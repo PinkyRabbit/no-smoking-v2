@@ -1,6 +1,5 @@
 import TelegramBot from "node-telegram-bot-api";
-import { contentFor } from "./content";
-import { Content } from "./content/keys";
+import { botActionsInit } from "./commands";
 
 process.on("uncaughtException", (error) => {
   console.error("Uncaught exception:", error);
@@ -28,11 +27,4 @@ bot.onText(/\/echo (.+)/, (msg, match) => {
   bot.sendMessage(chatId, resp);
 });
 
-// Listen for any kind of message. There are different kinds of
-// messages.
-bot.on("message", (msg) => {
-  const chatId = msg.chat.id;
-
-  // send a message to the chat acknowledging receipt of their message
-  bot.sendMessage(chatId, contentFor(Content.START));
-});
+botActionsInit(bot);

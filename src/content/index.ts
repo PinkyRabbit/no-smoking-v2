@@ -18,3 +18,5 @@ catalog.en = en;
 export const contentFor = (contentKey: Content) => {
   return i18n.__(contentKey);
 };
+
+export { Content };
