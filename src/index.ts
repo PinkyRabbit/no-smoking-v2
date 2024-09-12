@@ -1,4 +1,6 @@
 import TelegramBot from "node-telegram-bot-api";
+import { contentFor } from "./content";
+import { Content } from "./content/keys";
 
 process.on("uncaughtException", (error) => {
   console.error("Uncaught exception:", error);
@@ -32,5 +34,5 @@ bot.on("message", (msg) => {
   const chatId = msg.chat.id;
 
   // send a message to the chat acknowledging receipt of their message
-  bot.sendMessage(chatId, "Received your message");
+  bot.sendMessage(chatId, contentFor(Content.START));
 });

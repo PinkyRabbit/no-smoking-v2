@@ -2,7 +2,6 @@ const typescript = require('@typescript-eslint/eslint-plugin');
 const prettierPlugin = require('eslint-plugin-prettier');
 const prettierConfig = require('eslint-config-prettier');
 
-// @TODO: Fix eslint config!
 module.exports = [
     {
         files: ['**/*.ts'],
@@ -20,7 +19,7 @@ module.exports = [
         rules: {
             ...typescript.configs['recommended'].rules,
             ...prettierConfig.rules,
-            // You can add custom rules here
+            semi: ['error', 'always'],
         },
     },
 ];
