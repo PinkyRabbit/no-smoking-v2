@@ -1,3 +1,4 @@
 export enum Content {
-  START = 'START'
+  MESSAGE = 'MESSAGE',
+  START_NEW = 'start_new_user'
 }

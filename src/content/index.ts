@@ -1,6 +1,6 @@
 import { I18n } from 'i18n';
 import { join as pathJoin } from 'path';
-import { en, ru } from './locales';
+import lang from './locales';
 import { Content } from "./keys";
 
 const i18n = new I18n({
@@ -12,8 +12,8 @@ const i18n = new I18n({
   syncFiles: false,
 });
 const catalog = i18n.getCatalog();
-catalog.ru = ru;
-catalog.en = en;
+catalog.ru = lang.ru;
+catalog.en = lang.en;
 
 export const contentFor = (contentKey: Content) => {
   return i18n.__(contentKey);

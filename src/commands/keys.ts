@@ -1,3 +1,4 @@
-export enum BotEvent {
-  MESSAGE = 'message'
+export const BotEvent =  {
+  Message: 'message',
+  Start: /\/start/,
 };
