@@ -1,3 +1,4 @@
+import TelegramBot from "node-telegram-bot-api";
 import { I18n } from "i18n";
 import { join as pathJoin } from "path";
 import { BTN, Callback, DialogKey } from "./keys";
@@ -18,8 +19,6 @@ catalog.en = lang.en;
 type ButtonOption = { text: string; callback_data: Callback };
 type ButtonLine = ButtonOption[];
 type InlineKeyboard = ButtonLine[];
-type ReplyMarkup = { inline_keyboard: InlineKeyboard };
-type GetButtonsResult = { reply_markup: ReplyMarkup };
 
 const selectButtonsByKey = (key: DialogKey): InlineKeyboard => {
   const result: InlineKeyboard = [];
@@ -35,7 +34,7 @@ const selectButtonsByKey = (key: DialogKey): InlineKeyboard => {
   return result;
 };
 
-export const buttonsFor = (key: DialogKey): GetButtonsResult => {
+export const buttonsFor = (key: DialogKey): TelegramBot.SendMessageOptions => {
   const inline_keyboard = selectButtonsByKey(key);
   return { reply_markup: { inline_keyboard } };
 };
