@@ -20,6 +20,7 @@ module.exports = [
             ...typescript.configs['recommended'].rules,
             ...prettierConfig.rules,
             semi: ['error', 'always'],
+            quotes: ['error', 'double'],
             indent: [
                 "error",
                 2, // Indent level is 2 spaces

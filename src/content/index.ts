@@ -1,13 +1,13 @@
-import { I18n } from 'i18n';
-import { join as pathJoin } from 'path';
-import lang from './locales';
+import { I18n } from "i18n";
+import { join as pathJoin } from "path";
+import lang from "./locales";
 import { Content } from "./keys";
 
 const i18n = new I18n({
-  locales: ['en', 'ru'],
-  directory: pathJoin(__dirname, '/locales'),
-  defaultLocale: 'ru',
-  extension: '.ts',
+  locales: ["en", "ru"],
+  directory: pathJoin(__dirname, "/locales"),
+  defaultLocale: "ru",
+  extension: ".ts",
   updateFiles: false,
   syncFiles: false,
 });

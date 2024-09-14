@@ -1,6 +1,6 @@
 export const BotEvent =  {
-  Message: 'message',
-  Callback: 'callback_query',
+  Message: "message",
+  Callback: "callback_query",
   Start: /\/start/,
 };
 
