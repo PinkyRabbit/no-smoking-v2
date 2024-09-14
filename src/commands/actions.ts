@@ -27,6 +27,6 @@ export class Actions {
   }
 
   toStage1  (chatId: number) {
-    this._res(chatId, contentFor(Content.STAGE_1));
+    this._res(chatId, contentFor(Content.STAGE_1), buttonsFor(DialogKey.stage1));
   };
 }

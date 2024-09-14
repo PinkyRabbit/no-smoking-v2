@@ -21,17 +21,17 @@ type ButtonLine = ButtonOption[];
 type InlineKeyboard = ButtonLine[];
 
 const selectButtonsByKey = (key: DialogKey): InlineKeyboard => {
-  const result: InlineKeyboard = [];
-  switch (key) {
-    case DialogKey.beginning:
-      const text = i18n.__(BTN.Beginning);
-      const btn = { text, callback_data: Callback.beginning };
-      result.push([btn]);
-      break;
-    default:
-      return [];
+  if (key === DialogKey.beginning) {
+    const text = i18n.__(BTN.Beginning);
+    const btn = { text, callback_data: Callback.beginning };
+    return [[btn]];
   }
-  return result;
+  if (key === DialogKey.stage1) {
+    const text = i18n.__(BTN.Im_Smoking);
+    const btn = { text, callback_data: Callback.im_smoking };
+    return [[btn]];
+  }
+  return [];
 };
 
 export const buttonsFor = (key: DialogKey): TelegramBot.SendMessageOptions => {
