@@ -1,6 +1,7 @@
 import TelegramBot from "node-telegram-bot-api";
 import { Content, contentFor } from "../content";
 import { buttonsFor, DialogKey } from "../buttons";
+import { Users } from "../db";
 
 export class Actions {
   constructor(private bot: TelegramBot) {
@@ -29,4 +30,11 @@ export class Actions {
   toStage1  (chatId: number) {
     this._res(chatId, contentFor(Content.STAGE_1), buttonsFor(DialogKey.stage1));
   };
+
+  async imSmokingHandler(chatId: number) {
+    const user = await Users.getByChatId(chatId);
+    console.log("----- user");
+    console.log(user);
+    this._res(chatId, contentFor(Content.STAGE_1), buttonsFor(DialogKey.stage1));
+  }
 }

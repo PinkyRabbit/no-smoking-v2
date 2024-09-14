@@ -17,6 +17,9 @@ export const botActionsInit = (bot: TelegramBot) => {
       case Callback.beginning:
         act.toStage1(chatId);
         break;
+      case Callback.im_smoking:
+        act.imSmokingHandler(chatId);
+        break;
       default:
         console.log(`Unsupported callback "${callbackType}"`);
     }
