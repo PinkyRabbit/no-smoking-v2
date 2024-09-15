@@ -1,11 +1,16 @@
 import TelegramBot from "node-telegram-bot-api";
 import { Content, contentFor } from "../content";
 import { buttonsFor, DialogKey } from "../buttons";
-import { UsersRepo } from "../db";
+import { User, UsersRepo } from "../db";
+import { STAGE_1_MAX, STAGE_1_MIN } from "./constants";
 
 export class Actions {
   constructor(private bot: TelegramBot) {
     this.bot = bot;
+    
+    // all "on" methods should be bound with "this"
+    this.onMessage = this.onMessage.bind(this);
+    this.onStart = this.onStart.bind(this);
   }
 
   private _res(
@@ -23,34 +28,92 @@ export class Actions {
   }
 
   onMessage(msg: TelegramBot.Message) {
-    console.log("!!!!");
-    this._res( msg.chat.id, contentFor(Content.MESSAGE));
+    if (typeof msg.text !== "string") {
+      return;
+    }
+    const stage1 = "st1 ";
+    if (msg.text.indexOf(stage1) === 0) {
+      const value = Number.parseInt(msg.text.replace(stage1, ""), 10);
+      const update: Partial<User> = {
+        prevTime: msg.date - 120 * 60,
+        deltaStage1: new Array(20).fill(value),
+      };
+      UsersRepo.updateUser(msg.chat.id, update);
+      this.bot.sendMessage(msg.chat.id,`Значение ${value} установлено`);
+      return;
+    }
   }
 
   onStart(msg: TelegramBot.Message) {
     this._res(msg.chat.id, contentFor(Content.START_NEW), buttonsFor(DialogKey.beginning));
   }
 
-  toStage1  (msg: TelegramBot.Message) {
+  toStage1(msg: TelegramBot.Message) {
     this._res(msg.chat.id, contentFor(Content.STAGE_1), buttonsFor(DialogKey.stage1));
   };
+
+  private async _onNewUserSmoking(msg: TelegramBot.Message) {
+    await UsersRepo.addNewUser(msg.chat.id, msg.date);
+    this._res(msg.chat.id, contentFor(Content.FIRST_STEP), buttonsFor(DialogKey.stage1));
+  }
+
+  private async _stage1(msg: TelegramBot.Message, user: User) {
+    const update: Partial<User> = { prevTime: msg.date };
+    const timeDifferenceSec = msg.date - user.prevTime;
+    const deltaTime = Math.round(timeDifferenceSec / 60); // in minutes
+    let isValidDeltaTime = true;
+    let deltaTimesLeft = 19 - user.deltaStage1.length;
+    if (deltaTime < STAGE_1_MIN) {
+      isValidDeltaTime = false;
+      const content = contentFor(Content.STAGE_1_IGNORE_MIN, {
+        min_stage_1: `${STAGE_1_MIN}`,
+        stage_1_left: `${deltaTimesLeft}`,
+      });
+      this._res(msg.chat.id, content, buttonsFor(DialogKey.stage1));
+    }
+    if(deltaTime > STAGE_1_MAX) {
+      isValidDeltaTime = false;
+      const content = contentFor(Content.STAGE_1_IGNORE_MAX, {
+        max_stage_1: `${STAGE_1_MAX}`,
+        stage_1_left: `${deltaTimesLeft}`,
+      });
+      this._res(msg.chat.id, content, buttonsFor(DialogKey.stage1));
+    }
+    if (isValidDeltaTime) {
+      deltaTimesLeft -= 1;
+      update.deltaStage1 = user.deltaStage1.concat(deltaTime);
+    }
+    if (isValidDeltaTime && deltaTimesLeft > 0) {
+      const content = contentFor(Content.STAGE_1_PROCESSING, {
+        stage_1_left: `${deltaTimesLeft}`,
+      });
+      this._res(msg.chat.id, content, buttonsFor(DialogKey.stage1));
+    }
+    if (isValidDeltaTime && deltaTimesLeft < 1) {
+      const summaryStage1Delta = update.deltaStage1!.reduce((a, b) => a + b, 0);
+      const stage1DeltaCount = update.deltaStage1!.length;
+      const stage1DeltaAvg = Math.round(summaryStage1Delta / stage1DeltaCount);
+      update.isStage1 = false;
+      update.deltaTime = stage1DeltaAvg;
+      update.deltaStage1 = [];
+      const content = contentFor(Content.STAGE_1_END);
+      this._res(msg.chat.id, content);
+    }
+    UsersRepo.updateUser(msg.chat.id, update);
+  }
 
   async imSmokingHandler(msg: TelegramBot.Message) {
     const user = await UsersRepo.getByChatId(msg.chat.id);
     if (!user) {
-      await UsersRepo.addNewUser(msg.chat.id, msg.date);
-      this._res(msg.chat.id, contentFor(Content.FIRST_STEP), buttonsFor(DialogKey.stage1));
-      return;
+      return this._onNewUserSmoking(msg);
     }
     if (user.isStage1) {
-      this._res(msg.chat.id, contentFor(Content.FIRST_STEP), buttonsFor(DialogKey.stage1));
+      return this._stage1(msg, user);
     }
     //   const update: Partial<User> = { prevTime: };
     //   const intervals = user.initialPeriods.push(msg.date);
     //
 
-    console.log("----- user");
-    console.log(user);
     return;
 
     const offset = this._getTimezoneOffset(msg);

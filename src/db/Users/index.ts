@@ -4,7 +4,8 @@ import { RequestOptions } from "../dbOptionsConstructor";
 export type User = {
   chatId: number;
   isStage1: boolean;
-  initialPeriods: number[];
+  deltaTime: number; // delta time in minutes
+  deltaStage1: number[]; // delta time in minutes for Stage 1
   prevTime: number;
 };
 
@@ -18,7 +19,8 @@ export class UsersRepo extends RequestOptions {
 
   static addNewUser(chatId: number, msgTime: number) {
     const that = new UsersRepo();
-    return that.Users.insert({ chatId, isStage1: true, initialPeriods: [], prevTime: msgTime });
+    const defaultUser: User = { chatId, prevTime: msgTime, isStage1: true, deltaTime: 0, deltaStage1: [], };
+    return that.Users.insert(defaultUser);
   }
 
   static updateUser(chatId: number, update: Partial<User>) {
