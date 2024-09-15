@@ -9,16 +9,16 @@ export const botActionsInit = (bot: TelegramBot) => {
   bot.on(BotEvent.Message, act.onMessage);
   bot.on(BotEvent.Callback, (callbackQuery: TelegramBot.CallbackQuery) => {
     const callbackType = callbackQuery.data as Callback;
-    const chatId = callbackQuery.message?.chat.id;
-    if (!chatId || !callbackType) {
+    const message = callbackQuery.message;
+    if (!message || !callbackType) {
       return;
     }
     switch (callbackType) {
       case Callback.beginning:
-        act.toStage1(chatId);
+        act.toStage1(message);
         break;
       case Callback.im_smoking:
-        act.imSmokingHandler(chatId);
+        act.imSmokingHandler(message);
         break;
       default:
         console.log(`Unsupported callback "${callbackType}"`);
