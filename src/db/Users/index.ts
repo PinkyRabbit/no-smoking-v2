@@ -1,12 +1,19 @@
 import monk  from "monk";
 import { RequestOptions } from "../dbOptionsConstructor";
 
+/**
+ * All the time is stored in minutes
+ */
+
 export type User = {
   chatId: number;
-  isStage1: boolean;
-  deltaTime: number; // delta time in minutes
-  deltaStage1: number[]; // delta time in minutes for Stage 1
-  prevTime: number;
+  minDeltaTime: number; // 0 = stage 1
+  minDeltaTimesInitial: number[]; // delta time for initial stage
+  deltaTime: number;
+  prevTime: number; // for stage 1
+  nextTime: number; // for stage 2
+  startDate: Date | null; // date of stage 1 start
+  endDate: Date | null; // date of stage 2 end
 };
 
 export class UsersRepo extends RequestOptions {
@@ -19,7 +26,16 @@ export class UsersRepo extends RequestOptions {
 
   static addNewUser(chatId: number, msgTime: number) {
     const that = new UsersRepo();
-    const defaultUser: User = { chatId, prevTime: msgTime, isStage1: true, deltaTime: 0, deltaStage1: [], };
+    const defaultUser: User = {
+      chatId,
+      minDeltaTime: 0,
+      minDeltaTimesInitial: [],
+      deltaTime: 0,
+      prevTime: msgTime,
+      nextTime: 0,
+      startDate: new Date(),
+      endDate: null,
+    };
     return that.Users.insert(defaultUser);
   }
 

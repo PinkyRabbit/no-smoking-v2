@@ -10,4 +10,5 @@ export const contentEn: MultilineContent = {
   [Content.STAGE_1_IGNORE_MAX]: "Received your message",
   [Content.STAGE_1_PROCESSING]: "Received your message",
   [Content.STAGE_1_END]: "Received your message",
+  [Content.STAGE_2]: "Received your message",
 };

@@ -36,7 +36,7 @@ export class Actions {
       const value = Number.parseInt(msg.text.replace(stage1, ""), 10);
       const update: Partial<User> = {
         prevTime: msg.date - 120 * 60,
-        deltaStage1: new Array(20).fill(value),
+        minDeltaTimesInitial: new Array(20).fill(value),
       };
       UsersRepo.updateUser(msg.chat.id, update);
       this.bot.sendMessage(msg.chat.id,`Значение ${value} установлено`);
@@ -45,8 +45,8 @@ export class Actions {
     if (msg.text === "tost1") {
       const update: Partial<User> = {
         prevTime: msg.date - 120 * 60,
-        deltaStage1: [],
-        isStage1: true,
+        minDeltaTime: 0,
+        minDeltaTimesInitial: [],
       };
       UsersRepo.updateUser(msg.chat.id, update);
       this.bot.sendMessage(msg.chat.id,"Пользователь сброшен до stage 1");
@@ -73,7 +73,7 @@ export class Actions {
     const timeDifferenceSec = msg.date - user.prevTime;
     const deltaTime = Math.round(timeDifferenceSec / 60); // in minutes
     let isValidDeltaTime = true;
-    let deltaTimesLeft = STAGE_1_STEPS - user.deltaStage1.length;
+    let deltaTimesLeft = STAGE_1_STEPS - user.minDeltaTimesInitial.length;
     if (deltaTime < STAGE_1_MIN) {
       isValidDeltaTime = false;
       const content = contentFor(Content.STAGE_1_IGNORE_MIN, {
@@ -82,7 +82,7 @@ export class Actions {
       });
       this._res(msg.chat.id, content, buttonsFor(DialogKey.stage1));
     }
-    if(deltaTime > STAGE_1_MAX) {
+    if (deltaTime > STAGE_1_MAX) {
       isValidDeltaTime = false;
       const content = contentFor(Content.STAGE_1_IGNORE_MAX, {
         max_stage_1: `${STAGE_1_MAX}`,
@@ -92,7 +92,7 @@ export class Actions {
     }
     if (isValidDeltaTime) {
       deltaTimesLeft -= 1;
-      update.deltaStage1 = user.deltaStage1.concat(deltaTime);
+      update.minDeltaTimesInitial = user.minDeltaTimesInitial.concat(deltaTime);
     }
     if (isValidDeltaTime && deltaTimesLeft > 0) {
       const content = contentFor(Content.STAGE_1_PROCESSING, {
@@ -101,17 +101,22 @@ export class Actions {
       this._res(msg.chat.id, content, buttonsFor(DialogKey.stage1));
     }
     if (isValidDeltaTime && deltaTimesLeft < 1) {
-      const summaryStage1Delta = update.deltaStage1!.reduce((a, b) => a + b, 0);
-      const stage1DeltaCount = update.deltaStage1!.length;
+      const summaryStage1Delta = update.minDeltaTimesInitial!.reduce((a, b) => a + b, 0);
+      const stage1DeltaCount = update.minDeltaTimesInitial!.length;
       const stage1DeltaAvg = Math.round(summaryStage1Delta / stage1DeltaCount);
-      update.isStage1 = false;
+      const ts = Date.now();
+      update.minDeltaTimesInitial = [];
+      update.minDeltaTime = stage1DeltaAvg;
       update.deltaTime = stage1DeltaAvg;
-      update.deltaStage1 = [];
+      update.prevTime = ts;
+      update.nextTime = ts + (stage1DeltaAvg * 60);
       const content = contentFor(Content.STAGE_1_END, {
-        hours: `${Math.floor(stage1DeltaAvg / 60)}`,
-        minutes: `${stage1DeltaAvg % 60}`,
+        deltaTime: minsToTimeString(stage1DeltaAvg),
       });
       this._res(msg.chat.id, content);
+      setTimeout(() => {
+        this._res(msg.chat.id, contentFor(Content.STAGE_2));
+      }, 5000);
     }
     UsersRepo.updateUser(msg.chat.id, update);
   }
@@ -121,9 +126,10 @@ export class Actions {
     if (!user) {
       return this._onNewUserSmoking(msg);
     }
-    if (user.isStage1) {
+    if (!user.minDeltaTime) {
       return this._stage1(msg, user);
     }
+    this._res(msg.chat.id, contentFor(Content.STAGE_2));
     //   const update: Partial<User> = { prevTime: };
     //   const intervals = user.initialPeriods.push(msg.date);
     //
