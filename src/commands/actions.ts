@@ -3,6 +3,7 @@ import { Content, contentFor } from "../content";
 import { buttonsFor, DialogKey } from "../buttons";
 import { User, UsersRepo } from "../db";
 import { STAGE_1_MAX, STAGE_1_MIN, STAGE_1_STEPS } from "./constants";
+import { minsToTimeString } from "../lib_helpers/humanize-duration";
 
 export class Actions {
   constructor(private bot: TelegramBot) {
@@ -35,7 +36,7 @@ export class Actions {
     if (msg.text.indexOf(stage1) === 0) {
       const value = Number.parseInt(msg.text.replace(stage1, ""), 10);
       const update: Partial<User> = {
-        prevTime: msg.date - 120 * 60,
+        prevTime: msg.date - 60 * 60,
         minDeltaTimesInitial: new Array(20).fill(value),
       };
       UsersRepo.updateUser(msg.chat.id, update);
@@ -44,7 +45,7 @@ export class Actions {
     }
     if (msg.text === "tost1") {
       const update: Partial<User> = {
-        prevTime: msg.date - 120 * 60,
+        prevTime: msg.date - 60 * 60,
         minDeltaTime: 0,
         minDeltaTimesInitial: [],
       };
@@ -104,14 +105,13 @@ export class Actions {
       const summaryStage1Delta = update.minDeltaTimesInitial!.reduce((a, b) => a + b, 0);
       const stage1DeltaCount = update.minDeltaTimesInitial!.length;
       const stage1DeltaAvg = Math.round(summaryStage1Delta / stage1DeltaCount);
-      const ts = Date.now();
       update.minDeltaTimesInitial = [];
       update.minDeltaTime = stage1DeltaAvg;
       update.deltaTime = stage1DeltaAvg;
-      update.prevTime = ts;
-      update.nextTime = ts + (stage1DeltaAvg * 60);
+      update.prevTime = msg.date;
+      update.nextTime = msg.date + (stage1DeltaAvg * 60);
       const content = contentFor(Content.STAGE_1_END, {
-        deltaTime: minsToTimeString(stage1DeltaAvg),
+        delta_time: minsToTimeString(stage1DeltaAvg),
       });
       this._res(msg.chat.id, content);
       setTimeout(() => {
