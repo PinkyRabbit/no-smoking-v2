@@ -6,6 +6,7 @@ import { Actions } from "./actions";
 export const botActionsInit = (bot: TelegramBot) => {
   const act = new Actions(bot);
   bot.onText(BotEvent.Start, act.onStart);
+  bot.onText(BotEvent.SelectLanguage, act.onLang);
   bot.on(BotEvent.Message, act.onMessage);
   bot.on(BotEvent.Callback, (callbackQuery: TelegramBot.CallbackQuery) => {
     const callbackType = callbackQuery.data as Callback;

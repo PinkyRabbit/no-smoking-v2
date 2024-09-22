@@ -12,6 +12,7 @@ export class Actions {
     // all "on" methods should be bound with "this"
     this.onMessage = this.onMessage.bind(this);
     this.onStart = this.onStart.bind(this);
+    this.onLang = this.onLang.bind(this);
   }
 
   private _res(
@@ -57,6 +58,10 @@ export class Actions {
 
   onStart(msg: TelegramBot.Message) {
     this._res(msg.chat.id, contentFor(Content.START_NEW), buttonsFor(DialogKey.beginning));
+  }
+
+  onLang(msg: TelegramBot.Message) {
+    this._res(msg.chat.id, contentFor(Content.LANG), buttonsFor(DialogKey.beginning));
   }
 
   toStage1(msg: TelegramBot.Message) {
