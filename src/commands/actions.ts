@@ -61,7 +61,7 @@ export class Actions {
   }
 
   onLang(msg: TelegramBot.Message) {
-    this._res(msg.chat.id, contentFor(Content.LANG), buttonsFor(DialogKey.beginning));
+    this._res(msg.chat.id, contentFor(Content.LANG), buttonsFor(DialogKey.lang));
   }
 
   toStage1(msg: TelegramBot.Message) {

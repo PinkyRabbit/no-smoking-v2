@@ -15,7 +15,7 @@ export const contentRu: MultilineContent = {
     Click here ➤ /lang ${NL}
     🇷🇺 🇬🇧 
   `,
-  [Content.LANG]: "Please choose a language to use.",
+  [Content.LANG]: "Please choose a language to use:",
   [Content.STAGE_1]: `
     ${B}Этап 1${B}${N2}
     Для начала нам нужно понять, как часто ты куришь.${NL} 

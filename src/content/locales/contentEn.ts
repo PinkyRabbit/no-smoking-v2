@@ -10,7 +10,7 @@ export const contentEn: MultilineContent = {
     Click here ➤ /lang ${NL}
     🇷🇺 🇬🇧 
   `,
-  [Content.LANG]: "Please choose a language to use.",
+  [Content.LANG]: "Please choose a language to use:",
   [Content.STAGE_1]: "Received your message",
   [Content.FIRST_STEP]: "Received your message",
   [Content.STAGE_1_IGNORE_MIN]: "Received your message",
