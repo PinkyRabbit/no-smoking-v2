@@ -16,6 +16,10 @@ export const contentRu: MultilineContent = {
     🇷🇺 🇬🇧 
   `,
   [Content.LANG]: "Please choose a language to use:",
+  [Content.LANG_APPLIED]: `
+    Был установлен русский язык.${ND}
+    You can change the language any time by clicking /lang
+  `,
   [Content.STAGE_1]: `
     ${B}Этап 1${B}${N2}
     Для начала нам нужно понять, как часто ты куришь.${NL} 

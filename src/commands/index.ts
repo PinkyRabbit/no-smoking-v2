@@ -2,6 +2,7 @@ import TelegramBot  from "node-telegram-bot-api";
 import { BotEvent } from "./keys";
 import { Callback } from "../buttons/keys";
 import { Actions } from "./actions";
+import { Lang } from "./constants";
 
 export const botActionsInit = (bot: TelegramBot) => {
   const act = new Actions(bot);
@@ -20,6 +21,12 @@ export const botActionsInit = (bot: TelegramBot) => {
         break;
       case Callback.im_smoking:
         act.imSmokingHandler(message);
+        break;
+      case Callback.lang_ru:
+        act.changeLanguageHandler(message, Lang.RU);
+        break;
+      case Callback.lang_en:
+        act.changeLanguageHandler(message, Lang.EN);
         break;
       default:
         console.log(`Unsupported callback "${callbackType}"`);

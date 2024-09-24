@@ -2,7 +2,7 @@ import TelegramBot from "node-telegram-bot-api";
 import { Content, contentFor } from "../content";
 import { buttonsFor, DialogKey } from "../buttons";
 import { User, UsersRepo } from "../db";
-import { STAGE_1_MAX, STAGE_1_MIN, STAGE_1_STEPS } from "./constants";
+import { Lang, STAGE_1_MAX, STAGE_1_MIN, STAGE_1_STEPS } from "./constants";
 import { minsToTimeString } from "../lib_helpers/humanize-duration";
 
 export class Actions {
@@ -69,7 +69,7 @@ export class Actions {
   };
 
   private async _onNewUserSmoking(msg: TelegramBot.Message) {
-    await UsersRepo.addNewUser(msg.chat.id, msg.date);
+    await UsersRepo.addNewUser(msg.chat.id, Lang.RU, msg.date);
     const ops = { stage_1_left: `${STAGE_1_STEPS - 1}` };
     this._res(msg.chat.id, contentFor(Content.FIRST_STEP, ops), buttonsFor(DialogKey.stage1));
   }
@@ -145,5 +145,10 @@ export class Actions {
     console.log(msg);
     console.log(offset);
     this._res(msg.chat.id, contentFor(Content.STAGE_1), buttonsFor(DialogKey.stage1));
+  }
+
+  async changeLanguageHandler(msg: TelegramBot.Message, lang: Lang) {
+    await UsersRepo.updateUser(msg.chat.id, { lang });
+    this._res(msg.chat.id, contentFor(Content.LANG_APPLIED));
   }
 }

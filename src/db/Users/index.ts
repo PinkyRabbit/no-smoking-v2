@@ -1,5 +1,6 @@
 import monk  from "monk";
 import { RequestOptions } from "../dbOptionsConstructor";
+import { Lang } from "../../commands/constants";
 
 /**
  * All the time is stored in minutes
@@ -7,6 +8,7 @@ import { RequestOptions } from "../dbOptionsConstructor";
 
 export type User = {
   chatId: number;
+  lang: Lang;
   minDeltaTime: number; // 0 = stage 1
   minDeltaTimesInitial: number[]; // delta time for initial stage
   deltaTime: number;
@@ -28,6 +30,7 @@ export class UsersRepo extends RequestOptions {
     const that = new UsersRepo();
     const defaultUser: User = {
       chatId,
+      lang: Lang.RU,
       minDeltaTime: 0,
       minDeltaTimesInitial: [],
       deltaTime: 0,
