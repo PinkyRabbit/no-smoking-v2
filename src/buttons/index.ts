@@ -4,7 +4,7 @@ import { join as pathJoin } from "path";
 import { BTN, Callback, DialogKey } from "./keys";
 import lang from "./locales";
 
-const i18n = new I18n({
+export const i18n = new I18n({
   locales: ["en", "ru"],
   directory: pathJoin(__dirname, "/locales"),
   defaultLocale: "ru",

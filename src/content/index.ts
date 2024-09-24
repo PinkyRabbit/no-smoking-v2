@@ -3,7 +3,7 @@ import { join as pathJoin } from "path";
 import lang from "./locales";
 import { Content } from "./keys";
 
-const i18n = new I18n({
+export const i18n = new I18n({
   locales: ["en", "ru"],
   directory: pathJoin(__dirname, "/locales"),
   defaultLocale: "ru",
@@ -16,7 +16,7 @@ catalog.ru = lang.ru;
 catalog.en = lang.en;
 
 export const contentFor = (contentKey: Content, values: Replacements = {}) => {
-  return i18n.__(contentKey, values);
+  return i18n.__(contentKey, { ...values, locale: "en" });
 };
 
 export { Content };

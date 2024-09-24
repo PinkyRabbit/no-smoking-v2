@@ -4,6 +4,7 @@ import { buttonsFor, DialogKey } from "../buttons";
 import { User, UsersRepo } from "../db";
 import { Lang, STAGE_1_MAX, STAGE_1_MIN, STAGE_1_STEPS } from "./constants";
 import { minsToTimeString } from "../lib_helpers/humanize-duration";
+import { transformMsg } from "./decorators";
 
 export class Actions {
   constructor(private bot: TelegramBot) {
@@ -69,7 +70,7 @@ export class Actions {
   };
 
   private async _onNewUserSmoking(msg: TelegramBot.Message) {
-    await UsersRepo.addNewUser(msg.chat.id, Lang.RU, msg.date);
+    await UsersRepo.addNewUser(msg.chat.id, msg.date);
     const ops = { stage_1_left: `${STAGE_1_STEPS - 1}` };
     this._res(msg.chat.id, contentFor(Content.FIRST_STEP, ops), buttonsFor(DialogKey.stage1));
   }
@@ -126,6 +127,7 @@ export class Actions {
     UsersRepo.updateUser(msg.chat.id, update);
   }
 
+  @transformMsg
   async imSmokingHandler(msg: TelegramBot.Message) {
     const user = await UsersRepo.getByChatId(msg.chat.id);
     if (!user) {
@@ -147,8 +149,12 @@ export class Actions {
     this._res(msg.chat.id, contentFor(Content.STAGE_1), buttonsFor(DialogKey.stage1));
   }
 
+  @transformMsg
   async changeLanguageHandler(msg: TelegramBot.Message, lang: Lang) {
     await UsersRepo.updateUser(msg.chat.id, { lang });
     this._res(msg.chat.id, contentFor(Content.LANG_APPLIED));
+    if (!msg.user.minDeltaTime && !msg.user.minDeltaTimesInitial.length) {
+      return this.onStart(msg);
+    }
   }
 }

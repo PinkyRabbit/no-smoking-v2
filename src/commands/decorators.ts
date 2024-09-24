@@ -1,0 +1,31 @@
+import { Message } from "node-telegram-bot-api";
+import { UsersRepo } from "../db";
+import { applyLang } from "../lib_helpers/i18n";
+
+const transformMessage = async (msg: Message) => {
+  const user = await UsersRepo.getByChatId(msg.chat.id);
+  if (user) {
+    applyLang(user.lang);
+    msg.user = Object.assign({}, user);
+  }
+  return msg;
+};
+
+export function transformMsg(target: unknown, propertyKey: string, descriptor: PropertyDescriptor) {
+  const originalMethod = descriptor.value;
+  descriptor.value = async function(...args: unknown[]) {
+    // Find the index of the 'msg' parameter
+    const msgIndex = originalMethod.toString()
+      .match(/\(([^)]*)\)/)[1]
+      .split(",")
+      .findIndex((param: string) => param.trim() === "msg");
+
+    if (msgIndex !== -1) {
+      // Transform the msg argument
+      args[msgIndex] = await transformMessage(args[msgIndex] as Message);
+    }
+
+    return originalMethod.apply(this, args);
+  };
+  return descriptor;
+}
