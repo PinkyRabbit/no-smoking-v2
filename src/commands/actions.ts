@@ -58,8 +58,12 @@ export class Actions {
     }
   }
 
+  @transformMsg
   onStart(msg: TelegramBot.Message) {
-    this._res(msg.chat.id, contentFor(Content.START_NEW), buttonsFor(DialogKey.beginning));
+    if (!msg.user) {
+      this._res(msg.chat.id, contentFor(Content.START_NEW), buttonsFor(DialogKey.beginning));
+    }
+    this._res(msg.chat.id, contentFor(Content.START_EXISTING));
   }
 
   onLang(msg: TelegramBot.Message) {

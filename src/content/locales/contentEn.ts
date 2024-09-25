@@ -16,6 +16,13 @@ export const contentEn: MultilineContent = {
     Click here ➤ /lang ${NL}
     🇷🇺 🇬🇧 
   `,
+  [Content.START_EXISTING]: `
+    Hi friend! ✌️${N2}
+    We see that you have made some progress in our application.${N2}
+    To forget everything and start from scratch${NL}
+    💥 Click here ➤ /purge${N2}
+    Otherwise, re-activate your account.
+  `,
   [Content.LANG]: "Please choose a language to use:",
   [Content.LANG_APPLIED]: "🇬🇧 You have chosen English language.",
   [Content.STAGE_1]: DEFAULT,
