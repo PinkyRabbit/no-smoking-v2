@@ -5,6 +5,7 @@ import { User, UsersRepo } from "../db";
 import { Lang, STAGE_1_MAX, STAGE_1_MIN, STAGE_1_STEPS } from "./constants";
 import { minsToTimeString } from "../lib_helpers/humanize-duration";
 import { transformMsg } from "./decorators";
+import { applyLang } from "../lib_helpers/i18n";
 
 export class Actions {
   constructor(private bot: TelegramBot) {
@@ -75,12 +76,12 @@ export class Actions {
     this._res(msg.chat.id, contentFor(Content.FIRST_STEP, ops), buttonsFor(DialogKey.stage1));
   }
 
-  private async _stage1(msg: TelegramBot.Message, user: User) {
+  private async _stage1(msg: TelegramBot.Message) {
     const update: Partial<User> = { prevTime: msg.date };
-    const timeDifferenceSec = msg.date - user.prevTime;
+    const timeDifferenceSec = msg.date - msg.user.prevTime;
     const deltaTime = Math.round(timeDifferenceSec / 60); // in minutes
     let isValidDeltaTime = true;
-    let deltaTimesLeft = STAGE_1_STEPS - user.minDeltaTimesInitial.length;
+    let deltaTimesLeft = STAGE_1_STEPS - msg.user.minDeltaTimesInitial.length;
     if (deltaTime < STAGE_1_MIN) {
       isValidDeltaTime = false;
       const content = contentFor(Content.STAGE_1_IGNORE_MIN, {
@@ -99,7 +100,7 @@ export class Actions {
     }
     if (isValidDeltaTime) {
       deltaTimesLeft -= 1;
-      update.minDeltaTimesInitial = user.minDeltaTimesInitial.concat(deltaTime);
+      update.minDeltaTimesInitial = msg.user.minDeltaTimesInitial.concat(deltaTime);
     }
     if (isValidDeltaTime && deltaTimesLeft > 0) {
       const content = contentFor(Content.STAGE_1_PROCESSING, {
@@ -117,7 +118,7 @@ export class Actions {
       update.prevTime = msg.date;
       update.nextTime = msg.date + (stage1DeltaAvg * 60);
       const content = contentFor(Content.STAGE_1_END, {
-        delta_time: minsToTimeString(stage1DeltaAvg),
+        delta_time: minsToTimeString(stage1DeltaAvg, msg.user.lang),
       });
       this._res(msg.chat.id, content);
       setTimeout(() => {
@@ -129,12 +130,11 @@ export class Actions {
 
   @transformMsg
   async imSmokingHandler(msg: TelegramBot.Message) {
-    const user = await UsersRepo.getByChatId(msg.chat.id);
-    if (!user) {
+    if (!msg.user) {
       return this._onNewUserSmoking(msg);
     }
-    if (!user.minDeltaTime) {
-      return this._stage1(msg, user);
+    if (!msg.user.minDeltaTime) {
+      return this._stage1(msg);
     }
     this._res(msg.chat.id, contentFor(Content.STAGE_2));
     //   const update: Partial<User> = { prevTime: };
@@ -152,9 +152,10 @@ export class Actions {
   @transformMsg
   async changeLanguageHandler(msg: TelegramBot.Message, lang: Lang) {
     await UsersRepo.updateUser(msg.chat.id, { lang });
+    applyLang(lang, msg);
     this._res(msg.chat.id, contentFor(Content.LANG_APPLIED));
     if (!msg.user.minDeltaTime && !msg.user.minDeltaTimesInitial.length) {
-      return this.onStart(msg);
+      setTimeout(() => this.onStart(msg), 500);
     }
   }
 }
