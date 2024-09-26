@@ -28,6 +28,9 @@ export const botActionsInit = (bot: TelegramBot) => {
       case Callback.lang_en:
         act.changeLanguageHandler(message, Lang.EN);
         break;
+      case Callback.reset_ignore:
+        act.resetIgnoreHandler(message);
+        break;
       default:
         console.log(`Unsupported callback "${callbackType}"`);
     }

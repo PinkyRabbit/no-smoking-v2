@@ -24,6 +24,7 @@ export const contentEn: MultilineContent = {
     Otherwise, re-activate your account.
   `,
   [Content.START_EXISTING_STAGE_1]: DEFAULT,
+  [Content.START_RESET_IGNORE]: DEFAULT,
   [Content.LANG]: "Please choose a language to use:",
   [Content.LANG_APPLIED]: "🇬🇧 You have chosen English language.",
   [Content.STAGE_1]: DEFAULT,

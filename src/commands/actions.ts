@@ -172,4 +172,16 @@ export class Actions {
       await this.onStart(msg);
     }
   }
+
+  @transformMsg
+  public async resetIgnoreHandler(msg: TelegramBot.Message) {
+    await UsersRepo.updateUser(msg.chat.id, {
+      prevTime: 0,
+      nextTime: 0,
+    });
+    // @TODO: add button!
+    await this._res(msg.chat.id, contentFor(Content.START_RESET_IGNORE, {
+      delta_time: minsToTimeString(msg.user.deltaTime, msg.user.lang),
+    }));
+  }
 }

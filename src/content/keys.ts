@@ -3,6 +3,7 @@ export enum Content {
   START_NEW = "start_new_user",
   START_EXISTING = "start_existing_user",
   START_EXISTING_STAGE_1 = "start_existing_stage_1",
+  START_RESET_IGNORE = "start_reset_ignore",
   LANG = "lang",
   LANG_APPLIED = "lang_applied",
   FIRST_STEP = "1st_step",
