@@ -37,6 +37,13 @@ const selectButtonsByKey = (key: DialogKey): InlineKeyboard => {
     const btn = { text, callback_data: Callback.im_smoking };
     return [[btn]];
   }
+  if (key === DialogKey.start_existing) {
+    return [
+      [{ text: i18n.__(BTN.Reset_Ignore), callback_data: Callback.reset_ignore }],
+      [{ text: i18n.__(BTN.Reset_Stage_2), callback_data: Callback.reset_to_stage_2 }],
+      [{ text: i18n.__(BTN.Reset_Stage_1), callback_data: Callback.reset_to_stage_1 }],
+    ];
+  }
   return [];
 };
 

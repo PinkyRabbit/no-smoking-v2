@@ -65,18 +65,17 @@ export class Actions {
 
   @transformMsg
   public async onStart(msg: TelegramBot.Message) {
-    if (msg.user.minDeltaTime) {
-      // @TODO: Add buttons
-      await this._res(msg.chat.id, contentFor(Content.START_EXISTING));
+    if (!msg.user) {
+      // @TODO: Create a new user logic
+      await this._res(msg.chat.id, contentFor(Content.START_NEW), buttonsFor(DialogKey.beginning));
       return;
     }
-    if (msg.user) {
+    if (!msg.user.minDeltaTime) {
       await this._res(msg.chat.id, contentFor(Content.START_EXISTING_STAGE_1));
       await this.toStage1(msg);
       return;
     }
-    // @TODO: Create a new user logic
-    await this._res(msg.chat.id, contentFor(Content.START_NEW), buttonsFor(DialogKey.beginning));
+    await this._res(msg.chat.id, contentFor(Content.START_EXISTING), buttonsFor(DialogKey.start_existing));
   }
 
   public async onLang(msg: TelegramBot.Message) {
