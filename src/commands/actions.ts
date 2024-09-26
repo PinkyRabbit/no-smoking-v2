@@ -21,9 +21,14 @@ export class Actions {
     chatId: TelegramBot.ChatId,
     text: string,
     options: TelegramBot.SendMessageOptions = {}
-  ) {
-    const ops: TelegramBot.SendMessageOptions = { parse_mode: "Markdown", ...options };
-    this.bot.sendMessage(chatId, text, ops);
+  ): Promise<void> {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        const ops: TelegramBot.SendMessageOptions = { parse_mode: "Markdown", ...options };
+        this.bot.sendMessage(chatId, text, ops).catch((err) => reject(err));
+        resolve();
+      }, 400);
+    });
   }
 
   private async _getTimezoneOffset(msg: TelegramBot.Message) {
@@ -59,25 +64,33 @@ export class Actions {
   }
 
   @transformMsg
-  onStart(msg: TelegramBot.Message) {
-    if (!msg.user) {
-      this._res(msg.chat.id, contentFor(Content.START_NEW), buttonsFor(DialogKey.beginning));
+  public async onStart(msg: TelegramBot.Message) {
+    if (msg.user.minDeltaTime) {
+      // @TODO: Add buttons
+      await this._res(msg.chat.id, contentFor(Content.START_EXISTING));
+      return;
     }
-    this._res(msg.chat.id, contentFor(Content.START_EXISTING));
+    if (msg.user) {
+      await this._res(msg.chat.id, contentFor(Content.START_EXISTING_STAGE_1));
+      await this.toStage1(msg);
+      return;
+    }
+    // @TODO: Create a new user logic
+    await this._res(msg.chat.id, contentFor(Content.START_NEW), buttonsFor(DialogKey.beginning));
   }
 
-  onLang(msg: TelegramBot.Message) {
-    this._res(msg.chat.id, contentFor(Content.LANG), buttonsFor(DialogKey.lang));
+  public async onLang(msg: TelegramBot.Message) {
+    await this._res(msg.chat.id, contentFor(Content.LANG), buttonsFor(DialogKey.lang));
   }
 
-  toStage1(msg: TelegramBot.Message) {
-    this._res(msg.chat.id, contentFor(Content.STAGE_1), buttonsFor(DialogKey.stage1));
+  public async toStage1(msg: TelegramBot.Message) {
+    await this._res(msg.chat.id, contentFor(Content.STAGE_1), buttonsFor(DialogKey.stage1));
   };
 
   private async _onNewUserSmoking(msg: TelegramBot.Message) {
     await UsersRepo.addNewUser(msg.chat.id, msg.date);
     const ops = { stage_1_left: `${STAGE_1_STEPS - 1}` };
-    this._res(msg.chat.id, contentFor(Content.FIRST_STEP, ops), buttonsFor(DialogKey.stage1));
+    await this._res(msg.chat.id, contentFor(Content.FIRST_STEP, ops), buttonsFor(DialogKey.stage1));
   }
 
   private async _stage1(msg: TelegramBot.Message) {
@@ -92,7 +105,7 @@ export class Actions {
         min_stage_1: `${STAGE_1_MIN}`,
         stage_1_left: `${deltaTimesLeft}`,
       });
-      this._res(msg.chat.id, content, buttonsFor(DialogKey.stage1));
+      await this._res(msg.chat.id, content, buttonsFor(DialogKey.stage1));
     }
     if (deltaTime > STAGE_1_MAX) {
       isValidDeltaTime = false;
@@ -100,7 +113,7 @@ export class Actions {
         max_stage_1: `${STAGE_1_MAX}`,
         stage_1_left: `${deltaTimesLeft}`,
       });
-      this._res(msg.chat.id, content, buttonsFor(DialogKey.stage1));
+      await this._res(msg.chat.id, content, buttonsFor(DialogKey.stage1));
     }
     if (isValidDeltaTime) {
       deltaTimesLeft -= 1;
@@ -110,7 +123,7 @@ export class Actions {
       const content = contentFor(Content.STAGE_1_PROCESSING, {
         stage_1_left: `${deltaTimesLeft}`,
       });
-      this._res(msg.chat.id, content, buttonsFor(DialogKey.stage1));
+      await this._res(msg.chat.id, content, buttonsFor(DialogKey.stage1));
     }
     if (isValidDeltaTime && deltaTimesLeft < 1) {
       const summaryStage1Delta = update.minDeltaTimesInitial!.reduce((a, b) => a + b, 0);
@@ -124,23 +137,21 @@ export class Actions {
       const content = contentFor(Content.STAGE_1_END, {
         delta_time: minsToTimeString(stage1DeltaAvg, msg.user.lang),
       });
-      this._res(msg.chat.id, content);
-      setTimeout(() => {
-        this._res(msg.chat.id, contentFor(Content.STAGE_2));
-      }, 5000);
+      await this._res(msg.chat.id, content);
+      await this._res(msg.chat.id, contentFor(Content.STAGE_2));
     }
     UsersRepo.updateUser(msg.chat.id, update);
   }
 
   @transformMsg
-  async imSmokingHandler(msg: TelegramBot.Message) {
+  public async imSmokingHandler(msg: TelegramBot.Message) {
     if (!msg.user) {
       return this._onNewUserSmoking(msg);
     }
     if (!msg.user.minDeltaTime) {
       return this._stage1(msg);
     }
-    this._res(msg.chat.id, contentFor(Content.STAGE_2));
+    await this._res(msg.chat.id, contentFor(Content.STAGE_2));
     //   const update: Partial<User> = { prevTime: };
     //   const intervals = user.initialPeriods.push(msg.date);
     //
@@ -154,12 +165,12 @@ export class Actions {
   }
 
   @transformMsg
-  async changeLanguageHandler(msg: TelegramBot.Message, lang: Lang) {
+  public async changeLanguageHandler(msg: TelegramBot.Message, lang: Lang) {
     await UsersRepo.updateUser(msg.chat.id, { lang });
     applyLang(lang, msg);
-    this._res(msg.chat.id, contentFor(Content.LANG_APPLIED));
+    await this._res(msg.chat.id, contentFor(Content.LANG_APPLIED));
     if (!msg.user.minDeltaTime && !msg.user.minDeltaTimesInitial.length) {
-      setTimeout(() => this.onStart(msg), 500);
+      await this.onStart(msg);
     }
   }
 }

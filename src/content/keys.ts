@@ -2,6 +2,7 @@ export enum Content {
   MESSAGE = "MESSAGE",
   START_NEW = "start_new_user",
   START_EXISTING = "start_existing_user",
+  START_EXISTING_STAGE_1 = "start_existing_stage_1",
   LANG = "lang",
   LANG_APPLIED = "lang_applied",
   FIRST_STEP = "1st_step",
