@@ -4,6 +4,8 @@ export enum Content {
   START_EXISTING = "start_existing_user",
   START_EXISTING_STAGE_1 = "start_existing_stage_1",
   START_RESET_IGNORE = "start_reset_ignore",
+  START_RESET_TO_STAGE_1 = "start_reset_stage_1",
+  START_RESET_TO_STAGE_2 = "start_reset_stage_2",
   LANG = "lang",
   LANG_APPLIED = "lang_applied",
   FIRST_STEP = "1st_step",

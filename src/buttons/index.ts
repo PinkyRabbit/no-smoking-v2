@@ -32,7 +32,7 @@ const selectButtonsByKey = (key: DialogKey): InlineKeyboard => {
       { text: i18n.__(BTN.Lang_EN), callback_data: Callback.lang_en },
     ]];
   }
-  if (key === DialogKey.stage1) {
+  if (key === DialogKey.im_smoking) {
     const text = i18n.__(BTN.Im_Smoking);
     const btn = { text, callback_data: Callback.im_smoking };
     return [[btn]];

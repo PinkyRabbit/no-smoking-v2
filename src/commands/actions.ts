@@ -75,7 +75,10 @@ export class Actions {
       await this.toStage1(msg);
       return;
     }
-    await this._res(msg.chat.id, contentFor(Content.START_EXISTING), buttonsFor(DialogKey.start_existing));
+    const min_delta = minsToTimeString(msg.user.minDeltaTime, msg.user.lang);
+    const real_delta = minsToTimeString(msg.user.deltaTime || msg.user.minDeltaTime, msg.user.lang);
+    const contentProps = { min_delta, real_delta };
+    await this._res(msg.chat.id, contentFor(Content.START_EXISTING, contentProps), buttonsFor(DialogKey.start_existing));
   }
 
   public async onLang(msg: TelegramBot.Message) {
@@ -83,13 +86,13 @@ export class Actions {
   }
 
   public async toStage1(msg: TelegramBot.Message) {
-    await this._res(msg.chat.id, contentFor(Content.STAGE_1), buttonsFor(DialogKey.stage1));
+    await this._res(msg.chat.id, contentFor(Content.STAGE_1), buttonsFor(DialogKey.im_smoking));
   };
 
   private async _onNewUserSmoking(msg: TelegramBot.Message) {
     await UsersRepo.addNewUser(msg.chat.id, msg.date);
     const ops = { stage_1_left: `${STAGE_1_STEPS - 1}` };
-    await this._res(msg.chat.id, contentFor(Content.FIRST_STEP, ops), buttonsFor(DialogKey.stage1));
+    await this._res(msg.chat.id, contentFor(Content.FIRST_STEP, ops), buttonsFor(DialogKey.im_smoking));
   }
 
   private async _stage1(msg: TelegramBot.Message) {
@@ -104,7 +107,7 @@ export class Actions {
         min_stage_1: `${STAGE_1_MIN}`,
         stage_1_left: `${deltaTimesLeft}`,
       });
-      await this._res(msg.chat.id, content, buttonsFor(DialogKey.stage1));
+      await this._res(msg.chat.id, content, buttonsFor(DialogKey.im_smoking));
     }
     if (deltaTime > STAGE_1_MAX) {
       isValidDeltaTime = false;
@@ -112,7 +115,7 @@ export class Actions {
         max_stage_1: `${STAGE_1_MAX}`,
         stage_1_left: `${deltaTimesLeft}`,
       });
-      await this._res(msg.chat.id, content, buttonsFor(DialogKey.stage1));
+      await this._res(msg.chat.id, content, buttonsFor(DialogKey.im_smoking));
     }
     if (isValidDeltaTime) {
       deltaTimesLeft -= 1;
@@ -122,7 +125,7 @@ export class Actions {
       const content = contentFor(Content.STAGE_1_PROCESSING, {
         stage_1_left: `${deltaTimesLeft}`,
       });
-      await this._res(msg.chat.id, content, buttonsFor(DialogKey.stage1));
+      await this._res(msg.chat.id, content, buttonsFor(DialogKey.im_smoking));
     }
     if (isValidDeltaTime && deltaTimesLeft < 1) {
       const summaryStage1Delta = update.minDeltaTimesInitial!.reduce((a, b) => a + b, 0);
@@ -160,7 +163,7 @@ export class Actions {
     const offset = this._getTimezoneOffset(msg);
     console.log(msg);
     console.log(offset);
-    this._res(msg.chat.id, contentFor(Content.STAGE_1), buttonsFor(DialogKey.stage1));
+    this._res(msg.chat.id, contentFor(Content.STAGE_1), buttonsFor(DialogKey.im_smoking));
   }
 
   @transformMsg
@@ -179,9 +182,31 @@ export class Actions {
       prevTime: 0,
       nextTime: 0,
     });
-    // @TODO: add button!
-    await this._res(msg.chat.id, contentFor(Content.START_RESET_IGNORE, {
-      delta_time: minsToTimeString(msg.user.deltaTime, msg.user.lang),
-    }));
+    const contentProps = { min_delta: minsToTimeString(msg.user.minDeltaTime, msg.user.lang) };
+    await this._res(msg.chat.id, contentFor(Content.START_RESET_IGNORE, contentProps), buttonsFor(DialogKey.im_smoking));
+  }
+
+  @transformMsg
+  public async resetToStage1Handler(msg: TelegramBot.Message) {
+    await UsersRepo.updateUser(msg.chat.id, {
+      prevTime: 0,
+      nextTime: 0,
+      deltaTime: 0,
+      minDeltaTime: 0,
+      minDeltaTimesInitial: [],
+    });
+    await this._res(msg.chat.id, contentFor(Content.START_RESET_TO_STAGE_1));
+    await this.toStage1(msg);
+  }
+
+  @transformMsg
+  public async resetToStage2Handler(msg: TelegramBot.Message) {
+    await UsersRepo.updateUser(msg.chat.id, {
+      prevTime: 0,
+      nextTime: 0,
+      deltaTime: msg.user.minDeltaTime,
+    });
+    const contentProps = { min_delta: minsToTimeString(msg.user.minDeltaTime, msg.user.lang) };
+    await this._res(msg.chat.id, contentFor(Content.START_RESET_TO_STAGE_2, contentProps), buttonsFor(DialogKey.im_smoking));
   }
 }

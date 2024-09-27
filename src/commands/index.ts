@@ -31,6 +31,12 @@ export const botActionsInit = (bot: TelegramBot) => {
       case Callback.reset_ignore:
         act.resetIgnoreHandler(message);
         break;
+      case Callback.reset_to_stage_1:
+        act.resetToStage1Handler(message);
+        break;
+      case Callback.reset_to_stage_2:
+        act.resetToStage2Handler(message);
+        break;
       default:
         console.log(`Unsupported callback "${callbackType}"`);
     }

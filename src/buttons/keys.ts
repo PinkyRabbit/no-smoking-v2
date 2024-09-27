@@ -1,7 +1,7 @@
 export enum DialogKey {
   beginning = "new_user_beginning",
   lang = "lang",
-  stage1 = "stage_1",
+  im_smoking = "im_smoking",
   start_existing = "start_existing",
 }
 

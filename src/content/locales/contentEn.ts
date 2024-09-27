@@ -25,6 +25,8 @@ export const contentEn: MultilineContent = {
   `,
   [Content.START_EXISTING_STAGE_1]: DEFAULT,
   [Content.START_RESET_IGNORE]: DEFAULT,
+  [Content.START_RESET_TO_STAGE_1]: DEFAULT,
+  [Content.START_RESET_TO_STAGE_2]: DEFAULT,
   [Content.LANG]: "Please choose a language to use:",
   [Content.LANG_APPLIED]: "🇬🇧 You have chosen English language.",
   [Content.STAGE_1]: DEFAULT,
