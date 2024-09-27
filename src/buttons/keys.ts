@@ -1,4 +1,5 @@
 export enum DialogKey {
+  to_start = "to_start",
   beginning = "new_user_beginning",
   lang = "lang",
   im_smoking = "im_smoking",
@@ -9,6 +10,7 @@ export enum DialogKey {
  * Button names
  */
 export enum BTN {
+  CallStart = "call_start",
   Beginning = "new_user_beginning",
   Im_Smoking = "im_smoking",
   Lang_RU = "lang_ru",
@@ -19,6 +21,7 @@ export enum BTN {
 }
 
 export enum Callback {
+  start = "start",
   beginning = "new_user_beginning",
   im_smoking = "im_smoking",
   lang_ru = "lang_ru",

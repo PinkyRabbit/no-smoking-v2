@@ -8,7 +8,8 @@ export const botActionsInit = (bot: TelegramBot) => {
   const act = new Actions(bot);
   bot.onText(BotEvent.Start, act.onStart);
   bot.onText(BotEvent.SelectLanguage, act.onLang);
-  bot.on(BotEvent.Message, act.onMessage);
+  bot.onText(/\/del/, act.onDel); // to remove
+  bot.on(BotEvent.Message, act.onMessage); // to remove
   bot.on(BotEvent.Callback, (callbackQuery: TelegramBot.CallbackQuery) => {
     const callbackType = callbackQuery.data as Callback;
     const message = callbackQuery.message;
@@ -16,6 +17,9 @@ export const botActionsInit = (bot: TelegramBot) => {
       return;
     }
     switch (callbackType) {
+      case Callback.start:
+        act.onStart(message);
+        break;
       case Callback.beginning:
         act.toStage1(message);
         break;

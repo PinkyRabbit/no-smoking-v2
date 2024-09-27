@@ -9,6 +9,10 @@ All questions to @PinkyaRabbit
 
 export const contentEn: MultilineContent = {
   [Content.MESSAGE]: DEFAULT,
+  [Content.USER_UNKNOWN]: `
+    🤖 All the bot functionality is available only to authorized users.${ND}
+    Please authorize first by clicking the button below.
+  `,
   [Content.START_NEW]: `
     Hi mate!${N2}
     ${DEFAULT}${ND}

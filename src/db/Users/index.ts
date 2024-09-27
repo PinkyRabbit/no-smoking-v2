@@ -46,4 +46,9 @@ export class UsersRepo extends RequestOptions {
     const that = new UsersRepo();
     return that.Users.update({ chatId }, { $set: update });
   }
+
+  static removeUser(chatId: number) {
+    const that = new UsersRepo();
+    return that.Users.remove({ chatId });
+  }
 }

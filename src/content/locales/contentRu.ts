@@ -5,6 +5,10 @@ import { NL, N2, ND, B, I } from "./constants";
 // https://en.wikipedia.org/wiki/List_of_emojis
 export const contentRu: MultilineContent = {
   [Content.MESSAGE]: "Received your message",
+  [Content.USER_UNKNOWN]: `
+    🤖 Функционал бота доступен только для авторизированных пользователей.${ND}
+    Пожалуйста, авторизируйтесь, нажав на кнопку ниже.
+  `,
   [Content.START_NEW]: `
     Привет!${N2}
     Табачные корпорации наживаются на твоём здоровье?${N2}

@@ -4,7 +4,7 @@ import { buttonsFor, DialogKey } from "../buttons";
 import { User, UsersRepo } from "../db";
 import { Lang, STAGE_1_MAX, STAGE_1_MIN, STAGE_1_STEPS } from "./constants";
 import { minsToTimeString } from "../lib_helpers/humanize-duration";
-import { transformMsg } from "./decorators";
+import { onlyForKnownUsers, transformMsg } from "./decorators";
 import { applyLang } from "../lib_helpers/i18n";
 
 export class Actions {
@@ -12,9 +12,13 @@ export class Actions {
     this.bot = bot;
 
     // all "on" methods should be bound with "this"
-    this.onMessage = this.onMessage.bind(this);
     this.onStart = this.onStart.bind(this);
     this.onLang = this.onLang.bind(this);
+    this.onUserUnknown = this.onUserUnknown.bind(this);
+
+    // @FIXME: TO REMOVE!
+    this.onMessage = this.onMessage.bind(this);
+    this.onDel = this.onDel.bind(this);
   }
 
   private _res(
@@ -81,10 +85,28 @@ export class Actions {
     await this._res(msg.chat.id, contentFor(Content.START_EXISTING, contentProps), buttonsFor(DialogKey.start_existing));
   }
 
+  @transformMsg
+  @onlyForKnownUsers
   public async onLang(msg: TelegramBot.Message) {
     await this._res(msg.chat.id, contentFor(Content.LANG), buttonsFor(DialogKey.lang));
   }
 
+  /**
+   * This method is called by decorator "onlyForKnownUsers",
+   * when non-authorized user trying to make a call to private route
+   */
+  public async onUserUnknown(msg: TelegramBot.Message) {
+    await this._res(msg.chat.id, contentFor(Content.USER_UNKNOWN), buttonsFor(DialogKey.to_start));
+  }
+
+  // @FIXME: TO REMOVE!
+  public async onDel(msg: TelegramBot.Message) {
+    await UsersRepo.removeUser(msg.chat.id);
+    await this._res(msg.chat.id, "Пользователь удалён /del /start");
+  }
+
+  @transformMsg
+  @onlyForKnownUsers
   public async toStage1(msg: TelegramBot.Message) {
     await this._res(msg.chat.id, contentFor(Content.STAGE_1), buttonsFor(DialogKey.im_smoking));
   };
@@ -146,6 +168,7 @@ export class Actions {
   }
 
   @transformMsg
+  @onlyForKnownUsers
   public async imSmokingHandler(msg: TelegramBot.Message) {
     if (!msg.user) {
       return this._onNewUserSmoking(msg);
@@ -167,6 +190,7 @@ export class Actions {
   }
 
   @transformMsg
+  @onlyForKnownUsers
   public async changeLanguageHandler(msg: TelegramBot.Message, lang: Lang) {
     await UsersRepo.updateUser(msg.chat.id, { lang });
     applyLang(lang, msg);
@@ -177,6 +201,7 @@ export class Actions {
   }
 
   @transformMsg
+  @onlyForKnownUsers
   public async resetIgnoreHandler(msg: TelegramBot.Message) {
     await UsersRepo.updateUser(msg.chat.id, {
       prevTime: 0,
@@ -187,6 +212,7 @@ export class Actions {
   }
 
   @transformMsg
+  @onlyForKnownUsers
   public async resetToStage1Handler(msg: TelegramBot.Message) {
     await UsersRepo.updateUser(msg.chat.id, {
       prevTime: 0,
@@ -200,6 +226,7 @@ export class Actions {
   }
 
   @transformMsg
+  @onlyForKnownUsers
   public async resetToStage2Handler(msg: TelegramBot.Message) {
     await UsersRepo.updateUser(msg.chat.id, {
       prevTime: 0,

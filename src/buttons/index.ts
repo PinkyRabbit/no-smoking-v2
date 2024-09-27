@@ -21,6 +21,11 @@ type ButtonLine = ButtonOption[];
 type InlineKeyboard = ButtonLine[];
 
 const selectButtonsByKey = (key: DialogKey): InlineKeyboard => {
+  if (key === DialogKey.to_start) {
+    const text = i18n.__(BTN.CallStart);
+    const btn = { text, callback_data: Callback.start };
+    return [[btn]];
+  }
   if (key === DialogKey.beginning) {
     const text = i18n.__(BTN.Beginning);
     const btn = { text, callback_data: Callback.beginning };
