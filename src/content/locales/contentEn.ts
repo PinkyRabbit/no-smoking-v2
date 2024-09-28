@@ -44,5 +44,6 @@ export const contentEn: MultilineContent = {
   [Content.DEV]: `
     ⚒️ ${B}Development Mode is ON${B} ⚒️${N2} 
     Select the action:
-  `
+  `,
+  [Content.DEV_OFF]: "Dev Mode is Off ⛔️",
 };

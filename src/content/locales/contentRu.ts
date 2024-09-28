@@ -134,5 +134,6 @@ export const contentRu: MultilineContent = {
   [Content.DEV]: `
     ⚒️ ${B}Мы перешли в режим разработки${B} ⚒️${N2} 
     Выберите действие:
-  `
+  `,
+  [Content.DEV_OFF]: "Разработка отключена ⛔️",
 };

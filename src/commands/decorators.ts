@@ -2,6 +2,7 @@ import { Message } from "node-telegram-bot-api";
 import { UsersRepo } from "../db";
 import { applyLang } from "../lib_helpers/i18n";
 import { Actions } from "./actions";
+import { DevActions } from "./development";
 
 const transformMessage = async (msg: Message) => {
   const user = await UsersRepo.getByChatId(msg.chat.id);
@@ -45,6 +46,17 @@ export function onlyForKnownUsers(target: unknown, propertyKey: string, descript
     const msg = args[msgIndex] as Message;
     if (!msg.user) {
       return this.onUserUnknown.apply(this, args as [msg: Message]);
+    }
+    return originalMethod.apply(this, args);
+  };
+  return descriptor;
+}
+
+export function devModeOnly(target: unknown, propertyKey: string, descriptor: PropertyDescriptor) {
+  const originalMethod = descriptor.value;
+  descriptor.value = function (this: DevActions, ...args: unknown[]) {
+    if (`${process.env.DEV_MODE}` !== "true") {
+      return this.devModeDisabled.apply(this, args as [msg: Message]);
     }
     return originalMethod.apply(this, args);
   };

@@ -1,7 +1,12 @@
 import TelegramBot from "node-telegram-bot-api";
 import { Content, contentFor } from "../content";
 import { buttonsFor, DialogKey } from "../buttons";
+import { devModeOnly } from "./decorators";
 
+/**
+ * Class for development actions
+ * @remark This class should be inherited by Actions class
+ */
 export class DevActions {
   constructor() {
     this.onDev = this.onDev.bind(this);
@@ -13,7 +18,15 @@ export class DevActions {
     return Promise.resolve();
   }
 
+  @devModeOnly
   public async onDev(msg: TelegramBot.Message) {
     await this._res(msg.chat.id, contentFor(Content.DEV), buttonsFor(DialogKey.dev));
+  }
+
+  /**
+   * This method is called by "devModeOnly" decorator when dev mode is disabled
+   */
+  public async devModeDisabled(msg: TelegramBot.Message) {
+    await this._res(msg.chat.id, contentFor(Content.DEV_OFF));
   }
 }
