@@ -1,14 +1,17 @@
 import TelegramBot from "node-telegram-bot-api";
 import { Content, contentFor } from "../content";
 import { buttonsFor, DialogKey } from "../buttons";
+import { DevActions } from "./development";
 import { User, UsersRepo } from "../db";
 import { Lang, STAGE_1_MAX, STAGE_1_MIN, STAGE_1_STEPS } from "./constants";
 import { minsToTimeString } from "../lib_helpers/humanize-duration";
 import { onlyForKnownUsers, transformMsg } from "./decorators";
 import { applyLang } from "../lib_helpers/i18n";
 
-export class Actions {
+export class Actions extends DevActions {
   constructor(private bot: TelegramBot) {
+    super();
+
     this.bot = bot;
 
     // all "on" methods should be bound with "this"
@@ -21,7 +24,7 @@ export class Actions {
     this.onDel = this.onDel.bind(this);
   }
 
-  private _res(
+  protected override _res(
     chatId: TelegramBot.ChatId,
     text: string,
     options: TelegramBot.SendMessageOptions = {}

@@ -1,6 +1,6 @@
 import { MultilineContent } from "./types";
 import { Content } from "../keys";
-import { N2, ND, NL } from "./constants";
+import { B, N2, ND, NL } from "./constants";
 
 const DEFAULT = `
 The text of the message has not yet been translated.${N2}
@@ -40,4 +40,9 @@ export const contentEn: MultilineContent = {
   [Content.STAGE_1_PROCESSING]: DEFAULT,
   [Content.STAGE_1_END]: DEFAULT,
   [Content.STAGE_2]: DEFAULT,
+  // dev
+  [Content.DEV]: `
+    ⚒️ ${B}Development Mode is ON${B} ⚒️${N2} 
+    Select the action:
+  `
 };

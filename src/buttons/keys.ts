@@ -4,6 +4,7 @@ export enum DialogKey {
   lang = "lang",
   im_smoking = "im_smoking",
   start_existing = "start_existing",
+  dev = "dev",
 }
 
 /**

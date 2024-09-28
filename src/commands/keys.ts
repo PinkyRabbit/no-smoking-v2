@@ -3,5 +3,6 @@ export const BotEvent =  {
   Callback: "callback_query",
   Start: /\/start/,
   SelectLanguage: /\/lang/,
+  Dev: /\/dev/,
 };
 

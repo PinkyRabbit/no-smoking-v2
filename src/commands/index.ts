@@ -8,6 +8,7 @@ export const botActionsInit = (bot: TelegramBot) => {
   const act = new Actions(bot);
   bot.onText(BotEvent.Start, act.onStart);
   bot.onText(BotEvent.SelectLanguage, act.onLang);
+  bot.onText(BotEvent.Dev, act.onDev);
   bot.onText(/\/del/, act.onDel); // to remove
   bot.on(BotEvent.Message, act.onMessage); // to remove
   bot.on(BotEvent.Callback, (callbackQuery: TelegramBot.CallbackQuery) => {
