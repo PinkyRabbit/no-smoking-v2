@@ -26,15 +26,15 @@ export class UsersRepo extends RequestOptions {
     return that.Users.findOne({ chatId });
   }
 
-  static addNewUser(chatId: number, msgTime: number) {
+  static addNewUser(chatId: number, lang = Lang.EN) {
     const that = new UsersRepo();
     const defaultUser: User = {
       chatId,
-      lang: Lang.RU,
+      lang,
       minDeltaTime: 0,
       minDeltaTimesInitial: [],
       deltaTime: 0,
-      prevTime: msgTime,
+      prevTime: 0,
       nextTime: 0,
       startDate: new Date(),
       endDate: null,

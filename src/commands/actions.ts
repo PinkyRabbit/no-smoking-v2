@@ -39,10 +39,22 @@ export class Actions extends DevActions {
     return messageDate.getTimezoneOffset();
   }
 
+  /**
+   * This method is called by decorator "onlyForKnownUsers",
+   * when non-authorized user trying to make a call to private route
+   */
+  public async onUserUnknown(msg: TelegramBot.Message) {
+    await this._res(msg.chat.id, contentFor(Content.USER_UNKNOWN), buttonsFor(DialogKey.to_start));
+  }
+
+  /**
+   * Start. Step 1
+   */
   @transformMsg
   public async onStart(msg: TelegramBot.Message) {
     if (!msg.user) {
-      // @TODO: Create a new user logic
+      const user = await UsersRepo.addNewUser(msg.chat.id);
+      applyLang(user.lang, msg);
       await this._res(msg.chat.id, contentFor(Content.START_NEW), buttonsFor(DialogKey.beginning));
       return;
     }
@@ -57,34 +69,43 @@ export class Actions extends DevActions {
     await this._res(msg.chat.id, contentFor(Content.START_EXISTING, contentProps), buttonsFor(DialogKey.start_existing));
   }
 
-  @transformMsg
-  @onlyForKnownUsers
-  public async onLang(msg: TelegramBot.Message) {
-    await this._res(msg.chat.id, contentFor(Content.LANG), buttonsFor(DialogKey.lang));
-  }
-
   /**
-   * This method is called by decorator "onlyForKnownUsers",
-   * when non-authorized user trying to make a call to private route
+   * Start. Step 2
    */
-  public async onUserUnknown(msg: TelegramBot.Message) {
-    await this._res(msg.chat.id, contentFor(Content.USER_UNKNOWN), buttonsFor(DialogKey.to_start));
-  }
-
   @transformMsg
   @onlyForKnownUsers
   public async toStage1(msg: TelegramBot.Message) {
     await this._res(msg.chat.id, contentFor(Content.STAGE_1), buttonsFor(DialogKey.im_smoking));
   };
 
-  private async _onNewUserSmoking(msg: TelegramBot.Message) {
-    await UsersRepo.addNewUser(msg.chat.id, msg.date);
-    const ops = { stage_1_left: `${STAGE_1_STEPS - 1}` };
-    await this._res(msg.chat.id, contentFor(Content.FIRST_STEP, ops), buttonsFor(DialogKey.im_smoking));
+  /**
+   * Language
+   */
+  @transformMsg
+  @onlyForKnownUsers
+  public async onLang(msg: TelegramBot.Message) {
+    await this._res(msg.chat.id, contentFor(Content.LANG), buttonsFor(DialogKey.lang));
+  }
+
+  @transformMsg
+  @onlyForKnownUsers
+  public async changeLanguageHandler(msg: TelegramBot.Message, lang: Lang) {
+    await UsersRepo.updateUser(msg.chat.id, { lang });
+    applyLang(lang, msg);
+    await this._res(msg.chat.id, contentFor(Content.LANG_APPLIED));
+    if (!msg.user.minDeltaTime && !msg.user.minDeltaTimesInitial.length) {
+      await this.onStart(msg);
+    }
   }
 
   private async _stage1(msg: TelegramBot.Message) {
     const update: Partial<User> = { prevTime: msg.date };
+    if (!msg.user.prevTime) {
+      await UsersRepo.updateUser(msg.chat.id, update);
+      const ops = { stage_1_left: `${STAGE_1_STEPS - 1}` };
+      await this._res(msg.chat.id, contentFor(Content.FIRST_STEP, ops), buttonsFor(DialogKey.im_smoking));
+      return;
+    }
     const timeDifferenceSec = msg.date - msg.user.prevTime;
     const deltaTime = Math.round(timeDifferenceSec / 60); // in minutes
     let isValidDeltaTime = true;
@@ -136,9 +157,6 @@ export class Actions extends DevActions {
   @transformMsg
   @onlyForKnownUsers
   public async imSmokingHandler(msg: TelegramBot.Message) {
-    if (!msg.user) {
-      return this._onNewUserSmoking(msg);
-    }
     if (!msg.user.minDeltaTime) {
       return this._stage1(msg);
     }
@@ -155,17 +173,9 @@ export class Actions extends DevActions {
     this._res(msg.chat.id, contentFor(Content.STAGE_1), buttonsFor(DialogKey.im_smoking));
   }
 
-  @transformMsg
-  @onlyForKnownUsers
-  public async changeLanguageHandler(msg: TelegramBot.Message, lang: Lang) {
-    await UsersRepo.updateUser(msg.chat.id, { lang });
-    applyLang(lang, msg);
-    await this._res(msg.chat.id, contentFor(Content.LANG_APPLIED));
-    if (!msg.user.minDeltaTime && !msg.user.minDeltaTimesInitial.length) {
-      await this.onStart(msg);
-    }
-  }
-
+  /**
+   * Existing user /start callbacks
+   */
   @transformMsg
   @onlyForKnownUsers
   public async resetIgnoreHandler(msg: TelegramBot.Message) {

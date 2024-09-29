@@ -1,6 +1,6 @@
 import { MultilineContent } from "./types";
 import { Content } from "../keys";
-import { B, N2, ND, NL } from "./constants";
+import { B, I, N2, ND, NL } from "./constants";
 
 const DEFAULT = `
 The text of the message has not yet been translated.${N2}
@@ -8,32 +8,60 @@ All questions to @PinkyaRabbit
 `;
 
 export const contentEn: MultilineContent = {
-  [Content.MESSAGE]: DEFAULT,
+  [Content.MESSAGE]: "Received your message",
   [Content.USER_UNKNOWN]: `
     🤖 All the bot functionality is available only to authorized users.${ND}
     Please authorize first by clicking the button below.
   `,
   [Content.START_NEW]: `
     Hi mate!${N2}
-    ${DEFAULT}${ND}
+    Are tobacco corporations profiting off your health?${N2}
+    Looking for a way to quit smoking?${N2}
+    You are Smart!${N2}
+    Together we can do it 🤙${ND}
     Supported languages${NL}
     Click here ➤ /lang ${NL}
     🇷🇺 🇬🇧 
   `,
   [Content.START_EXISTING]: `
-    Hi friend! ✌️${N2}
-    We see that you have made some progress in our application.${N2}
-    To forget everything and start from scratch${NL}
-    💥 Click here ➤ /purge${N2}
-    Otherwise, re-activate your account.
+    Hey! ✌️${N2}
+    We can see your previous progress in our application.${NL}
+    Your account is active now!${N2}
+    There are three ways to go:${N2}
+    1. Full Account Reset.${NL}
+    On this action you'll ${B}start from Stage 1${B}.${NL} 
+    Time between smoking: ${I}RESET${I}.${N2}
+    2. Clean up the progress.${NL}
+    You'll start ${B}from Stage 2${B}, but Delta time will be reset.{NL} 
+    Time between smoking: ${I}{{min_delta}}${I}.${N2}
+    3. Keep as it is.${NL}
+    You'll carry on with the place where you left the account.${NL}
+    ${B}Not recommended${B}.${NL}
+    Time between smoking: ${I}{{real_delta}}${I}.${N2}
   `,
-  [Content.START_EXISTING_STAGE_1]: DEFAULT,
+  [Content.START_EXISTING_STAGE_1]: `
+    Hey! ✌️${N2}
+    Your account has been reactivated,${NL}
+    all the data reset.${N2}
+    You need to pass the Stage 1 ⤵️ 
+  `,
   [Content.START_RESET_IGNORE]: DEFAULT,
   [Content.START_RESET_TO_STAGE_1]: DEFAULT,
   [Content.START_RESET_TO_STAGE_2]: DEFAULT,
   [Content.LANG]: "Please choose a language to use:",
   [Content.LANG_APPLIED]: "🇬🇧 You have chosen English language.",
-  [Content.STAGE_1]: DEFAULT,
+  [Content.STAGE_1]: `
+    ${B}Stage 1${B}${N2}
+    First things first, we need to understand${NL} 
+    the Delta Time of your smoking.${N2}
+    To do this, we need to compare time interval between${NL} 
+    20 smoke breaks.of your. It's just one pack of cigarettes.${N2}
+    Too big or too small intervals will not make any difference. 
+    So you don't have to worry if you go to sleep
+    or just forget to press the button.${N2}
+    Ok. Lets start.${ND}
+    Next time you want to smoke, press the button "${B}I'm Smoking${B}".
+  `,
   [Content.FIRST_STEP]: DEFAULT,
   [Content.STAGE_1_IGNORE_MIN]: DEFAULT,
   [Content.STAGE_1_IGNORE_MAX]: DEFAULT,
