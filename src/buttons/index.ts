@@ -3,18 +3,19 @@ import { I18n } from "i18n";
 import { join as pathJoin } from "path";
 import { BTN, Callback, DialogKey } from "./keys";
 import lang from "./locales";
+import { Lang } from "../constants";
 
 export const i18n = new I18n({
-  locales: ["en", "ru"],
+  locales: [Lang.RU, Lang.EN],
   directory: pathJoin(__dirname, "/locales"),
-  defaultLocale: "ru",
+  defaultLocale: Lang.EN,
   extension: ".ts",
   updateFiles: false,
   syncFiles: false,
 });
 const catalog = i18n.getCatalog();
-catalog.ru = lang.ru;
-catalog.en = lang.en;
+catalog[Lang.RU] = lang[Lang.RU];
+catalog[Lang.EN] = lang[Lang.EN];
 
 type ButtonOption = { text: string; callback_data: Callback };
 type ButtonLine = ButtonOption[];

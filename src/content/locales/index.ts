@@ -3,6 +3,7 @@ import { Content } from "../keys";
 import { newLineRegexp } from "./constants";
 import { contentRu } from "./contentRu";
 import { contentEn } from "./contentEn";
+import { Lang } from "../../constants";
 
 const transformSingleLineContent = (content: string): string =>
   content
@@ -21,6 +22,6 @@ const transformMultilineContent = (content: MultilineContent): MultilineContent 
 };
 
 export default {
-  ru: transformMultilineContent(contentRu),
-  en: transformMultilineContent(contentEn),
+  [Lang.RU]: transformMultilineContent(contentRu),
+  [Lang.EN]: transformMultilineContent(contentEn),
 };

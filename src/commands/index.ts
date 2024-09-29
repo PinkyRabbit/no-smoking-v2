@@ -2,7 +2,7 @@ import TelegramBot  from "node-telegram-bot-api";
 import { BotEvent } from "./keys";
 import { Callback } from "../buttons/keys";
 import { Actions } from "./actions";
-import { Lang } from "./constants";
+import { Lang } from "../constants";
 
 export const botActionsInit = (bot: TelegramBot) => {
   const act = new Actions(bot);

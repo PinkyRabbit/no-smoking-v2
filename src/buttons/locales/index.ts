@@ -1,7 +1,8 @@
 import { buttonsRu } from "./buttonsRu";
 import { buttonsEn } from "./buttonsEn";
+import { Lang } from "../../constants";
 
 export default {
-  ru: buttonsRu,
-  en: buttonsEn,
+  [Lang.RU]: buttonsRu,
+  [Lang.EN]: buttonsEn,
 };

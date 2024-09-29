@@ -7,6 +7,9 @@ import { DevActions } from "./development";
 export function transformMsg(target: unknown, propertyKey: string, descriptor: PropertyDescriptor) {
   const originalMethod = descriptor.value;
   descriptor.value = async function(msg: Message, ...args: unknown[]) {
+    if (!msg.from || !msg.chat || !msg.message_id || !msg.date) {
+      return Promise.resolve();
+    }
     const user = await UsersRepo.getByChatId(msg.chat.id);
     if (user) {
       applyLang(user.lang);

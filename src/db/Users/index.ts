@@ -1,6 +1,6 @@
 import monk  from "monk";
 import { RequestOptions } from "../dbOptionsConstructor";
-import { Lang } from "../../commands/constants";
+import { Lang } from "../../constants";
 
 /**
  * All the time is stored in minutes
@@ -26,7 +26,7 @@ export class UsersRepo extends RequestOptions {
     return that.Users.findOne({ chatId });
   }
 
-  static addNewUser(chatId: number, lang = Lang.EN) {
+  static addNewUser(chatId: number, lang: Lang) {
     const that = new UsersRepo();
     const defaultUser: User = {
       chatId,

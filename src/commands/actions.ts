@@ -3,10 +3,11 @@ import { Content, contentFor } from "../content";
 import { buttonsFor, DialogKey } from "../buttons";
 import { DevActions } from "./development";
 import { User, UsersRepo } from "../db";
-import { Lang, STAGE_1_MAX, STAGE_1_MIN, STAGE_1_STEPS } from "./constants";
+import { STAGE_1_MAX, STAGE_1_MIN, STAGE_1_STEPS } from "./constants";
 import { minsToTimeString } from "../lib_helpers/humanize-duration";
 import { onlyForKnownUsers, transformMsg } from "./decorators";
-import { applyLang } from "../lib_helpers/i18n";
+import { applyLang, tgLangCodeToLang } from "../lib_helpers/i18n";
+import { Lang } from "../constants";
 
 export class Actions extends DevActions {
   constructor(private bot: TelegramBot) {
@@ -53,7 +54,8 @@ export class Actions extends DevActions {
   @transformMsg
   public async onStart(msg: TelegramBot.Message) {
     if (!msg.user) {
-      const user = await UsersRepo.addNewUser(msg.chat.id);
+      const lang = tgLangCodeToLang(msg.from!.language_code);
+      const user = await UsersRepo.addNewUser(msg.chat.id, lang);
       applyLang(user.lang, msg);
       await this._res(msg.chat.id, contentFor(Content.START_NEW), buttonsFor(DialogKey.beginning));
       return;
