@@ -51,4 +51,23 @@ export class UsersRepo extends RequestOptions {
     const that = new UsersRepo();
     return that.Users.remove({ chatId });
   }
+
+  /**
+   * Method returns all users who reached their targeted time
+   */
+  static async getAllSmokersToSmokeChatIds(): Promise<number[]> {
+    const that = new UsersRepo();
+    const ts = Date.now();
+    const users = await that.Users.find({
+      $and: [
+        { endDate: { $ne: null } },
+        { nextTime: { $ne: 0 } },
+        { nextTime: { $lte: ts } },
+      ]
+    });
+    const userIds = users.map(({ _id }) => _id);
+    const chatIds = users.map(({ chatId }) => chatId);
+    await that.Users.update({ _id: { $in: userIds } }, { $set: { nextTime: 0 } });
+    return chatIds;
+  }
 }

@@ -74,6 +74,7 @@ export const contentEn: MultilineContent = {
     The penalty will be applied after the next big pause.${ND}
     🚭 Current number of penalty points: ${B}{{penalty}}${B}
   `,
+  [Content.TIME_FOR_A_SMOKE]: "🔥 It's time for a smoke break! 🔥",
   // dev
   [Content.DEV]: `
     ⚒️ ${B}Development Mode is ON${B} ⚒️${N2} 

@@ -1,6 +1,7 @@
 import TelegramBot from "node-telegram-bot-api";
 import { initDatabase } from "./db";
 import { botActionsInit } from "./commands";
+import { startMinutelySmokingTimeTest } from "./timer-operations";
 
 process.on("uncaughtException", (error) => {
   console.error("Uncaught exception:", error);
@@ -17,6 +18,7 @@ initDatabase()
     console.log("Connected to database");
     const bot = new TelegramBot(token, { polling: true });
     botActionsInit(bot);
+    startMinutelySmokingTimeTest(bot);
   })
   .catch((err: { message: string }) => {
     console.error("Error connecting to database:", err);
