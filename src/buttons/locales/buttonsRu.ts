@@ -10,4 +10,5 @@ export const buttonsRu: ButtonNames  = {
   [BTN.Reset_Stage_1]: "Сбросить всё 👍",
   [BTN.Reset_Stage_2]: "Сбросить до Этапа 2 🐯",
   [BTN.Reset_Ignore]: "Оставить \"как есть\" ❌️",
+  [BTN.Dev_Delete_User]: "Удалить пользователя 🗑️",
 };

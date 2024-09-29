@@ -21,7 +21,6 @@ export class Actions extends DevActions {
 
     // @FIXME: TO REMOVE!
     this.onMessage = this.onMessage.bind(this);
-    this.onDel = this.onDel.bind(this);
   }
 
   protected override _res(
@@ -100,12 +99,6 @@ export class Actions extends DevActions {
    */
   public async onUserUnknown(msg: TelegramBot.Message) {
     await this._res(msg.chat.id, contentFor(Content.USER_UNKNOWN), buttonsFor(DialogKey.to_start));
-  }
-
-  // @FIXME: TO REMOVE!
-  public async onDel(msg: TelegramBot.Message) {
-    await UsersRepo.removeUser(msg.chat.id);
-    await this._res(msg.chat.id, "Пользователь удалён /del /start");
   }
 
   @transformMsg

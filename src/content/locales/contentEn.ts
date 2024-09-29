@@ -46,4 +46,5 @@ export const contentEn: MultilineContent = {
     Select the action:
   `,
   [Content.DEV_OFF]: "Dev Mode is Off ⛔️",
+  [Content.DEV_USER_DELETED]: "User Deleted /start",
 };

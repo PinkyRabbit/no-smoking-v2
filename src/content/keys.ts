@@ -19,4 +19,5 @@ export enum Content {
   // TEST
   DEV = "dev",
   DEV_OFF = "dev_off",
+  DEV_USER_DELETED = "dev_user_deleted",
 }

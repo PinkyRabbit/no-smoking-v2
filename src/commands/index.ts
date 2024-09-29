@@ -9,7 +9,6 @@ export const botActionsInit = (bot: TelegramBot) => {
   bot.onText(BotEvent.Start, act.onStart);
   bot.onText(BotEvent.SelectLanguage, act.onLang);
   bot.onText(BotEvent.Dev, act.onDev);
-  bot.onText(/\/del/, act.onDel); // to remove
   bot.on(BotEvent.Message, act.onMessage); // to remove
   bot.on(BotEvent.Callback, (callbackQuery: TelegramBot.CallbackQuery) => {
     const callbackType = callbackQuery.data as Callback;
@@ -41,6 +40,9 @@ export const botActionsInit = (bot: TelegramBot) => {
         break;
       case Callback.reset_to_stage_2:
         act.resetToStage2Handler(message);
+        break;
+      case Callback.Dev_Delete_User:
+        act.devOnDel(message);
         break;
       default:
         console.log(`Unsupported callback "${callbackType}"`);

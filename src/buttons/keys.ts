@@ -19,6 +19,7 @@ export enum BTN {
   Reset_Stage_1 = "reset_to_stage_1",
   Reset_Stage_2 = "reset_to_stage_2",
   Reset_Ignore = "reset_ignore",
+  Dev_Delete_User = "dev_delete_user",
 }
 
 export enum Callback {
@@ -30,4 +31,5 @@ export enum Callback {
   reset_to_stage_1 = "reset_to_stage_1",
   reset_to_stage_2 = "reset_to_stage_2",
   reset_ignore = "reset_ignore",
+  Dev_Delete_User = "dev_delete_user",
 }

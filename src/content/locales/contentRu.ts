@@ -136,4 +136,5 @@ export const contentRu: MultilineContent = {
     Выберите действие:
   `,
   [Content.DEV_OFF]: "Разработка отключена ⛔️",
+  [Content.DEV_USER_DELETED]: "Пользователь удалён /start",
 };
