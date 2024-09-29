@@ -20,4 +20,6 @@ export enum Content {
   DEV = "dev",
   DEV_OFF = "dev_off",
   DEV_USER_DELETED = "dev_user_deleted",
+  DEV_TO_STAGE_1 = "dev_to_stage_1",
+  DEV_FILL_STAGE_1 = "dev_fill_stage_1",
 }

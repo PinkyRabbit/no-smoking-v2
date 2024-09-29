@@ -52,6 +52,8 @@ const selectButtonsByKey = (key: DialogKey): InlineKeyboard => {
   if (key === DialogKey.dev) {
     return [
       [{ text: i18n.__(BTN.Dev_Delete_User), callback_data: Callback.Dev_Delete_User }],
+      [{ text: i18n.__(BTN.Dev_To_Stage_1), callback_data: Callback.Dev_To_Stage_1 }],
+      [{ text: i18n.__(BTN.Dev_Fill_Stage_1), callback_data: Callback.Dev_Fill_Stage_1 }],
     ];
   }
   return [];

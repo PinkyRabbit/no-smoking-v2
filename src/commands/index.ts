@@ -6,10 +6,10 @@ import { Lang } from "./constants";
 
 export const botActionsInit = (bot: TelegramBot) => {
   const act = new Actions(bot);
+  bot.on(BotEvent.Message, () => Promise.resolve());
   bot.onText(BotEvent.Start, act.onStart);
   bot.onText(BotEvent.SelectLanguage, act.onLang);
   bot.onText(BotEvent.Dev, act.onDev);
-  bot.on(BotEvent.Message, act.onMessage); // to remove
   bot.on(BotEvent.Callback, (callbackQuery: TelegramBot.CallbackQuery) => {
     const callbackType = callbackQuery.data as Callback;
     const message = callbackQuery.message;
@@ -43,6 +43,12 @@ export const botActionsInit = (bot: TelegramBot) => {
         break;
       case Callback.Dev_Delete_User:
         act.devOnDel(message);
+        break;
+      case Callback.Dev_To_Stage_1:
+        act.devResetToStage1(message);
+        break;
+      case Callback.Dev_Fill_Stage_1:
+        act.devFillStage1(message);
         break;
       default:
         console.log(`Unsupported callback "${callbackType}"`);

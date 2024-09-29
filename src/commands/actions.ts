@@ -18,9 +18,6 @@ export class Actions extends DevActions {
     this.onStart = this.onStart.bind(this);
     this.onLang = this.onLang.bind(this);
     this.onUserUnknown = this.onUserUnknown.bind(this);
-
-    // @FIXME: TO REMOVE!
-    this.onMessage = this.onMessage.bind(this);
   }
 
   protected override _res(
@@ -40,33 +37,6 @@ export class Actions extends DevActions {
   private async _getTimezoneOffset(msg: TelegramBot.Message) {
     const messageDate = new Date(msg.date * 1000);
     return messageDate.getTimezoneOffset();
-  }
-
-  onMessage(msg: TelegramBot.Message) {
-    if (typeof msg.text !== "string") {
-      return;
-    }
-    const stage1 = "st1 ";
-    if (msg.text.indexOf(stage1) === 0) {
-      const value = Number.parseInt(msg.text.replace(stage1, ""), 10);
-      const update: Partial<User> = {
-        prevTime: msg.date - 60 * 60,
-        minDeltaTimesInitial: new Array(20).fill(value),
-      };
-      UsersRepo.updateUser(msg.chat.id, update);
-      this.bot.sendMessage(msg.chat.id,`Значение ${value} установлено`);
-      return;
-    }
-    if (msg.text === "tost1") {
-      const update: Partial<User> = {
-        prevTime: msg.date - 60 * 60,
-        minDeltaTime: 0,
-        minDeltaTimesInitial: [],
-      };
-      UsersRepo.updateUser(msg.chat.id, update);
-      this.bot.sendMessage(msg.chat.id,"Пользователь сброшен до stage 1");
-      return;
-    }
   }
 
   @transformMsg
