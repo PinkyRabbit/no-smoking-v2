@@ -46,7 +46,9 @@ export class DevActions {
   @onlyForKnownUsers
   public async devResetToStage1(msg: TelegramBot.Message) {
     const update: Partial<User> = {
-      prevTime: msg.date - 60 * 60,
+      tgLastCallTime: 0,
+      lastTime: 0,
+      nextTime: 0,
       minDeltaTime: 0,
       minDeltaTimesInitial: [],
     };
@@ -60,7 +62,9 @@ export class DevActions {
   public async devFillStage1(msg: TelegramBot.Message) {
     const value = STAGE_1_MIN + 1;
     const update: Partial<User> = {
-      prevTime: msg.date - 60 * 60,
+      tgLastCallTime: msg.date - 60 * 60,
+      lastTime: Date.now() - (60 * 60 * 1000),
+      nextTime: 0,
       minDeltaTimesInitial: new Array(STAGE_1_STEPS).fill(value),
     };
     await UsersRepo.updateUser(msg.chat.id, update);

@@ -98,15 +98,19 @@ export class Actions extends DevActions {
    * Stage 1
    */
   private async _stage1(msg: TelegramBot.Message) {
-    const update: Partial<User> = { prevTime: msg.date };
-    if (!msg.user.prevTime) {
+    const update: Partial<User> = {
+      tgLastCallTime: msg.date,
+      lastTime: msg.ts,
+    };
+    if (!msg.user.tgLastCallTime) {
+      update.minDeltaTimesInitial = [msg.ts];
       await UsersRepo.updateUser(msg.chat.id, update);
       const ops = { stage_1_left: `${STAGE_1_STEPS - 1}` };
       await this._res(msg.chat.id, contentFor(Content.FIRST_STEP, ops), buttonsFor(DialogKey.im_smoking));
       return;
     }
-    const timeDifferenceSec = msg.date - msg.user.prevTime;
-    const deltaTime = Math.round(timeDifferenceSec / 60); // in minutes
+    const timeDifferenceSec = msg.ts - msg.user.lastTime;
+    const deltaTime = Math.round(timeDifferenceSec / 60 / 1000); // in minutes
     let isValidDeltaTime = true;
     let deltaTimesLeft = STAGE_1_STEPS - msg.user.minDeltaTimesInitial.length;
     if (deltaTime < STAGE_1_MIN) {
@@ -142,13 +146,13 @@ export class Actions extends DevActions {
       update.minDeltaTimesInitial = [];
       update.minDeltaTime = stage1DeltaAvg;
       update.deltaTime = stage1DeltaAvg;
-      update.prevTime = msg.date;
-      update.nextTime = msg.date + (stage1DeltaAvg * 60);
+      update.nextTime = msg.ts + (stage1DeltaAvg * 60 * 1000);
       const content = contentFor(Content.STAGE_1_END, {
         delta_time: minsToTimeString(stage1DeltaAvg, msg.user.lang),
       });
       await this._res(msg.chat.id, content);
-      await this._res(msg.chat.id, contentFor(Content.STAGE_2));
+      const time_to_get_smoke = timestampToTime(msg.date + (stage1DeltaAvg * 60));
+      await this._res(msg.chat.id, contentFor(Content.STAGE_2, { time_to_get_smoke }));
     }
     UsersRepo.updateUser(msg.chat.id, update);
   }
@@ -159,11 +163,12 @@ export class Actions extends DevActions {
     if (!msg.user.minDeltaTime) {
       return this._stage1(msg);
     }
-    const delta = msg.user.deltaTime;
-    const date = msg.date;
-    const nextTime = date + (delta * 60);
-    const time_to_get_smoke = timestampToTime(nextTime);
-    await UsersRepo.updateUser(msg.chat.id, { nextTime });
+    await UsersRepo.updateUser(msg.chat.id, {
+      tgLastCallTime: msg.date,
+      lastTime: msg.ts,
+      nextTime: msg.ts + (msg.user.deltaTime * 60 * 1000),
+    });
+    const time_to_get_smoke = timestampToTime(msg.date + (msg.user.deltaTime * 60));
     await this._res(msg.chat.id, contentFor(Content.STAGE_2, { time_to_get_smoke }));
   }
 
@@ -174,7 +179,8 @@ export class Actions extends DevActions {
   @onlyForKnownUsers
   public async resetIgnoreHandler(msg: TelegramBot.Message) {
     await UsersRepo.updateUser(msg.chat.id, {
-      prevTime: 0,
+      tgLastCallTime: 0,
+      lastTime: 0,
       nextTime: 0,
     });
     const contentProps = { min_delta: minsToTimeString(msg.user.minDeltaTime, msg.user.lang) };
@@ -185,7 +191,8 @@ export class Actions extends DevActions {
   @onlyForKnownUsers
   public async resetToStage1Handler(msg: TelegramBot.Message) {
     await UsersRepo.updateUser(msg.chat.id, {
-      prevTime: 0,
+      tgLastCallTime: 0,
+      lastTime: 0,
       nextTime: 0,
       deltaTime: 0,
       minDeltaTime: 0,
@@ -199,7 +206,8 @@ export class Actions extends DevActions {
   @onlyForKnownUsers
   public async resetToStage2Handler(msg: TelegramBot.Message) {
     await UsersRepo.updateUser(msg.chat.id, {
-      prevTime: 0,
+      tgLastCallTime: 0,
+      lastTime: 0,
       nextTime: 0,
       deltaTime: msg.user.minDeltaTime,
     });

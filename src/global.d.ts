@@ -6,6 +6,7 @@ type PlainUser = { _id: IObjectID; } & User
 
 declare module "node-telegram-bot-api" {
   interface Message extends TelegramMessage {
-    user: PlainUser
+    user: PlainUser;
+    ts: number; // server timestamp
   }
 }

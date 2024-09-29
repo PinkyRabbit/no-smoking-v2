@@ -2,18 +2,15 @@ import monk  from "monk";
 import { RequestOptions } from "../dbOptionsConstructor";
 import { Lang } from "../../constants";
 
-/**
- * All the time is stored in minutes
- */
-
 export type User = {
   chatId: number;
   lang: Lang;
-  minDeltaTime: number; // 0 = stage 1
-  minDeltaTimesInitial: number[]; // delta time for initial stage
-  deltaTime: number;
-  prevTime: number; // for stage 1
-  nextTime: number; // for stage 2
+  minDeltaTime: number; // minutes, 0 = stage 1
+  minDeltaTimesInitial: number[]; // timestamp Server array
+  deltaTime: number; // minutes
+  tgLastCallTime: number; // Telegram timestamp
+  lastTime: number; // timestamp Server
+  nextTime: number; // timestamp Server
   startDate: Date | null; // date of stage 1 start
   endDate: Date | null; // date of stage 2 end
 };
@@ -34,7 +31,8 @@ export class UsersRepo extends RequestOptions {
       minDeltaTime: 0,
       minDeltaTimesInitial: [],
       deltaTime: 0,
-      prevTime: 0,
+      tgLastCallTime: 0,
+      lastTime: 0,
       nextTime: 0,
       startDate: new Date(),
       endDate: null,

@@ -14,6 +14,7 @@ export function transformMsg(target: unknown, propertyKey: string, descriptor: P
     if (user) {
       applyLang(user.lang);
       msg.user = Object.assign({}, user);
+      msg.ts = Date.now();
     }
     return originalMethod.apply(this, [msg, ...args]);
   };
