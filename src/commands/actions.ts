@@ -8,13 +8,12 @@ import { minsToTimeString } from "../lib_helpers/humanize-duration";
 import { onlyForKnownUsers, transformMsg } from "./decorators";
 import { applyLang, tgLangCodeToLang } from "../lib_helpers/i18n";
 import { Lang } from "../constants";
+import { timestampToTime } from "../lib_helpers/luxon";
 
 export class Actions extends DevActions {
   constructor(private bot: TelegramBot) {
     super();
-
     this.bot = bot;
-
     // all "on" methods should be bound with "this"
     this.onStart = this.onStart.bind(this);
     this.onLang = this.onLang.bind(this);
@@ -33,11 +32,6 @@ export class Actions extends DevActions {
         resolve();
       }, 400);
     });
-  }
-
-  private async _getTimezoneOffset(msg: TelegramBot.Message) {
-    const messageDate = new Date(msg.date * 1000);
-    return messageDate.getTimezoneOffset();
   }
 
   /**
@@ -100,6 +94,9 @@ export class Actions extends DevActions {
     }
   }
 
+  /**
+   * Stage 1
+   */
   private async _stage1(msg: TelegramBot.Message) {
     const update: Partial<User> = { prevTime: msg.date };
     if (!msg.user.prevTime) {
@@ -162,17 +159,12 @@ export class Actions extends DevActions {
     if (!msg.user.minDeltaTime) {
       return this._stage1(msg);
     }
-    await this._res(msg.chat.id, contentFor(Content.STAGE_2));
-    //   const update: Partial<User> = { prevTime: };
-    //   const intervals = user.initialPeriods.push(msg.date);
-    //
-
-    return;
-
-    const offset = this._getTimezoneOffset(msg);
-    console.log(msg);
-    console.log(offset);
-    this._res(msg.chat.id, contentFor(Content.STAGE_1), buttonsFor(DialogKey.im_smoking));
+    const delta = msg.user.deltaTime;
+    const date = msg.date;
+    const nextTime = date + (delta * 60);
+    const time_to_get_smoke = timestampToTime(nextTime);
+    await UsersRepo.updateUser(msg.chat.id, { nextTime });
+    await this._res(msg.chat.id, contentFor(Content.STAGE_2, { time_to_get_smoke }));
   }
 
   /**
