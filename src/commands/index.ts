@@ -1,4 +1,5 @@
 import TelegramBot  from "node-telegram-bot-api";
+import logger from "../logger";
 import { BotEvent } from "./keys";
 import { Callback } from "../buttons/keys";
 import { Actions } from "./actions";
@@ -51,7 +52,7 @@ export const botActionsInit = (bot: TelegramBot) => {
         act.devFillStage1(message);
         break;
       default:
-        console.log(`Unsupported callback "${callbackType}"`);
+        logger.error(`Unsupported callback "${callbackType}"`);
     }
   });
 };

@@ -1,4 +1,5 @@
 import TelegramBot from "node-telegram-bot-api";
+import logger from "../logger";
 import { smokingTimeTest } from "./smokingTimeTest";
 
 /**
@@ -11,13 +12,13 @@ export const startMinutelySmokingTimeTest = (bot: TelegramBot) => {
   const intervalId = setInterval(() => smokingTimeTest(bot), ONE_MINUTE);
 
   process.on("SIGINT", () => {
-    console.log("Received SIGINT. Cleaning up...");
+    logger.debug("Received SIGINT. Cleaning up...");
     clearInterval(intervalId);
     process.exit(0);
   });
 
   process.on("SIGTERM", () => {
-    console.log("Received SIGTERM. Cleaning up...");
+    logger.debug("Received SIGTERM. Cleaning up...");
     clearInterval(intervalId);
     process.exit(0);
   });

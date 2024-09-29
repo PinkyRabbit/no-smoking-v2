@@ -1,4 +1,5 @@
 import { Message } from "node-telegram-bot-api";
+import logger from "../logger";
 import { UsersRepo } from "../db";
 import { applyLang } from "../lib_helpers/i18n";
 import { Actions } from "./actions";
@@ -8,6 +9,7 @@ export function transformMsg(target: unknown, propertyKey: string, descriptor: P
   const originalMethod = descriptor.value;
   descriptor.value = async function(msg: Message, ...args: unknown[]) {
     if (!msg.from || !msg.chat || !msg.message_id || !msg.date) {
+      logger.error("Invalid message", msg);
       return Promise.resolve();
     }
     const user = await UsersRepo.getByChatId(msg.chat.id);

@@ -1,4 +1,5 @@
 import TelegramBot from "node-telegram-bot-api";
+import logger from "../logger";
 import { Content, contentFor } from "../content";
 import { buttonsFor, DialogKey } from "../buttons";
 import { devModeOnly, onlyForKnownUsers, transformMsg } from "./decorators";
@@ -17,7 +18,7 @@ export class DevActions {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   protected _res(...args: unknown[]): Promise<void> {
-    console.log("Method this._res is not implemented");
+    logger.error("Method this._res is not implemented");
     return Promise.resolve();
   }
 
