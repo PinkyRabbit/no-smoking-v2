@@ -163,11 +163,17 @@ export class Actions extends DevActions {
     if (!msg.user.minDeltaTime) {
       return this._stage1(msg);
     }
-    await UsersRepo.updateUser(msg.chat.id, {
+    const update: Partial<User> = {
       tgLastCallTime: msg.date,
       lastTime: msg.ts,
       nextTime: msg.ts + (msg.user.deltaTime * 60 * 1000),
-    });
+    };
+    if (msg.ts < msg.user.nextTime) {
+      const penalty = msg.user.penalty + 1;
+      update.penalty = penalty;
+      await this._res(msg.chat.id, contentFor(Content.PENALTY, { penalty: `${penalty}` }));
+    }
+    await UsersRepo.updateUser(msg.chat.id, update);
     const time_to_get_smoke = timestampToTime(msg.date + (msg.user.deltaTime * 60));
     await this._res(msg.chat.id, contentFor(Content.STAGE_2, { time_to_get_smoke }), buttonsFor(DialogKey.im_smoking));
   }

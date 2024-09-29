@@ -16,6 +16,7 @@ export enum Content {
   STAGE_1_PROCESSING = "stage_1_processing",
   STAGE_1_END = "stage_1_end",
   STAGE_2 = "stage_2",
+  PENALTY = "penalty",
   // TEST
   DEV = "dev",
   DEV_OFF = "dev_off",

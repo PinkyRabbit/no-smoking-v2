@@ -11,6 +11,7 @@ export type User = {
   tgLastCallTime: number; // Telegram timestamp
   lastTime: number; // timestamp Server
   nextTime: number; // timestamp Server
+  penalty: number;
   startDate: Date | null; // date of stage 1 start
   endDate: Date | null; // date of stage 2 end
 };
@@ -34,6 +35,7 @@ export class UsersRepo extends RequestOptions {
       tgLastCallTime: 0,
       lastTime: 0,
       nextTime: 0,
+      penalty: 0,
       startDate: new Date(),
       endDate: null,
     };

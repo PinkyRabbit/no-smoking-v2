@@ -68,6 +68,12 @@ export const contentEn: MultilineContent = {
   [Content.STAGE_1_PROCESSING]: DEFAULT,
   [Content.STAGE_1_END]: DEFAULT,
   [Content.STAGE_2]: DEFAULT,
+  [Content.PENALTY]: `
+    The app has a ${I}Motivating Penalty System${I}.${N2}
+    If you don't keep to the schedule, we slightly reduce the difficulty.${N2}
+    The penalty will be applied after the next big pause.${ND}
+    🚭 Current number of penalty points: ${B}{{penalty}}${B}
+  `,
   // dev
   [Content.DEV]: `
     ⚒️ ${B}Development Mode is ON${B} ⚒️${N2} 
