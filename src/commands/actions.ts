@@ -152,7 +152,7 @@ export class Actions extends DevActions {
       });
       await this._res(msg.chat.id, content);
       const time_to_get_smoke = timestampToTime(msg.date + (stage1DeltaAvg * 60));
-      await this._res(msg.chat.id, contentFor(Content.STAGE_2, { time_to_get_smoke }));
+      await this._res(msg.chat.id, contentFor(Content.STAGE_2, { time_to_get_smoke }), buttonsFor(DialogKey.im_smoking));
     }
     UsersRepo.updateUser(msg.chat.id, update);
   }
@@ -169,7 +169,7 @@ export class Actions extends DevActions {
       nextTime: msg.ts + (msg.user.deltaTime * 60 * 1000),
     });
     const time_to_get_smoke = timestampToTime(msg.date + (msg.user.deltaTime * 60));
-    await this._res(msg.chat.id, contentFor(Content.STAGE_2, { time_to_get_smoke }));
+    await this._res(msg.chat.id, contentFor(Content.STAGE_2, { time_to_get_smoke }), buttonsFor(DialogKey.im_smoking));
   }
 
   /**
