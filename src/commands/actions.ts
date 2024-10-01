@@ -5,11 +5,12 @@ import { DevActions } from "./development";
 import { User, UsersRepo } from "../db";
 import { STAGE_1_MAX, STAGE_1_MIN, STAGE_1_STEPS } from "./constants";
 import { minsToTimeString } from "../lib_helpers/humanize-duration";
-import { onlyForKnownUsers, transformMsg } from "./decorators";
+import { LogActionCalls, onlyForKnownUsers, transformMsg } from "./decorators";
 import { applyLang, tgLangCodeToLang } from "../lib_helpers/i18n";
 import { Lang } from "../constants";
 import { timestampToTime } from "../lib_helpers/luxon";
 
+@LogActionCalls
 export class Actions extends DevActions {
   constructor(private bot: TelegramBot) {
     super();
