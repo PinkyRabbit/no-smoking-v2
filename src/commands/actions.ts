@@ -9,6 +9,12 @@ import { LogActionCalls, onlyForKnownUsers, transformMsg } from "./decorators";
 import { applyLang, tgLangCodeToLang } from "../lib_helpers/i18n";
 import { Lang } from "../constants";
 import { timestampToTime } from "../lib_helpers/luxon";
+import logger from "../logger";
+
+type ResponseOptions = {
+  contentProps?: Record<string, string>;
+  buttons?: TelegramBot.SendMessageOptions;
+}
 
 @LogActionCalls
 export class Actions extends DevActions {
@@ -23,12 +29,18 @@ export class Actions extends DevActions {
 
   protected override _res(
     chatId: TelegramBot.ChatId,
-    text: string,
-    options: TelegramBot.SendMessageOptions = {}
+    contentKey: Content,
+    responseOptions: ResponseOptions = {},
   ): Promise<void> {
+    const { buttons, contentProps } = responseOptions;
+    const text = contentFor(contentKey, contentProps);
+    const ops: TelegramBot.SendMessageOptions = buttons ? { parse_mode: "Markdown", ...buttons } : {};
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        const ops: TelegramBot.SendMessageOptions = { parse_mode: "Markdown", ...options };
+        const contentPropsString = Object.entries(contentProps || {})
+          .map(([k, v]) => `${k} = "${v}"`)
+          .join(", ");
+        logger.debug(`U-${chatId} -> ${contentKey} ${contentPropsString}`);
         this.bot.sendMessage(chatId, text, ops).catch((err) => reject(err));
         resolve();
       }, 400);
@@ -40,7 +52,7 @@ export class Actions extends DevActions {
    * when non-authorized user trying to make a call to private route
    */
   public async onUserUnknown(msg: TelegramBot.Message) {
-    await this._res(msg.chat.id, contentFor(Content.USER_UNKNOWN), buttonsFor(DialogKey.to_start));
+    await this._res(msg.chat.id, Content.USER_UNKNOWN, { buttons: buttonsFor(DialogKey.to_start) });
   }
 
   /**
@@ -52,18 +64,19 @@ export class Actions extends DevActions {
       const lang = tgLangCodeToLang(msg.from!.language_code);
       const user = await UsersRepo.addNewUser(msg.chat.id, lang);
       applyLang(user.lang, msg);
-      await this._res(msg.chat.id, contentFor(Content.START_NEW), buttonsFor(DialogKey.beginning));
+      await this._res(msg.chat.id, Content.START_NEW, { buttons: buttonsFor(DialogKey.beginning) });
       return;
     }
     if (!msg.user.minDeltaTime) {
-      await this._res(msg.chat.id, contentFor(Content.START_EXISTING_STAGE_1));
+      await this._res(msg.chat.id, Content.START_EXISTING_STAGE_1);
       await this.toStage1(msg);
       return;
     }
     const min_delta = minsToTimeString(msg.user.minDeltaTime, msg.user.lang);
     const real_delta = minsToTimeString(msg.user.deltaTime || msg.user.minDeltaTime, msg.user.lang);
     const contentProps = { min_delta, real_delta };
-    await this._res(msg.chat.id, contentFor(Content.START_EXISTING, contentProps), buttonsFor(DialogKey.start_existing));
+    const buttons = buttonsFor(DialogKey.start_existing);
+    await this._res(msg.chat.id, Content.START_EXISTING, { contentProps, buttons });
   }
 
   /**
@@ -72,7 +85,7 @@ export class Actions extends DevActions {
   @transformMsg
   @onlyForKnownUsers
   public async toStage1(msg: TelegramBot.Message) {
-    await this._res(msg.chat.id, contentFor(Content.STAGE_1), buttonsFor(DialogKey.im_smoking));
+    await this._res(msg.chat.id, Content.STAGE_1, { buttons: buttonsFor(DialogKey.im_smoking) });
   };
 
   /**
@@ -81,7 +94,7 @@ export class Actions extends DevActions {
   @transformMsg
   @onlyForKnownUsers
   public async onLang(msg: TelegramBot.Message) {
-    await this._res(msg.chat.id, contentFor(Content.LANG), buttonsFor(DialogKey.lang));
+    await this._res(msg.chat.id, Content.LANG, { buttons: buttonsFor(DialogKey.lang) });
   }
 
   @transformMsg
@@ -89,7 +102,7 @@ export class Actions extends DevActions {
   public async changeLanguageHandler(msg: TelegramBot.Message, lang: Lang) {
     await UsersRepo.updateUser(msg.chat.id, { lang });
     applyLang(lang, msg);
-    await this._res(msg.chat.id, contentFor(Content.LANG_APPLIED));
+    await this._res(msg.chat.id, Content.LANG_APPLIED);
     if (!msg.user.minDeltaTime && !msg.user.minDeltaTimesInitial.length) {
       await this.onStart(msg);
     }
@@ -106,8 +119,9 @@ export class Actions extends DevActions {
     if (!msg.user.tgLastCallTime) {
       update.minDeltaTimesInitial = [msg.ts];
       await UsersRepo.updateUser(msg.chat.id, update);
-      const ops = { stage_1_left: `${STAGE_1_STEPS - 1}` };
-      await this._res(msg.chat.id, contentFor(Content.FIRST_STEP, ops), buttonsFor(DialogKey.im_smoking));
+      const contentProps = { stage_1_left: `${STAGE_1_STEPS - 1}` };
+      const buttons = buttonsFor(DialogKey.im_smoking);
+      await this._res(msg.chat.id, Content.FIRST_STEP, { contentProps, buttons });
       return;
     }
     const timeDifferenceSec = msg.ts - msg.user.lastTime;
@@ -116,29 +130,24 @@ export class Actions extends DevActions {
     let deltaTimesLeft = STAGE_1_STEPS - msg.user.minDeltaTimesInitial.length;
     if (deltaTime < STAGE_1_MIN) {
       isValidDeltaTime = false;
-      const content = contentFor(Content.STAGE_1_IGNORE_MIN, {
-        min_stage_1: `${STAGE_1_MIN}`,
-        stage_1_left: `${deltaTimesLeft}`,
-      });
-      await this._res(msg.chat.id, content, buttonsFor(DialogKey.im_smoking));
+      const contentProps = { min_stage_1: `${STAGE_1_MIN}`, stage_1_left: `${deltaTimesLeft}` };
+      const buttons = buttonsFor(DialogKey.im_smoking);
+      await this._res(msg.chat.id, Content.STAGE_1_IGNORE_MIN, { contentProps, buttons } );
     }
     if (deltaTime > STAGE_1_MAX) {
       isValidDeltaTime = false;
-      const content = contentFor(Content.STAGE_1_IGNORE_MAX, {
-        max_stage_1: `${STAGE_1_MAX}`,
-        stage_1_left: `${deltaTimesLeft}`,
-      });
-      await this._res(msg.chat.id, content, buttonsFor(DialogKey.im_smoking));
+      const contentProps = { max_stage_1: `${STAGE_1_MAX}`, stage_1_left: `${deltaTimesLeft}`  };
+      const buttons = buttonsFor(DialogKey.im_smoking);
+      await this._res(msg.chat.id, Content.STAGE_1_IGNORE_MAX, { contentProps, buttons });
     }
     if (isValidDeltaTime) {
       deltaTimesLeft -= 1;
       update.minDeltaTimesInitial = msg.user.minDeltaTimesInitial.concat(deltaTime);
     }
     if (isValidDeltaTime && deltaTimesLeft > 0) {
-      const content = contentFor(Content.STAGE_1_PROCESSING, {
-        stage_1_left: `${deltaTimesLeft}`,
-      });
-      await this._res(msg.chat.id, content, buttonsFor(DialogKey.im_smoking));
+      const contentProps = { stage_1_left: `${deltaTimesLeft}` };
+      const buttons = buttonsFor(DialogKey.im_smoking);
+      await this._res(msg.chat.id, Content.STAGE_1_PROCESSING, { contentProps, buttons } );
     }
     if (isValidDeltaTime && deltaTimesLeft < 1) {
       const summaryStage1Delta = update.minDeltaTimesInitial!.reduce((a, b) => a + b, 0);
@@ -148,12 +157,14 @@ export class Actions extends DevActions {
       update.minDeltaTime = stage1DeltaAvg;
       update.deltaTime = stage1DeltaAvg;
       update.nextTime = msg.ts + (stage1DeltaAvg * 60 * 1000);
-      const content = contentFor(Content.STAGE_1_END, {
-        delta_time: minsToTimeString(stage1DeltaAvg, msg.user.lang),
-      });
-      await this._res(msg.chat.id, content);
+      const contentProps = { delta_time: minsToTimeString(stage1DeltaAvg, msg.user.lang) };
+      await this._res(msg.chat.id, Content.STAGE_1_END, { contentProps });
       const time_to_get_smoke = timestampToTime(msg.date + (stage1DeltaAvg * 60));
-      await this._res(msg.chat.id, contentFor(Content.STAGE_2, { time_to_get_smoke }), buttonsFor(DialogKey.im_smoking));
+      const stage2Response: ResponseOptions = {
+        contentProps: { time_to_get_smoke },
+        buttons: buttonsFor(DialogKey.im_smoking),
+      };
+      await this._res(msg.chat.id, Content.STAGE_2, stage2Response);
     }
     UsersRepo.updateUser(msg.chat.id, update);
   }
@@ -172,11 +183,16 @@ export class Actions extends DevActions {
     if (msg.ts < msg.user.nextTime) {
       const penalty = msg.user.penalty + 1;
       update.penalty = penalty;
-      await this._res(msg.chat.id, contentFor(Content.PENALTY, { penalty: `${penalty}` }));
+      const contentProps = { penalty: `${penalty}` };
+      await this._res(msg.chat.id, Content.PENALTY, { contentProps });
     }
     await UsersRepo.updateUser(msg.chat.id, update);
     const time_to_get_smoke = timestampToTime(msg.date + (msg.user.deltaTime * 60));
-    await this._res(msg.chat.id, contentFor(Content.STAGE_2, { time_to_get_smoke }), buttonsFor(DialogKey.im_smoking));
+    const stage2Response: ResponseOptions = {
+      contentProps: { time_to_get_smoke },
+      buttons: buttonsFor(DialogKey.im_smoking),
+    };
+    await this._res(msg.chat.id, Content.STAGE_2, stage2Response);
   }
 
   /**
@@ -191,7 +207,8 @@ export class Actions extends DevActions {
       nextTime: 0,
     });
     const contentProps = { min_delta: minsToTimeString(msg.user.minDeltaTime, msg.user.lang) };
-    await this._res(msg.chat.id, contentFor(Content.START_RESET_IGNORE, contentProps), buttonsFor(DialogKey.im_smoking));
+    const buttons = buttonsFor(DialogKey.im_smoking);
+    await this._res(msg.chat.id, Content.START_RESET_IGNORE, { contentProps, buttons });
   }
 
   @transformMsg
@@ -205,7 +222,7 @@ export class Actions extends DevActions {
       minDeltaTime: 0,
       minDeltaTimesInitial: [],
     });
-    await this._res(msg.chat.id, contentFor(Content.START_RESET_TO_STAGE_1));
+    await this._res(msg.chat.id, Content.START_RESET_TO_STAGE_1);
     await this.toStage1(msg);
   }
 
@@ -219,6 +236,7 @@ export class Actions extends DevActions {
       deltaTime: msg.user.minDeltaTime,
     });
     const contentProps = { min_delta: minsToTimeString(msg.user.minDeltaTime, msg.user.lang) };
-    await this._res(msg.chat.id, contentFor(Content.START_RESET_TO_STAGE_2, contentProps), buttonsFor(DialogKey.im_smoking));
+    const buttons = buttonsFor(DialogKey.im_smoking);
+    await this._res(msg.chat.id, Content.START_RESET_TO_STAGE_2, { contentProps, buttons });
   }
 }

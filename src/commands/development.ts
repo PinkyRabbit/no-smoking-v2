@@ -1,6 +1,6 @@
 import TelegramBot from "node-telegram-bot-api";
 import logger from "../logger";
-import { Content, contentFor } from "../content";
+import { Content } from "../content";
 import { buttonsFor, DialogKey } from "../buttons";
 import { devModeOnly, onlyForKnownUsers, transformMsg } from "./decorators";
 import { User, UsersRepo } from "../db";
@@ -26,12 +26,12 @@ export class DevActions {
    * This method is called by "devModeOnly" decorator when dev mode is disabled
    */
   public async devModeDisabled(msg: TelegramBot.Message) {
-    await this._res(msg.chat.id, contentFor(Content.DEV_OFF));
+    await this._res(msg.chat.id, Content.DEV_OFF);
   }
 
   @devModeOnly
   public async onDev(msg: TelegramBot.Message) {
-    await this._res(msg.chat.id, contentFor(Content.DEV), buttonsFor(DialogKey.dev));
+    await this._res(msg.chat.id, Content.DEV, { buttons: buttonsFor(DialogKey.dev) });
   }
 
   @devModeOnly
@@ -39,7 +39,7 @@ export class DevActions {
   @onlyForKnownUsers
   public async devOnDel(msg: TelegramBot.Message) {
     await UsersRepo.removeUser(msg.chat.id);
-    await this._res(msg.chat.id, contentFor(Content.DEV_USER_DELETED));
+    await this._res(msg.chat.id, Content.DEV_USER_DELETED);
   }
 
   @devModeOnly
@@ -54,7 +54,7 @@ export class DevActions {
       minDeltaTimesInitial: [],
     };
     await UsersRepo.updateUser(msg.chat.id, update);
-    await this._res(msg.chat.id, contentFor(Content.DEV_TO_STAGE_1));
+    await this._res(msg.chat.id, Content.DEV_TO_STAGE_1);
   }
 
   @devModeOnly
@@ -69,6 +69,7 @@ export class DevActions {
       minDeltaTimesInitial: new Array(STAGE_1_STEPS).fill(value),
     };
     await UsersRepo.updateUser(msg.chat.id, update);
-    await this._res(msg.chat.id, contentFor(Content.DEV_FILL_STAGE_1), { min: value });
+    const contentProps = { min: value };
+    await this._res(msg.chat.id, Content.DEV_FILL_STAGE_1, { contentProps });
   }
 }
