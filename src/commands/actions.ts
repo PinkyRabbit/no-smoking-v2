@@ -124,9 +124,9 @@ export class Actions extends DevActions {
       await this._res(msg.chat.id, Content.FIRST_STEP, { contentProps, buttons });
       return;
     }
-    const timeDifferenceSec = msg.ts - msg.user.lastTime;
-    logger.debug(`timeDifferenceSec = ${msg.ts} - ${msg.user.lastTime} = ${timeDifferenceSec}`);
-    const deltaTime = Math.round(timeDifferenceSec / 60 / 1000); // in minutes
+    const timeDifferenceMs = msg.ts - msg.user.lastTime;
+    const deltaTime = Math.round(timeDifferenceMs / 60 / 1000); // in minutes
+    logger.debug(`timeDifferenceMs = ${msg.ts} - ${msg.user.lastTime} = ${timeDifferenceMs} (${deltaTime} min)`);
     let isValidDeltaTime = true;
     let deltaTimesLeft = STAGE_1_STEPS - msg.user.minDeltaTimesInitial.length;
     // to ignore if user clicking too often
@@ -141,6 +141,7 @@ export class Actions extends DevActions {
     }
     // to skip calculation if delta is too big
     if (deltaTime > STAGE_1_MAX) {
+      logger.debug(`deltaTime > STAGE_1_MAX ${deltaTime} > ${STAGE_1_MAX}`);
       isValidDeltaTime = false;
       const contentProps = { max_stage_1: STAGE_1_MAX, stage_1_left: deltaTimesLeft  };
       const buttons = buttonsFor(DialogKey.im_smoking);

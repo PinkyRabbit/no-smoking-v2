@@ -23,6 +23,7 @@ export enum BTN {
   Dev_To_Stage_1 = "dev_to_stage_1",
   Dev_Fill_Stage_1 = "dev_fill_stage_1",
   Dev_Last_Time_1_Hour = "dev_last_time_1_hour",
+  Dev_Stage_1_More_Max = "dev_stage_1_more_than_max",
 }
 
 export enum Callback {
@@ -38,4 +39,5 @@ export enum Callback {
   Dev_To_Stage_1 = "dev_to_stage_1",
   Dev_Fill_Stage_1 = "dev_fill_stage_1",
   Dev_Last_Time_1_Hour = "dev_last_time_1_hour",
+  Dev_Stage_1_More_Max = "dev_stage_1_more_than_max",
 }

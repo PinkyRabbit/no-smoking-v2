@@ -85,4 +85,5 @@ export const contentEn: MultilineContent = {
   [Content.DEV_TO_STAGE_1]: "🔮 Your user was reset to Stage 1",
   [Content.DEV_FILL_STAGE_1]: "🔮 Stage 1 was filled by {{min}} minutes values",
   [Content.DEV_LAST_TIME_MINUS_HOUR]: "🔮 Last time set to 1 hour ago",
+  [Content.DEV_STAGE_1_MORE_THAN_MAX]: "🔮 Last time set to more than max value",
 };

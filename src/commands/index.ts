@@ -54,6 +54,9 @@ export const botActionsInit = (bot: TelegramBot) => {
       case Callback.Dev_Last_Time_1_Hour:
         act.devLastTimeMinusHour(message);
         break;
+      case Callback.Dev_Stage_1_More_Max:
+        act.devStage1MoreThanMax(message);
+        break;
       default:
         logger.error(`Unsupported callback "${callbackType}"`);
     }
