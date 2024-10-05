@@ -1,5 +1,5 @@
 import TelegramBot from "node-telegram-bot-api";
-import { Content, contentFor } from "../content";
+import { Content, contentFor, ContentProps } from "../content";
 import { buttonsFor, DialogKey } from "../buttons";
 import { DevActions } from "./development";
 import { User, UsersRepo } from "../db";
@@ -12,7 +12,7 @@ import { timestampToTime } from "../lib_helpers/luxon";
 import logger from "../logger";
 
 type ResponseOptions = {
-  contentProps?: Record<string, string>;
+  contentProps?: ContentProps;
   buttons?: TelegramBot.SendMessageOptions;
 }
 
@@ -130,13 +130,13 @@ export class Actions extends DevActions {
     let deltaTimesLeft = STAGE_1_STEPS - msg.user.minDeltaTimesInitial.length;
     if (deltaTime < STAGE_1_MIN) {
       isValidDeltaTime = false;
-      const contentProps = { min_stage_1: `${STAGE_1_MIN}`, stage_1_left: `${deltaTimesLeft}` };
+      const contentProps = { min_stage_1: STAGE_1_MIN, stage_1_left: deltaTimesLeft };
       const buttons = buttonsFor(DialogKey.im_smoking);
       await this._res(msg.chat.id, Content.STAGE_1_IGNORE_MIN, { contentProps, buttons } );
     }
     if (deltaTime > STAGE_1_MAX) {
       isValidDeltaTime = false;
-      const contentProps = { max_stage_1: `${STAGE_1_MAX}`, stage_1_left: `${deltaTimesLeft}`  };
+      const contentProps = { max_stage_1: STAGE_1_MAX, stage_1_left: deltaTimesLeft  };
       const buttons = buttonsFor(DialogKey.im_smoking);
       await this._res(msg.chat.id, Content.STAGE_1_IGNORE_MAX, { contentProps, buttons });
     }
@@ -145,7 +145,7 @@ export class Actions extends DevActions {
       update.minDeltaTimesInitial = msg.user.minDeltaTimesInitial.concat(deltaTime);
     }
     if (isValidDeltaTime && deltaTimesLeft > 0) {
-      const contentProps = { stage_1_left: `${deltaTimesLeft}` };
+      const contentProps = { stage_1_left: deltaTimesLeft };
       const buttons = buttonsFor(DialogKey.im_smoking);
       await this._res(msg.chat.id, Content.STAGE_1_PROCESSING, { contentProps, buttons } );
     }
@@ -183,7 +183,7 @@ export class Actions extends DevActions {
     if (msg.ts < msg.user.nextTime) {
       const penalty = msg.user.penalty + 1;
       update.penalty = penalty;
-      const contentProps = { penalty: `${penalty}` };
+      const contentProps = { penalty };
       await this._res(msg.chat.id, Content.PENALTY, { contentProps });
     }
     await UsersRepo.updateUser(msg.chat.id, update);

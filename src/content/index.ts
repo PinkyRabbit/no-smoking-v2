@@ -16,8 +16,13 @@ const catalog = i18n.getCatalog();
 catalog[Lang.RU] = lang[Lang.RU];
 catalog[Lang.EN] = lang[Lang.EN];
 
-export const contentFor = (contentKey: Content, values: Replacements = {}) => {
-  return i18n.__(contentKey, { ...values });
+
+export type ContentProps = Record<string, unknown>;
+
+export const contentFor = (contentKey: Content, values: ContentProps = {}) => {
+  const replacements: Replacements = {};
+  Object.entries(values).forEach(([key, value]) => (replacements[key] = `${value}`));
+  return i18n.__(contentKey, replacements);
 };
 
 export { Content };
