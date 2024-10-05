@@ -34,7 +34,10 @@ export class Actions extends DevActions {
   ): Promise<void> {
     const { buttons, contentProps } = responseOptions;
     const text = contentFor(contentKey, contentProps);
-    const ops: TelegramBot.SendMessageOptions = buttons ? { parse_mode: "Markdown", ...buttons } : {};
+    const ops: TelegramBot.SendMessageOptions = { parse_mode: "Markdown" };
+    if (buttons) {
+      ops.reply_markup = buttons.reply_markup;
+    }
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         const contentPropsString = Object.entries(contentProps || {})
