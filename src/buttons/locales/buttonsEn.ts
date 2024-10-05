@@ -15,4 +15,5 @@ export const buttonsEn: ButtonNames = {
   [BTN.Dev_Fill_Stage_1]: "Fill Stage 1 📈",
   [BTN.Dev_Last_Time_1_Hour]: "Last Time to 1 hour ago 🕘",
   [BTN.Dev_Stage_1_More_Max]: "Stage 1 more than max 🕧",
+  [BTN.Dev_To_Idle]: "To idle mode 💤",
 };

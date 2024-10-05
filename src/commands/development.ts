@@ -4,7 +4,7 @@ import { Content } from "../content";
 import { buttonsFor, DialogKey } from "../buttons";
 import { devModeOnly, onlyForKnownUsers, transformMsg } from "./decorators";
 import { User, UsersRepo } from "../db";
-import { STAGE_1_MAX, STAGE_1_MIN, STAGE_1_STEPS } from "./constants";
+import { STAGE_1_MAX, STAGE_1_MIN, STAGE_1_STEPS, USER_IDLE_TIME } from "./constants";
 
 /**
  * Class for development actions
@@ -101,5 +101,18 @@ export class DevActions {
     };
     await UsersRepo.updateUser(msg.chat.id, update);
     await this._res(msg.chat.id, Content.DEV_STAGE_1_MORE_THAN_MAX);
+  }
+
+  @devModeOnly
+  @transformMsg
+  @onlyForKnownUsers
+  public async devToIdle(msg: TelegramBot.Message) {
+    const moreThanMax = USER_IDLE_TIME + 1;
+    const update: Partial<User> = {
+      tgLastCallTime: msg.date - moreThanMax * 60,
+      lastTime: Date.now() - (moreThanMax * 60 * 1000),
+    };
+    await UsersRepo.updateUser(msg.chat.id, update);
+    await this._res(msg.chat.id, Content.DEV_TO_IDLE);
   }
 }

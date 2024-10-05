@@ -3,7 +3,7 @@ import { Content, contentFor, ContentProps } from "../content";
 import { buttonsFor, DialogKey } from "../buttons";
 import { DevActions } from "./development";
 import { User, UsersRepo } from "../db";
-import { STAGE_1_MAX, STAGE_1_MIN, STAGE_1_STEPS } from "./constants";
+import { STAGE_1_MAX, STAGE_1_MIN, STAGE_1_STEPS, USER_IDLE_TIME } from "./constants";
 import { minsToTimeString } from "../lib_helpers/humanize-duration";
 import { LogActionCalls, onlyForKnownUsers, transformMsg } from "./decorators";
 import { applyLang, tgLangCodeToLang } from "../lib_helpers/i18n";
@@ -180,6 +180,20 @@ export class Actions extends DevActions {
     UsersRepo.updateUser(msg.chat.id, update);
   }
 
+  /**
+   * On user idle
+   */
+  private async _stage2Idle(msg: TelegramBot.Message) {
+    const content: string[] = [];
+    content.push(contentFor(Content.ON_IDLE_START));
+    content.push(contentFor(Content.ON_IDLE_END, { new_delta: 112, time_to_get_smoke: 224 }));
+    const text = content.join("");
+    const { reply_markup } = buttonsFor(DialogKey.im_smoking);
+    const ops: TelegramBot.SendMessageOptions = { parse_mode: "Markdown", reply_markup };
+    logger.info(`U-${msg.user.chatId} -> IDLE`);
+    return this.bot.sendMessage(msg.user.chatId, text, ops);
+  }
+
   @transformMsg
   @onlyForKnownUsers
   public async imSmokingHandler(msg: TelegramBot.Message) {
@@ -196,6 +210,14 @@ export class Actions extends DevActions {
       update.penalty = penalty;
       const contentProps = { penalty };
       await this._res(msg.chat.id, Content.PENALTY, { contentProps });
+    }
+    const timeDifferenceMs = msg.ts - msg.user.lastTime;
+    const currentDelta = Math.round(timeDifferenceMs / 60 / 1000); // in minutes
+    logger.debug(`timeDifferenceMs = ${msg.ts} - ${msg.user.lastTime} = ${timeDifferenceMs} (${currentDelta} min)`);
+    // if user in idle state too long
+    if (currentDelta >= USER_IDLE_TIME) {
+      logger.debug(`currentDelta >= USER_IDLE_TIME ${currentDelta} >= ${USER_IDLE_TIME}`);
+      await this._stage2Idle(msg);
     }
     await UsersRepo.updateUser(msg.chat.id, update);
     const time_to_get_smoke = timestampToTime(msg.date + (msg.user.deltaTime * 60));

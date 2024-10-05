@@ -75,6 +75,8 @@ export const contentEn: MultilineContent = {
     🚭 Current number of penalty points: ${B}{{penalty}}${B}
   `,
   [Content.TIME_FOR_A_SMOKE]: "🔥 It's time for a smoke break! 🔥",
+  [Content.ON_IDLE_START]: DEFAULT,
+  [Content.ON_IDLE_END]: DEFAULT,
   // dev
   [Content.DEV]: `
     ⚒️ ${B}Development Mode is ON${B} ⚒️${N2} 
@@ -86,4 +88,5 @@ export const contentEn: MultilineContent = {
   [Content.DEV_FILL_STAGE_1]: "🔮 Stage 1 was filled, {{stepsAdded}} steps added",
   [Content.DEV_LAST_TIME_MINUS_HOUR]: "🔮 Last time set to 1 hour ago",
   [Content.DEV_STAGE_1_MORE_THAN_MAX]: "🔮 Last time set to more than max value",
+  [Content.DEV_TO_IDLE]: "🔮 User switched to Idle mode",
 };

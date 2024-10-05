@@ -18,6 +18,8 @@ export enum Content {
   STAGE_2 = "Stage_2",
   PENALTY = "Penalty",
   TIME_FOR_A_SMOKE = "Time_For_a_Smoke",
+  ON_IDLE_START = "On_Idle_Start",
+  ON_IDLE_END = "On_Idle_End",
   // TEST
   DEV = "Dev",
   DEV_OFF = "Dev_Off",
@@ -25,5 +27,6 @@ export enum Content {
   DEV_TO_STAGE_1 = "Dev_to_Stage_1",
   DEV_FILL_STAGE_1 = "Dev_Fill_Stage_1",
   DEV_LAST_TIME_MINUS_HOUR = "Dev_Last_Time_Minus_Hour",
-  DEV_STAGE_1_MORE_THAN_MAX = "Dev_Last_Time_More_Than_Max"
+  DEV_STAGE_1_MORE_THAN_MAX = "Dev_Last_Time_More_Than_Max",
+  DEV_TO_IDLE = "Dev_To_Idle",
 }
