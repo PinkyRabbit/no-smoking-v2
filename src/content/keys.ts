@@ -24,4 +24,5 @@ export enum Content {
   DEV_USER_DELETED = "Dev_User_Deleted",
   DEV_TO_STAGE_1 = "Dev_to_Stage_1",
   DEV_FILL_STAGE_1 = "Dev_Fill_Stage_1",
+  DEV_LAST_TIME_MINUS_HOUR = "Dev_Last_Time_Minus_Hour",
 }

@@ -72,4 +72,16 @@ export class DevActions {
     const contentProps = { min: value };
     await this._res(msg.chat.id, Content.DEV_FILL_STAGE_1, { contentProps });
   }
+
+  @devModeOnly
+  @transformMsg
+  @onlyForKnownUsers
+  public async devLastTimeMinusHour(msg: TelegramBot.Message) {
+    const update: Partial<User> = {
+      tgLastCallTime: msg.date - 60 * 60,
+      lastTime: Date.now() - (60 * 60 * 1000),
+    };
+    await UsersRepo.updateUser(msg.chat.id, update);
+    await this._res(msg.chat.id, Content.DEV_LAST_TIME_MINUS_HOUR);
+  }
 }

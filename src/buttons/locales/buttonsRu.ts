@@ -13,4 +13,5 @@ export const buttonsRu: ButtonNames  = {
   [BTN.Dev_Delete_User]: "Удалить пользователя 🗑️",
   [BTN.Dev_To_Stage_1]: "Сбросить до Stage 1 🗯️",
   [BTN.Dev_Fill_Stage_1]: "Заполнить Stage 1 📈",
+  [BTN.Dev_Last_Time_1_Hour]: "Last Time на 1 час назад 🕘",
 };

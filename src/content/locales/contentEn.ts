@@ -84,4 +84,5 @@ export const contentEn: MultilineContent = {
   [Content.DEV_USER_DELETED]: "🔮 User Deleted /start",
   [Content.DEV_TO_STAGE_1]: "🔮 Your user was reset to Stage 1",
   [Content.DEV_FILL_STAGE_1]: "🔮 Stage 1 was filled by {{min}} minutes values",
+  [Content.DEV_LAST_TIME_MINUS_HOUR]: "🔮 Last time set to 1 hour ago",
 };

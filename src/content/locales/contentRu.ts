@@ -133,4 +133,5 @@ export const contentRu: MultilineContent = {
   [Content.DEV_USER_DELETED]: "🔮 Пользователь удалён /start",
   [Content.DEV_TO_STAGE_1]: "🔮 Пользователь сброшен до stage 1",
   [Content.DEV_FILL_STAGE_1]: "🔮 Stage 1 заполнено {{min}} значением",
+  [Content.DEV_LAST_TIME_MINUS_HOUR]: "🔮 Last time установлен на 1 час назад",
 };

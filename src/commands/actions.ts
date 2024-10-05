@@ -40,7 +40,7 @@ export class Actions extends DevActions {
         const contentPropsString = Object.entries(contentProps || {})
           .map(([k, v]) => `${k} = "${v}"`)
           .join(", ");
-        logger.debug(`U-${chatId} -> ${contentKey} ${contentPropsString}`);
+        logger.info(`U-${chatId} -> ${contentKey} ${contentPropsString}`);
         this.bot.sendMessage(chatId, text, ops).catch((err) => reject(err));
         resolve();
       }, 400);
@@ -125,21 +125,28 @@ export class Actions extends DevActions {
       return;
     }
     const timeDifferenceSec = msg.ts - msg.user.lastTime;
+    logger.debug(`timeDifferenceSec = ${msg.ts} - ${msg.user.lastTime} = ${timeDifferenceSec}`);
     const deltaTime = Math.round(timeDifferenceSec / 60 / 1000); // in minutes
     let isValidDeltaTime = true;
     let deltaTimesLeft = STAGE_1_STEPS - msg.user.minDeltaTimesInitial.length;
+    // to ignore if user clicking too often
     if (deltaTime < STAGE_1_MIN) {
+      logger.debug(`deltaTime < STAGE_1_MIN, ${deltaTime} < ${STAGE_1_MIN}`);
       isValidDeltaTime = false;
+      update.tgLastCallTime = msg.user.tgLastCallTime;
+      update.lastTime = msg.user.lastTime;
       const contentProps = { min_stage_1: STAGE_1_MIN, stage_1_left: deltaTimesLeft };
       const buttons = buttonsFor(DialogKey.im_smoking);
       await this._res(msg.chat.id, Content.STAGE_1_IGNORE_MIN, { contentProps, buttons } );
     }
+    // to skip calculation if delta is too big
     if (deltaTime > STAGE_1_MAX) {
       isValidDeltaTime = false;
       const contentProps = { max_stage_1: STAGE_1_MAX, stage_1_left: deltaTimesLeft  };
       const buttons = buttonsFor(DialogKey.im_smoking);
       await this._res(msg.chat.id, Content.STAGE_1_IGNORE_MAX, { contentProps, buttons });
     }
+    // add time if timestamp is valid
     if (isValidDeltaTime) {
       deltaTimesLeft -= 1;
       update.minDeltaTimesInitial = msg.user.minDeltaTimesInitial.concat(deltaTime);
