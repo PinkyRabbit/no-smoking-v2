@@ -8,7 +8,7 @@ import { MIN_INTERVAL, STAGE_1_MAX, STAGE_1_STEPS, USER_IDLE_TIME } from "./cons
 import { minsToTimeString } from "../lib_helpers/humanize-duration";
 import { LogActionCalls, onlyForKnownUsers, transformMsg } from "./decorators";
 import { tgLangCodeToLang } from "../lib_helpers/i18n";
-import { timestampToTime } from "../lib_helpers/luxon";
+import { timestampToTime, tsToDateTime } from "../lib_helpers/luxon";
 import logger from "../logger";
 import { getButtons } from "../buttons";
 
@@ -159,47 +159,50 @@ export class Actions extends DevActions {
     UsersRepo.updateUser(msg.chat.id, update);
   }
 
-  /**
-   * On user idle
-   */
-  private async _stage2Idle(msg: TelegramBot.Message) {
-    const content: string[] = [];
-    content.push(getContent(msg.user.lang, Content.ON_IDLE_START));
-    content.push(getContent(msg.user.lang, Content.ON_IDLE_END, { new_delta: 112, time_to_get_smoke: 224 }));
-    const text = content.join("");
-    const { reply_markup } = getButtons(msg.user.lang, DialogKey.im_smoking);
-    const ops: TelegramBot.SendMessageOptions = { parse_mode: "Markdown", reply_markup };
-    logger.info(`U-${msg.user.chatId} -> IDLE`);
-    return this.bot.sendMessage(msg.user.chatId, text, ops);
-  }
-
   @transformMsg
   @onlyForKnownUsers
   public async imSmokingHandler(msg: TelegramBot.Message) {
     if (!msg.user.minDeltaTime) {
       return this._stage1(msg);
     }
+    /**
+     * Stage 2
+     */
     const update: Partial<User> = {
       tgLastCallTime: msg.date,
       lastTime: msg.ts,
       nextTime: msg.ts + (msg.user.deltaTime * 60 * 1000),
     };
+    // @TODO: fix LOWER THAN MIN (spam)
+    // penalty
     if (msg.ts < msg.user.nextTime) {
+      logger.debug(`U-${msg.user.chatId} [penalty] ${tsToDateTime(msg.ts)} < ${tsToDateTime(msg.user.nextTime)}`);
       const penalty = msg.user.penalty + 1;
       update.penalty = penalty;
       await this._res(msg.user, Content.PENALTY, { penalty });
     }
+    // idle
     const timeDifferenceMs = msg.ts - msg.user.lastTime;
     const currentDelta = Math.round(timeDifferenceMs / 60 / 1000); // in minutes
     logger.debug(`timeDifferenceMs = ${msg.ts} - ${msg.user.lastTime} = ${timeDifferenceMs} (${currentDelta} min)`);
-    // if user in idle state too long
     if (currentDelta >= USER_IDLE_TIME) {
-      logger.debug(`currentDelta >= USER_IDLE_TIME ${currentDelta} >= ${USER_IDLE_TIME}`);
-      await this._stage2Idle(msg);
+      logger.debug(`U-${msg.user.chatId} [idle] ${currentDelta} >= ${USER_IDLE_TIME}`);
+      const content: string[] = [];
+      content.push(getContent(msg.user.lang, Content.ON_IDLE_START));
+      content.push(getContent(msg.user.lang, Content.ON_IDLE_END, { new_delta: 112, time_to_get_smoke: 224 }));
+      const text = content.join("");
+      const { reply_markup } = getButtons(msg.user.lang, DialogKey.im_smoking);
+      const ops: TelegramBot.SendMessageOptions = { parse_mode: "Markdown", reply_markup };
+      logger.info(`U-${msg.user.chatId} -> IDLE`);
+      await this.bot.sendMessage(msg.user.chatId, text, ops);
     }
+    // normal stage 2
+    if (currentDelta < USER_IDLE_TIME) {
+      const time_to_get_smoke = timestampToTime(msg.date + (msg.user.deltaTime * 60));
+      await this._res(msg.user, Content.STAGE_2, { time_to_get_smoke }, DialogKey.im_smoking);
+    }
+    // update user
     await UsersRepo.updateUser(msg.chat.id, update);
-    const time_to_get_smoke = timestampToTime(msg.date + (msg.user.deltaTime * 60));
-    await this._res(msg.user, Content.STAGE_2, { time_to_get_smoke }, DialogKey.im_smoking);
   }
 
   /**

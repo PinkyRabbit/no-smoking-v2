@@ -107,9 +107,11 @@ export class DevActions {
   @onlyForKnownUsers
   public async devToIdle(msg: TelegramBot.Message) {
     const moreThanMax = USER_IDLE_TIME + 1;
+    const lastTime = Date.now() - (moreThanMax * 60 * 1000);
     const update: Partial<User> = {
       tgLastCallTime: msg.date - moreThanMax * 60,
-      lastTime: Date.now() - (moreThanMax * 60 * 1000),
+      lastTime,
+      nextTime: lastTime + msg.user.deltaTime * 60 * 1000,
     };
     await UsersRepo.updateUser(msg.chat.id, update);
     await this._res(msg.user, Content.DEV_TO_IDLE);
