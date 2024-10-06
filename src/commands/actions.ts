@@ -187,14 +187,24 @@ export class Actions extends DevActions {
     logger.debug(`timeDifferenceMs = ${msg.ts} - ${msg.user.lastTime} = ${timeDifferenceMs} (${currentDelta} min)`);
     if (currentDelta >= USER_IDLE_TIME) {
       logger.debug(`U-${msg.user.chatId} [idle] ${currentDelta} >= ${USER_IDLE_TIME}`);
+      const DIFFICULTY_LEVEL = 1;
+      const newDelta = msg.user.deltaTime + DIFFICULTY_LEVEL - msg.user.penalty;
+      const newNextTime = msg.ts + (newDelta * 60 * 1000);
+      update.penalty = 0;
+      update.deltaTime = newDelta;
+      update.nextTime = newNextTime;
       const content: string[] = [];
       content.push(getContent(msg.user.lang, Content.ON_IDLE_START));
-      content.push(getContent(msg.user.lang, Content.ON_IDLE_END, { new_delta: 112, time_to_get_smoke: 224 }));
-      const text = content.join("");
+      content.push(getContent(msg.user.lang, Content.ON_IDLE_END, {
+        prev_delta: minsToTimeString(msg.user.deltaTime, msg.user.lang),
+        new_delta: minsToTimeString(newDelta, msg.user.lang),
+        time_to_get_smoke: timestampToTime(msg.date + (newDelta * 60)),
+        penalty: minsToTimeString(msg.user.penalty, msg.user.lang),
+        step: minsToTimeString(DIFFICULTY_LEVEL, msg.user.lang),
+      }));
       const { reply_markup } = getButtons(msg.user.lang, DialogKey.im_smoking);
       const ops: TelegramBot.SendMessageOptions = { parse_mode: "Markdown", reply_markup };
-      logger.info(`U-${msg.user.chatId} -> IDLE`);
-      await this.bot.sendMessage(msg.user.chatId, text, ops);
+      await this.bot.sendMessage(msg.user.chatId, content.join(""), ops);
     }
     // normal stage 2
     if (currentDelta < USER_IDLE_TIME) {
