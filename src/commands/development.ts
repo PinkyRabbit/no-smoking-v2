@@ -1,7 +1,6 @@
 import TelegramBot from "node-telegram-bot-api";
 import logger from "../logger";
-import { Content } from "../content";
-import { buttonsFor, DialogKey } from "../buttons";
+import { Content, DialogKey } from "../constants";
 import { devModeOnly, onlyForKnownUsers, transformMsg } from "./decorators";
 import { User, UsersRepo } from "../db";
 import { STAGE_1_MAX, MIN_INTERVAL, STAGE_1_STEPS, USER_IDLE_TIME } from "./constants";
@@ -26,12 +25,13 @@ export class DevActions {
    * This method is called by "devModeOnly" decorator when dev mode is disabled
    */
   public async devModeDisabled(msg: TelegramBot.Message) {
-    await this._res(msg.chat.id, Content.DEV_OFF);
+    await this._res(msg.user, Content.DEV_OFF);
   }
 
   @devModeOnly
+  @transformMsg
   public async onDev(msg: TelegramBot.Message) {
-    await this._res(msg.chat.id, Content.DEV, { buttons: buttonsFor(DialogKey.dev) });
+    await this._res(msg.user, Content.DEV, {}, DialogKey.dev);
   }
 
   @devModeOnly
@@ -39,7 +39,7 @@ export class DevActions {
   @onlyForKnownUsers
   public async devOnDel(msg: TelegramBot.Message) {
     await UsersRepo.removeUser(msg.chat.id);
-    await this._res(msg.chat.id, Content.DEV_USER_DELETED);
+    await this._res(msg.user, Content.DEV_USER_DELETED);
   }
 
   @devModeOnly
@@ -54,7 +54,7 @@ export class DevActions {
       minDeltaTimesInitial: [],
     };
     await UsersRepo.updateUser(msg.chat.id, update);
-    await this._res(msg.chat.id, Content.DEV_TO_STAGE_1);
+    await this._res(msg.user, Content.DEV_TO_STAGE_1);
   }
 
   @devModeOnly
@@ -74,8 +74,7 @@ export class DevActions {
       minDeltaTimesInitial: minDeltaTimesInitial,
     };
     await UsersRepo.updateUser(msg.chat.id, update);
-    const contentProps = { stepsAdded };
-    await this._res(msg.chat.id, Content.DEV_FILL_STAGE_1, { contentProps });
+    await this._res(msg.user, Content.DEV_FILL_STAGE_1, { stepsAdded });
   }
 
   @devModeOnly
@@ -87,7 +86,7 @@ export class DevActions {
       lastTime: Date.now() - (60 * 60 * 1000),
     };
     await UsersRepo.updateUser(msg.chat.id, update);
-    await this._res(msg.chat.id, Content.DEV_LAST_TIME_MINUS_HOUR);
+    await this._res(msg.user, Content.DEV_LAST_TIME_MINUS_HOUR);
   }
 
   @devModeOnly
@@ -100,7 +99,7 @@ export class DevActions {
       lastTime: Date.now() - (moreThanMax * 60 * 1000),
     };
     await UsersRepo.updateUser(msg.chat.id, update);
-    await this._res(msg.chat.id, Content.DEV_STAGE_1_MORE_THAN_MAX);
+    await this._res(msg.user, Content.DEV_STAGE_1_MORE_THAN_MAX);
   }
 
   @devModeOnly
@@ -113,7 +112,7 @@ export class DevActions {
       lastTime: Date.now() - (moreThanMax * 60 * 1000),
     };
     await UsersRepo.updateUser(msg.chat.id, update);
-    await this._res(msg.chat.id, Content.DEV_TO_IDLE);
+    await this._res(msg.user, Content.DEV_TO_IDLE);
   }
 
   @devModeOnly
@@ -127,6 +126,6 @@ export class DevActions {
       nextTime: Date.now() - 60 * 1000,
     };
     await UsersRepo.updateUser(msg.chat.id, update);
-    await this._res(msg.chat.id, Content.DEV_NEXT);
+    await this._res(msg.user, Content.DEV_NEXT);
   }
 }

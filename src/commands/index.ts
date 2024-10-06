@@ -1,17 +1,18 @@
-import TelegramBot  from "node-telegram-bot-api";
+import { CallbackQuery } from "node-telegram-bot-api";
+import TgBot from "../telegram-bot";
 import logger from "../logger";
 import { BotEvent } from "./keys";
 import { Callback } from "../buttons/keys";
 import { Actions } from "./actions";
 import { Lang } from "../constants";
 
-export const botActionsInit = (bot: TelegramBot) => {
+export const botActionsInit = (bot: TgBot) => {
   const act = new Actions(bot);
   bot.on(BotEvent.Message, () => Promise.resolve());
   bot.onText(BotEvent.Start, act.onStart);
   bot.onText(BotEvent.SelectLanguage, act.onLang);
   bot.onText(BotEvent.Dev, act.onDev);
-  bot.on(BotEvent.Callback, (callbackQuery: TelegramBot.CallbackQuery) => {
+  bot.on(BotEvent.Callback, (callbackQuery: CallbackQuery) => {
     const callbackType = callbackQuery.data as Callback;
     const message = callbackQuery.message;
     if (!message || !callbackType) {

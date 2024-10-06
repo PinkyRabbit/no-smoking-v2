@@ -1,4 +1,4 @@
-import { Content } from "../keys";
+import { Content } from "../../constants";
 import { MultilineContent } from "./types";
 import { NL, N2, ND, B, I } from "./constants";
 

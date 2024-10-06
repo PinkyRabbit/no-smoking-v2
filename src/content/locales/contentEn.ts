@@ -1,5 +1,5 @@
 import { MultilineContent } from "./types";
-import { Content } from "../keys";
+import { Content } from "../../constants";
 import { B, I, N2, ND, NL } from "./constants";
 
 const DEFAULT = `

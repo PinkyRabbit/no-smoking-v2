@@ -1,4 +1,4 @@
-import TelegramBot from "node-telegram-bot-api";
+import TgBot from "../telegram-bot";
 import logger from "../logger";
 import { smokingTimeTest } from "./smokingTimeTest";
 
@@ -6,7 +6,7 @@ import { smokingTimeTest } from "./smokingTimeTest";
  * Method to start timer for smoking time test
  * @param bot - TelegramBot instance
  */
-export const startMinutelySmokingTimeTest = (bot: TelegramBot) => {
+export const startMinutelySmokingTimeTest = (bot: TgBot) => {
   const ONE_MINUTE = 60 * 1000;
 
   const intervalId = setInterval(() => smokingTimeTest(bot), ONE_MINUTE);

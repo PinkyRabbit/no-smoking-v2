@@ -60,7 +60,7 @@ export class UsersRepo extends RequestOptions {
   /**
    * Method returns all users who reached their targeted time
    */
-  static async getAllSmokersToSmokeChatIds(): Promise<number[]> {
+  static async getAllSmokersToSmoke(): Promise<User[]> {
     const that = new UsersRepo();
     const ts = Date.now();
     const users = await that.Users.find({
@@ -75,6 +75,6 @@ export class UsersRepo extends RequestOptions {
     const dateTimeString = tsToDateTime(ts);
     logger.info(`[${dateTimeString}] smokingTimeTest call, ${chatIds.length} affected`);
     await that.Users.update({ _id: { $in: userIds } }, { $set: { nextTime: 0 } });
-    return chatIds;
+    return users;
   }
 }

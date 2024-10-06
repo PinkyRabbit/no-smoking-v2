@@ -1,4 +1,4 @@
-import TelegramBot from "node-telegram-bot-api";
+import TgBot from "./telegram-bot";
 import logger from "./logger";
 import { initDatabase } from "./db";
 import { botActionsInit } from "./commands";
@@ -17,7 +17,7 @@ if (!token) {
 initDatabase()
   .then(() => {
     logger.info("Connected to database");
-    const bot = new TelegramBot(token, { polling: true });
+    const bot = new TgBot(token, { polling: true });
     botActionsInit(bot);
     startMinutelySmokingTimeTest(bot);
   })

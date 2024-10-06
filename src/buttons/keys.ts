@@ -1,12 +1,3 @@
-export enum DialogKey {
-  to_start = "to_start",
-  beginning = "new_user_beginning",
-  lang = "lang",
-  im_smoking = "im_smoking",
-  start_existing = "start_existing",
-  dev = "dev",
-}
-
 /**
  * Button names
  */

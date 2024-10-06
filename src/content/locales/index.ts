@@ -1,9 +1,8 @@
 import { MultilineContent } from "./types";
-import { Content } from "../keys";
+import { Lang, Content } from "../../constants";
 import { newLineRegexp } from "./constants";
 import { contentRu } from "./contentRu";
 import { contentEn } from "./contentEn";
-import { Lang } from "../../constants";
 
 const transformSingleLineContent = (content: string): string =>
   content

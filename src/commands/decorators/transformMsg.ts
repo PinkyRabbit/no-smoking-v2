@@ -1,7 +1,6 @@
 import { Message } from "node-telegram-bot-api";
 import logger from "../../logger";
 import { UsersRepo } from "../../db";
-import { applyLang } from "../../lib_helpers/i18n";
 
 export function transformMsg(target: unknown, propertyKey: string, descriptor: PropertyDescriptor) {
   const originalMethod = descriptor.value;
@@ -12,7 +11,6 @@ export function transformMsg(target: unknown, propertyKey: string, descriptor: P
     }
     const user = await UsersRepo.getByChatId(msg.chat.id);
     if (user) {
-      applyLang(user.lang);
       msg.user = Object.assign({}, user);
       msg.ts = Date.now();
     }
