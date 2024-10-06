@@ -30,6 +30,7 @@ export enum Content {
   STAGE_1_IGNORE_MAX = "Stage_1_Ignore_Max",
   STAGE_1_PROCESSING = "Stage_1_Processing",
   STAGE_1_END = "Stage_1_End",
+  STAGE_2_INITIAL = "Stage_2_Initial",
   STAGE_2 = "Stage_2",
   PENALTY = "Penalty",
   TIME_FOR_A_SMOKE = "Time_For_a_Smoke",

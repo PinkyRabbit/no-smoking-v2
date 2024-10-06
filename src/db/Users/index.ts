@@ -13,7 +13,13 @@ export type User = {
   deltaTime: number; // minutes
   tgLastCallTime: number; // Telegram timestamp
   lastTime: number; // timestamp Server
-  nextTime: number; // timestamp Server
+  /**
+   * @property nextTime - marker for timer-operations
+   * @type number - timestamp Server
+   * 0 - default value. Not set (Sage 1) or Smoking Time passed (Sage 2)
+   * more than 0 - timestamp Server. Value to check in timer-operations
+   */
+  nextTime: number;
   penalty: number;
   startDate: Date | null; // date of stage 1 start
   endDate: Date | null; // date of stage 2 end

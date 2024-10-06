@@ -154,7 +154,7 @@ export class Actions extends DevActions {
       const contentProps = { delta_time: minsToTimeString(stage1DeltaAvg, msg.user.lang) };
       await this._res(msg.user, Content.STAGE_1_END, contentProps);
       const time_to_get_smoke = timestampToTime(msg.date + (stage1DeltaAvg * 60));
-      await this._res(msg.user, Content.STAGE_2,  { time_to_get_smoke }, DialogKey.im_smoking);
+      await this._res(msg.user, Content.STAGE_2_INITIAL,  { time_to_get_smoke }, DialogKey.im_smoking);
     }
     UsersRepo.updateUser(msg.chat.id, update);
   }
