@@ -4,7 +4,7 @@ import { Content } from "../content";
 import { buttonsFor, DialogKey } from "../buttons";
 import { devModeOnly, onlyForKnownUsers, transformMsg } from "./decorators";
 import { User, UsersRepo } from "../db";
-import { STAGE_1_MAX, STAGE_1_MIN, STAGE_1_STEPS, USER_IDLE_TIME } from "./constants";
+import { STAGE_1_MAX, MIN_INTERVAL, STAGE_1_STEPS, USER_IDLE_TIME } from "./constants";
 
 /**
  * Class for development actions
@@ -65,7 +65,7 @@ export class DevActions {
     let stepsAdded = 0;
     while (minDeltaTimesInitial.length < STAGE_1_STEPS - 1) {
       stepsAdded += 1;
-      minDeltaTimesInitial.push(STAGE_1_MIN + 1);
+      minDeltaTimesInitial.push(MIN_INTERVAL + 1);
     }
     const update: Partial<User> = {
       tgLastCallTime: msg.date - 60 * 60,
@@ -114,5 +114,19 @@ export class DevActions {
     };
     await UsersRepo.updateUser(msg.chat.id, update);
     await this._res(msg.chat.id, Content.DEV_TO_IDLE);
+  }
+
+  @devModeOnly
+  @transformMsg
+  @onlyForKnownUsers
+  public async devByTimer(msg: TelegramBot.Message) {
+    const validInterval = MIN_INTERVAL + 1;
+    const update: Partial<User> = {
+      tgLastCallTime: msg.date - validInterval * 60,
+      lastTime: Date.now() - (validInterval * 60 * 1000),
+      nextTime: Date.now() - 60 * 1000,
+    };
+    await UsersRepo.updateUser(msg.chat.id, update);
+    await this._res(msg.chat.id, Content.DEV_NEXT);
   }
 }

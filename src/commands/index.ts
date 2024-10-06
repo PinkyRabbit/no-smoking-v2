@@ -60,6 +60,9 @@ export const botActionsInit = (bot: TelegramBot) => {
       case Callback.Dev_To_Idle:
         act.devToIdle(message);
         break;
+      case Callback.Dev_Next:
+        act.devByTimer(message);
+        break;
       default:
         logger.error(`Unsupported callback "${callbackType}"`);
     }

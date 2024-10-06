@@ -1,9 +1,7 @@
 import TelegramBot from "node-telegram-bot-api";
-import logger from "../logger";
 import { UsersRepo } from "../db";
 import { Content, contentFor } from "../content";
 import { buttonsFor, DialogKey } from "../buttons";
-import { dateTimeToTime } from "../lib_helpers/luxon";
 
 /**
  * Helper to make messages to send delayed
@@ -19,20 +17,10 @@ const sendDelayed = (bot: TelegramBot, chatIds: number[]) => {
 };
 
 /**
- * Helper to log the event
- * Only to use in smokingTimeTest
- */
-const logEvent = (usersCount: number) => {
-  const time = dateTimeToTime();
-  logger.info(`[${time}] smokingTimeTest call, ${usersCount} affected`);
-};
-
-/**
  * Method to notify all users about smoking time
  * @param bot - TelegramBot instance
  */
 export const smokingTimeTest = async (bot: TelegramBot) => {
   const chatIds = await UsersRepo.getAllSmokersToSmokeChatIds();
-  logEvent(chatIds.length);
   sendDelayed(bot, chatIds);
 };

@@ -64,6 +64,9 @@ const selectButtonsByKey = (key: DialogKey): InlineKeyboard => {
         { text: i18n.__(BTN.Dev_Last_Time_1_Hour), callback_data: Callback.Dev_Last_Time_1_Hour },
         { text: i18n.__(BTN.Dev_To_Idle), callback_data: Callback.Dev_To_Idle },
       ],
+      [
+        { text: i18n.__(BTN.Dev_Next), callback_data: Callback.Dev_Next },
+      ]
     ];
   }
   return [];

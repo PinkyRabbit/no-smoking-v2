@@ -16,4 +16,5 @@ export const buttonsRu: ButtonNames  = {
   [BTN.Dev_Last_Time_1_Hour]: "Last Time на 1 час назад 🕘",
   [BTN.Dev_Stage_1_More_Max]: "Stage 1 больше макс 🕧",
   [BTN.Dev_To_Idle]: "To idle mode 💤",
+  [BTN.Dev_Next]: "По таймеру ⏰️",
 };

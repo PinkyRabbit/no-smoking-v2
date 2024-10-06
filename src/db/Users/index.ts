@@ -1,6 +1,9 @@
 import monk  from "monk";
+import logger from "../../logger";
 import { RequestOptions } from "../dbOptionsConstructor";
 import { Lang } from "../../constants";
+import { logWithTimestamps } from "../../lib_helpers/logger";
+import { tsToDateTime } from "../../lib_helpers/luxon";
 
 export type User = {
   chatId: number;
@@ -43,11 +46,13 @@ export class UsersRepo extends RequestOptions {
   }
 
   static updateUser(chatId: number, update: Partial<User>) {
+    logWithTimestamps(`U-${chatId} [update]`, update);
     const that = new UsersRepo();
     return that.Users.update({ chatId }, { $set: update });
   }
 
   static removeUser(chatId: number) {
+    logger.debug(`U-${chatId} [delete]`);
     const that = new UsersRepo();
     return that.Users.remove({ chatId });
   }
@@ -60,13 +65,15 @@ export class UsersRepo extends RequestOptions {
     const ts = Date.now();
     const users = await that.Users.find({
       $and: [
-        { endDate: { $ne: null } },
+        { endDate: { $eq: null } },
         { nextTime: { $ne: 0 } },
         { nextTime: { $lte: ts } },
       ]
     });
     const userIds = users.map(({ _id }) => _id);
     const chatIds = users.map(({ chatId }) => chatId);
+    const dateTimeString = tsToDateTime(ts);
+    logger.info(`[${dateTimeString}] smokingTimeTest call, ${chatIds.length} affected`);
     await that.Users.update({ _id: { $in: userIds } }, { $set: { nextTime: 0 } });
     return chatIds;
   }

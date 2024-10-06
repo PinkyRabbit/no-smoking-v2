@@ -3,7 +3,7 @@ import { Content, contentFor, ContentProps } from "../content";
 import { buttonsFor, DialogKey } from "../buttons";
 import { DevActions } from "./development";
 import { User, UsersRepo } from "../db";
-import { STAGE_1_MAX, STAGE_1_MIN, STAGE_1_STEPS, USER_IDLE_TIME } from "./constants";
+import { STAGE_1_MAX, MIN_INTERVAL, STAGE_1_STEPS, USER_IDLE_TIME } from "./constants";
 import { minsToTimeString } from "../lib_helpers/humanize-duration";
 import { LogActionCalls, onlyForKnownUsers, transformMsg } from "./decorators";
 import { applyLang, tgLangCodeToLang } from "../lib_helpers/i18n";
@@ -133,12 +133,12 @@ export class Actions extends DevActions {
     let isValidDeltaTime = true;
     let deltaTimesLeft = STAGE_1_STEPS - msg.user.minDeltaTimesInitial.length;
     // to ignore if user clicking too often
-    if (deltaTime < STAGE_1_MIN) {
-      logger.debug(`deltaTime < STAGE_1_MIN, ${deltaTime} < ${STAGE_1_MIN}`);
+    if (deltaTime < MIN_INTERVAL) {
+      logger.debug(`deltaTime < MIN_INTERVAL, ${deltaTime} < ${MIN_INTERVAL}`);
       isValidDeltaTime = false;
       update.tgLastCallTime = msg.user.tgLastCallTime;
       update.lastTime = msg.user.lastTime;
-      const contentProps = { min_stage_1: STAGE_1_MIN, stage_1_left: deltaTimesLeft };
+      const contentProps = { min_stage_1: MIN_INTERVAL, stage_1_left: deltaTimesLeft };
       const buttons = buttonsFor(DialogKey.im_smoking);
       await this._res(msg.chat.id, Content.STAGE_1_IGNORE_MIN, { contentProps, buttons } );
     }

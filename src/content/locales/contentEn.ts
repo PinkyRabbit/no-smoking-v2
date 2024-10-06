@@ -78,10 +78,7 @@ export const contentEn: MultilineContent = {
   [Content.ON_IDLE_START]: DEFAULT,
   [Content.ON_IDLE_END]: DEFAULT,
   // dev
-  [Content.DEV]: `
-    ⚒️ ${B}Development Mode is ON${B} ⚒️${N2} 
-    Select the action:
-  `,
+  [Content.DEV]: `⚒️ ${B}Development Mode is ON${B} ⚒️`,
   [Content.DEV_OFF]: "Dev Mode is Off ⛔️",
   [Content.DEV_USER_DELETED]: "🔮 User Deleted /start",
   [Content.DEV_TO_STAGE_1]: "🔮 Your user was reset to Stage 1",
@@ -89,4 +86,5 @@ export const contentEn: MultilineContent = {
   [Content.DEV_LAST_TIME_MINUS_HOUR]: "🔮 Last time set to 1 hour ago",
   [Content.DEV_STAGE_1_MORE_THAN_MAX]: "🔮 Last time set to more than max value",
   [Content.DEV_TO_IDLE]: "🔮 User switched to Idle mode",
+  [Content.DEV_NEXT]: "🔮 Next smoke break will happen in 1 minute",
 };

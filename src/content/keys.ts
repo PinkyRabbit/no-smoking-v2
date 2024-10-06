@@ -29,4 +29,5 @@ export enum Content {
   DEV_LAST_TIME_MINUS_HOUR = "Dev_Last_Time_Minus_Hour",
   DEV_STAGE_1_MORE_THAN_MAX = "Dev_Last_Time_More_Than_Max",
   DEV_TO_IDLE = "Dev_To_Idle",
+  DEV_NEXT = "Dev_Next",
 }
