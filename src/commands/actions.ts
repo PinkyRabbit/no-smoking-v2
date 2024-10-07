@@ -125,7 +125,7 @@ export class Actions extends DevActions {
       isValidDeltaTime = false;
       update.tgLastCallTime = msg.user.tgLastCallTime;
       update.lastTime = msg.user.lastTime;
-      const contentProps = { min_stage_1: MIN_INTERVAL, stage_1_left: deltaTimesLeft };
+      const contentProps = { min_stage_1: minsToTimeString(MIN_INTERVAL), stage_1_left: deltaTimesLeft };
       await this._res(msg.user, Content.STAGE_1_IGNORE_MIN, contentProps, DialogKey.im_smoking);
     }
     // to skip calculation if delta is too big
@@ -168,12 +168,19 @@ export class Actions extends DevActions {
     /**
      * Stage 2
      */
+    const timeDifferenceMs = msg.ts - msg.user.lastTime;
+    const currentDelta = Math.round(timeDifferenceMs / 60 / 1000); // in minutes
+    logger.debug(`timeDifferenceMs = ${msg.ts} - ${msg.user.lastTime} = ${timeDifferenceMs} (${currentDelta} min)`);
+    // ignore spam
+    if (currentDelta < MIN_INTERVAL) {
+      await this._res(msg.user, Content.STAGE_2_IGNORE_MIN, { min_interval: minsToTimeString(MIN_INTERVAL) });
+      return;
+    }
     const update: Partial<User> = {
       tgLastCallTime: msg.date,
       lastTime: msg.ts,
       nextTime: msg.ts + (msg.user.deltaTime * 60 * 1000),
     };
-    // @TODO: fix LOWER THAN MIN (spam)
     // penalty
     if (msg.ts < msg.user.nextTime) {
       logger.debug(`U-${msg.user.chatId} [penalty] ${tsToDateTime(msg.ts)} < ${tsToDateTime(msg.user.nextTime)}`);
@@ -182,9 +189,6 @@ export class Actions extends DevActions {
       await this._res(msg.user, Content.PENALTY, { penalty });
     }
     // idle
-    const timeDifferenceMs = msg.ts - msg.user.lastTime;
-    const currentDelta = Math.round(timeDifferenceMs / 60 / 1000); // in minutes
-    logger.debug(`timeDifferenceMs = ${msg.ts} - ${msg.user.lastTime} = ${timeDifferenceMs} (${currentDelta} min)`);
     if (currentDelta >= USER_IDLE_TIME) {
       logger.debug(`U-${msg.user.chatId} [idle] ${currentDelta} >= ${USER_IDLE_TIME}`);
       const DIFFICULTY_LEVEL = 1;
