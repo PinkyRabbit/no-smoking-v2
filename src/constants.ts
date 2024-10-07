@@ -6,7 +6,17 @@
 export enum Lang {
   EN = "en",
   RU = "ru",
-};
+}
+
+/**
+ * Constant to define all the available difficulties
+ * @enum {number} Difficulty
+ */
+export enum Difficulty {
+  easy = 0.5,
+  normal = 1,
+  hard = 2,
+}
 
 /**
  * Constant to define all the available content keys

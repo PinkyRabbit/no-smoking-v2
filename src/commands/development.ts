@@ -47,7 +47,6 @@ export class DevActions {
   @onlyForKnownUsers
   public async devResetToStage1(msg: TelegramBot.Message) {
     const update: Partial<User> = {
-      tgLastCallTime: 0,
       lastTime: 0,
       nextTime: 0,
       minDeltaTime: 0,
@@ -68,7 +67,6 @@ export class DevActions {
       minDeltaTimesInitial.push(MIN_INTERVAL + 1);
     }
     const update: Partial<User> = {
-      tgLastCallTime: msg.date - 60 * 60,
       lastTime: Date.now() - (60 * 60 * 1000),
       nextTime: 0,
       minDeltaTimesInitial: minDeltaTimesInitial,
@@ -82,7 +80,6 @@ export class DevActions {
   @onlyForKnownUsers
   public async devLastTimeMinusHour(msg: TelegramBot.Message) {
     const update: Partial<User> = {
-      tgLastCallTime: msg.date - 60 * 60,
       lastTime: Date.now() - (60 * 60 * 1000),
     };
     await UsersRepo.updateUser(msg.chat.id, update);
@@ -95,7 +92,6 @@ export class DevActions {
   public async devStage1MoreThanMax(msg: TelegramBot.Message) {
     const moreThanMax = STAGE_1_MAX + 1;
     const update: Partial<User> = {
-      tgLastCallTime: msg.date - moreThanMax * 60,
       lastTime: Date.now() - (moreThanMax * 60 * 1000),
     };
     await UsersRepo.updateUser(msg.chat.id, update);
@@ -109,7 +105,6 @@ export class DevActions {
     const moreThanMax = USER_IDLE_TIME + 1;
     const lastTime = Date.now() - (moreThanMax * 60 * 1000);
     const update: Partial<User> = {
-      tgLastCallTime: msg.date - moreThanMax * 60,
       lastTime,
       nextTime: lastTime + msg.user.deltaTime * 60 * 1000,
     };
@@ -123,7 +118,6 @@ export class DevActions {
   public async devByTimer(msg: TelegramBot.Message) {
     const validInterval = MIN_INTERVAL + 1;
     const update: Partial<User> = {
-      tgLastCallTime: msg.date - validInterval * 60,
       lastTime: Date.now() - (validInterval * 60 * 1000),
       nextTime: Date.now() - 60 * 1000,
     };

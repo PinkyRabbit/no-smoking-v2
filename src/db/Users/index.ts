@@ -1,18 +1,64 @@
 import monk  from "monk";
 import logger from "../../logger";
 import { RequestOptions } from "../dbOptionsConstructor";
-import { Lang } from "../../constants";
+import { Difficulty, Lang } from "../../constants";
 import { logWithTimestamps } from "../../lib_helpers/logger";
 import { tsToDateTime } from "../../lib_helpers/luxon";
 
 export type User = {
+  /**
+   * @property chatId - Telegram chat id
+   * @type number
+   * id of the user in Telegram
+   */
   chatId: number;
+  /**
+   * @property lang - language code
+   * @type Lang
+   * @default Lang.en
+   * Telegram has own language codes, we have a tgLangCodeToLang mapper
+   * to convert it to our Lang enum
+   */
   lang: Lang;
-  minDeltaTime: number; // minutes, 0 = stage 1
-  minDeltaTimesInitial: number[]; // timestamp Server array
-  deltaTime: number; // minutes
-  tgLastCallTime: number; // Telegram timestamp
-  lastTime: number; // timestamp Server
+  /**
+   * @property timezone - timezone UTC string
+   * @type string | null
+   * @default null
+   * Provided by user, because telegram stores dates in UTC+0
+   */
+  timezone: string | null;
+  /**
+   * @property minDeltaTimesInitial - array of delta times from Stage 1
+   * Is using to calculate initial value for Stage 2 of the new user.
+   * @type number[] - milliseconds
+   * Stage 1: array of delta times
+   * Stage 2: [] - empty array
+   */
+  minDeltaTimesInitial: number[];
+  /**
+   * @property minDeltaTime - minimal delta time.
+   * Is using to know lower limit for penalties.
+   * Also, this is initial value for Stage 2 of the new user.
+   * @type number - minutes
+   * @default 0
+   * Stage 1: 0
+   * Stage 2: value as arithmetic mean of minDeltaTimesInitial
+   */
+  minDeltaTime: number;
+  /**
+   * @property deltaTime - current delta time.
+   * @type number - minutes
+   * @default 0
+   * Stage 1: 0
+   * Stage 2: more or equal to minDeltaTime
+   */
+  deltaTime: number;
+  /**
+   * @property lastTime - timestamp of the last smoking time
+   * @type number - timestamp Server
+   * @default 0
+   */
+  lastTime: number;
   /**
    * @property nextTime - marker for timer-operations
    * @type number - timestamp Server
@@ -20,9 +66,29 @@ export type User = {
    * more than 0 - timestamp Server. Value to check in timer-operations
    */
   nextTime: number;
+  /**
+   * @property difficulty - type of difficulty level
+   * @type Difficulty - enum
+   * Reflects on deltaTime calculation on each Big Interval
+   */
+  difficulty: Difficulty;
+  /**
+   * @property penalty - count of penalties
+   * @type number
+   * Reflects on deltaTime calculation on each Big Interval
+   * Refreshes on each Big Interval
+   */
   penalty: number;
-  startDate: Date | null; // date of stage 1 start
-  endDate: Date | null; // date of stage 2 end
+  /**
+   * @property startDate - to know the day when user starts the journey
+   * @type Date
+   */
+  startDate: Date;
+  /**
+   * @property endDate - to know when user quite of smoking
+   * @type Date | null
+   */
+  endDate: Date | null;
 };
 
 export class UsersRepo extends RequestOptions {
@@ -38,10 +104,11 @@ export class UsersRepo extends RequestOptions {
     const defaultUser: User = {
       chatId,
       lang,
+      timezone: null,
+      difficulty: Difficulty.easy,
       minDeltaTime: 0,
       minDeltaTimesInitial: [],
       deltaTime: 0,
-      tgLastCallTime: 0,
       lastTime: 0,
       nextTime: 0,
       penalty: 0,
