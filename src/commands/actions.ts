@@ -1,8 +1,10 @@
 import TelegramBot from "node-telegram-bot-api";
 import TgBot from "../telegram-bot";
+import { Mixin } from "ts-mixer";
 import { ContentProps, getContent } from "../content";
-import { Content, DialogKey, Lang } from "../constants";
+import { Content, DialogKey } from "../constants";
 import { DevActions } from "./development";
+import { Settings } from "./settings";
 import { User, UsersRepo } from "../db";
 import { MIN_INTERVAL, STAGE_1_MAX, STAGE_1_STEPS, USER_IDLE_TIME } from "./constants";
 import { minsToTimeString } from "../lib_helpers/humanize-duration";
@@ -13,13 +15,12 @@ import logger from "../logger";
 import { getButtons } from "../buttons";
 
 @LogActionCalls
-export class Actions extends DevActions {
+export class Actions extends Mixin(DevActions, Settings) {
   constructor(private bot: TgBot) {
     super();
     this.bot = bot;
     // all "on" methods should be bound with "this"
     this.onStart = this.onStart.bind(this);
-    this.onLang = this.onLang.bind(this);
     this.onUserUnknown = this.onUserUnknown.bind(this);
   }
 
@@ -79,26 +80,6 @@ export class Actions extends DevActions {
   public async toStage1(msg: TelegramBot.Message) {
     await this._res(msg.user, Content.STAGE_1, {}, DialogKey.im_smoking);
   };
-
-  /**
-   * Language
-   */
-  @transformMsg
-  @onlyForKnownUsers
-  public async onLang(msg: TelegramBot.Message) {
-    await this._res(msg.user, Content.LANG, {}, DialogKey.lang);
-  }
-
-  @transformMsg
-  @onlyForKnownUsers
-  public async changeLanguageHandler(msg: TelegramBot.Message, lang: Lang) {
-    await UsersRepo.updateUser(msg.chat.id, { lang });
-    msg.user.lang = lang;
-    await this._res(msg.user, Content.LANG_APPLIED);
-    if (!msg.user.minDeltaTime && !msg.user.minDeltaTimesInitial.length) {
-      await this.onStart(msg);
-    }
-  }
 
   /**
    * Stage 1
