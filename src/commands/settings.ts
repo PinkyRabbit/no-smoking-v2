@@ -1,13 +1,12 @@
 import TelegramBot from "node-telegram-bot-api";
 import { onlyForKnownUsers, transformMsg } from "./decorators";
-import { Content, DialogKey, Lang } from "../constants";
+import { Content, DialogKey, Difficulty, Lang } from "../constants";
+import { difficultyNameByLevel, isValidTimezoneCheck } from "../helpers";
 import { UsersRepo } from "../db";
 import logger from "../logger";
 
 export class Settings {
-  constructor() {
-    this.onLang = this.onLang.bind(this);
-  }
+  constructor() {}
 
   /**
    * @see {import('./actions').Actions#_res}
@@ -15,6 +14,15 @@ export class Settings {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   protected _res(...args: unknown[]): Promise<void> {
     logger.error("Method this._res is not implemented");
+    return Promise.resolve();
+  }
+
+  /**
+   * @see {import('./actions').Actions#_image}
+   */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  protected _image(...args: unknown[]): Promise<void> {
+    logger.error("Method this._image is not implemented");
     return Promise.resolve();
   }
 
@@ -48,15 +56,44 @@ export class Settings {
   }
 
   /**
+   * Level
+   */
+  @transformMsg
+  @onlyForKnownUsers
+  public async onLevel(msg: TelegramBot.Message) {
+    await this._res(msg.user, Content.DIFFICULTY, {}, DialogKey.difficulty);
+  }
+
+  @transformMsg
+  @onlyForKnownUsers
+  public async changeLevelHandler(msg: TelegramBot.Message, difficulty: Difficulty) {
+    await UsersRepo.updateUser(msg.chat.id, { difficulty });
+    const difficultyName = difficultyNameByLevel(msg.user.lang, difficulty);
+    await this._res(msg.user, Content.DIFFICULTY_SELECTED, { difficulty: difficultyName });
+  }
+
+  /**
    * Timezone
    */
   @transformMsg
   @onlyForKnownUsers
+  public async onTimezone(msg: TelegramBot.Message) {
+    await UsersRepo.updateUser(msg.chat.id, { timezone: null });
+    await this._image(msg.user, "timezone.jpg", "Timezone with Google");
+    await this._res(msg.user, Content.TIMEZONE);
+  }
+
+  @transformMsg
+  @onlyForKnownUsers
   public async onMessage(msg: TelegramBot.Message) {
-    if (msg.user.timezone || !/^([a-z]+-?)+$/i.test(msg.text!)) {
+    if (msg.user.timezone) {
       return Promise.resolve();
     }
-    // const locations = await node_geocoder.geocode(cityName);
-
+    const text = msg.text!.trim();
+    if (isValidTimezoneCheck(text)) {
+      const timezone = text;
+      await UsersRepo.updateUser(msg.chat.id, { timezone });
+      await this._res(msg.user, Content.TIMEZONE_SELECTED, { timezone });
+    }
   }
 }

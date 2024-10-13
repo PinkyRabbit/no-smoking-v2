@@ -50,6 +50,13 @@ const selectButtonsByKey = (key: DialogKey, locale: Lang): InlineKeyboard => {
       [{ text: i18n.__({ phrase: BTN.Reset_Stage_1, locale }), callback_data: Callback.reset_to_stage_1 }],
     ];
   }
+  if (key === DialogKey.difficulty) {
+    return [
+      [{ text: i18n.__({ phrase: BTN.Level_Easy, locale }), callback_data: Callback.Level_Easy }],
+      [{ text: i18n.__({ phrase: BTN.Level_Medium, locale }), callback_data: Callback.Level_Medium }],
+      [{ text: i18n.__({ phrase: BTN.Level_Hard, locale }), callback_data: Callback.Level_Hard }],
+    ];
+  }
   if (key === DialogKey.dev) {
     return [
       [

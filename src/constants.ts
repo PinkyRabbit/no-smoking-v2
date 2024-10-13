@@ -13,9 +13,9 @@ export enum Lang {
  * @enum {number} Difficulty
  */
 export enum Difficulty {
-  easy = 0.5,
-  normal = 1,
-  hard = 2,
+  EASY = 0.5,
+  MEDIUM = 1,
+  HARD = 2,
 }
 
 /**
@@ -47,6 +47,14 @@ export enum Content {
   TIME_FOR_A_SMOKE = "Time_For_a_Smoke",
   ON_IDLE_START = "On_Idle_Start",
   ON_IDLE_END = "On_Idle_End",
+  DIFFICULTY = "difficulty",
+  DIFFICULTY_SELECTED = "difficulty_selected",
+  DIFFICULTY_EASY = "difficulty_simple",
+  DIFFICULTY_MEDIUM = "difficulty_normal",
+  DIFFICULTY_HARD = "difficulty_hard",
+  TIMEZONE = "timezone",
+  TIMEZONE_INTRO = "timezone_select",
+  TIMEZONE_SELECTED = "timezone_selected",
   // TEST
   DEV = "Dev",
   DEV_OFF = "Dev_Off",
@@ -71,4 +79,5 @@ export enum DialogKey {
   im_smoking = "im_smoking",
   start_existing = "start_existing",
   dev = "dev",
+  difficulty = "difficulty",
 }

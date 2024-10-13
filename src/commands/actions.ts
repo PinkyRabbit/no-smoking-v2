@@ -1,5 +1,6 @@
 import TelegramBot from "node-telegram-bot-api";
 import TgBot from "../telegram-bot";
+import { join as pathJoin } from "path";
 import { Mixin } from "ts-mixer";
 import { ContentProps, getContent } from "../content";
 import { Content, DialogKey } from "../constants";
@@ -21,6 +22,10 @@ export class Actions extends Mixin(DevActions, Settings) {
     this.bot = bot;
     // all "on" methods should be bound with "this"
     this.onStart = this.onStart.bind(this);
+    this.onLevel = this.onLevel.bind(this);
+    this.onLang = this.onLang.bind(this);
+    this.onTimezone = this.onTimezone.bind(this);
+    this.onMessage = this.onMessage.bind(this);
     this.onUserUnknown = this.onUserUnknown.bind(this);
   }
 
@@ -38,6 +43,27 @@ export class Actions extends Mixin(DevActions, Settings) {
         logger.info(`U-${user.chatId} -> ${contentKey} ${contentPropsString}`);
         this.bot.sendToUser(user, contentKey, contentProps, dialogKey).catch((err) => reject(err));
         resolve();
+      }, 400);
+    });
+  }
+
+  /**
+   * Method to send an image
+   * @protected
+   */
+  protected override _image(
+    user: User,
+    fileName: string,
+    caption: string
+  ): Promise<void> {
+    const path = pathJoin(__dirname, `../../images/${fileName}`);
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        this.bot.sendPhoto(user.chatId, path, { caption })
+          .catch((error) => {
+            logger.error(`U-${user.chatId} -> Can't send an image ${path}`, { error });
+          })
+          .finally(() => resolve());
       }, 400);
     });
   }
@@ -133,8 +159,10 @@ export class Actions extends Mixin(DevActions, Settings) {
       update.nextTime = msg.ts + (stage1DeltaAvg * 60 * 1000);
       const contentProps = { delta_time: minsToTimeString(stage1DeltaAvg, msg.user.lang) };
       await this._res(msg.user, Content.STAGE_1_END, contentProps);
-      const time_to_get_smoke = secToTime(msg.date + (stage1DeltaAvg * 60));
-      await this._res(msg.user, Content.STAGE_2_INITIAL,  { time_to_get_smoke }, DialogKey.im_smoking);
+      await this._res(msg.user, Content.TIMEZONE_INTRO);
+      await this._res(msg.user, Content.TIMEZONE);
+      // const time_to_get_smoke = secToTime(msg.date + (stage1DeltaAvg * 60));
+      // await this._res(msg.user, Content.STAGE_2_INITIAL,  { time_to_get_smoke }, DialogKey.im_smoking);
     }
     UsersRepo.updateUser(msg.chat.id, update);
   }

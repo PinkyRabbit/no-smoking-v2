@@ -4,13 +4,16 @@ import logger from "../logger";
 import { BotEvent } from "./keys";
 import { Callback } from "../buttons/keys";
 import { Actions } from "./actions";
-import { Lang } from "../constants";
+import { Difficulty, Lang } from "../constants";
 
 export const botActionsInit = (bot: TgBot) => {
   const act = new Actions(bot);
-  bot.on(BotEvent.Message, () => Promise.resolve());
+  bot.on(BotEvent.Message, act.onMessage);
   bot.onText(BotEvent.Start, act.onStart);
+  bot.onText(BotEvent.Help, act.onStart);
   bot.onText(BotEvent.SelectLanguage, act.onLang);
+  bot.onText(BotEvent.SelectLevel, act.onLevel);
+  bot.onText(BotEvent.SelectTimezone, act.onTimezone);
   bot.onText(BotEvent.Dev, act.onDev);
   bot.on(BotEvent.Callback, (callbackQuery: CallbackQuery) => {
     const callbackType = callbackQuery.data as Callback;
@@ -33,6 +36,15 @@ export const botActionsInit = (bot: TgBot) => {
         break;
       case Callback.lang_en:
         act.changeLanguageHandler(message, Lang.EN);
+        break;
+      case Callback.Level_Easy:
+        act.changeLevelHandler(message, Difficulty.EASY);
+        break;
+      case Callback.Level_Medium:
+        act.changeLevelHandler(message, Difficulty.MEDIUM);
+        break;
+      case Callback.Level_Hard:
+        act.changeLevelHandler(message, Difficulty.HARD);
         break;
       case Callback.reset_ignore:
         act.resetIgnoreHandler(message);

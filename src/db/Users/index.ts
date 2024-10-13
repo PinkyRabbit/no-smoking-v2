@@ -71,7 +71,7 @@ export type User = {
    * @type Difficulty - enum
    * Reflects on deltaTime calculation on each Big Interval
    */
-  difficulty: Difficulty;
+  difficulty: Difficulty | null;
   /**
    * @property penalty - count of penalties
    * @type number
@@ -105,7 +105,7 @@ export class UsersRepo extends RequestOptions {
       chatId,
       lang,
       timezone: null,
-      difficulty: Difficulty.easy,
+      difficulty: null,
       minDeltaTime: 0,
       minDeltaTimesInitial: [],
       deltaTime: 0,
