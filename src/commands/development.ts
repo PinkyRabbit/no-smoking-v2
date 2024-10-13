@@ -10,10 +10,7 @@ import { STAGE_1_MAX, MIN_INTERVAL, STAGE_1_STEPS, USER_IDLE_TIME } from "./cons
  * @remark This class should be inherited by Actions class
  */
 export class DevActions {
-  constructor() {
-    this.onDev = this.onDev.bind(this);
-    this.devModeDisabled = this.devModeDisabled.bind(this);
-  }
+  constructor() {}
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   protected _res(...args: unknown[]): Promise<void> {

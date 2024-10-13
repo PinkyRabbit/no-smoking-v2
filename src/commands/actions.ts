@@ -27,6 +27,8 @@ export class Actions extends Mixin(DevActions, Settings) {
     this.onTimezone = this.onTimezone.bind(this);
     this.onMessage = this.onMessage.bind(this);
     this.onUserUnknown = this.onUserUnknown.bind(this);
+    this.onDev = this.onDev.bind(this);
+    this.devModeDisabled = this.devModeDisabled.bind(this);
   }
 
   protected override _res(
@@ -156,13 +158,15 @@ export class Actions extends Mixin(DevActions, Settings) {
       update.minDeltaTimesInitial = [];
       update.minDeltaTime = stage1DeltaAvg;
       update.deltaTime = stage1DeltaAvg;
-      update.nextTime = msg.ts + (stage1DeltaAvg * 60 * 1000);
+      // update.nextTime = msg.ts + (stage1DeltaAvg * 60 * 1000);
       const contentProps = { delta_time: minsToTimeString(stage1DeltaAvg, msg.user.lang) };
       await this._res(msg.user, Content.STAGE_1_END, contentProps);
-      await this._res(msg.user, Content.TIMEZONE_INTRO);
-      await this._res(msg.user, Content.TIMEZONE);
+      await this._res(msg.user, Content.SETTINGS);
+      return this.onTimezone(msg, update);
       // const time_to_get_smoke = secToTime(msg.date + (stage1DeltaAvg * 60));
       // await this._res(msg.user, Content.STAGE_2_INITIAL,  { time_to_get_smoke }, DialogKey.im_smoking);
+      // await this._res(msg.user, Content.TIMEZONE_INTRO);
+      // await this._res(msg.user, Content.TIMEZONE);
     }
     UsersRepo.updateUser(msg.chat.id, update);
   }

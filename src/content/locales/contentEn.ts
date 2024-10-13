@@ -87,6 +87,8 @@ export const contentEn: MultilineContent = {
   [Content.TIMEZONE]: DEFAULT,
   [Content.TIMEZONE_INTRO]: DEFAULT,
   [Content.TIMEZONE_SELECTED]: DEFAULT,
+  [Content.SETTINGS]: DEFAULT,
+  [Content.SETTINGS_DONE]: DEFAULT,
   // dev
   [Content.DEV]: `⚒️ ${B}Development Mode is ON${B} ⚒️`,
   [Content.DEV_OFF]: "Dev Mode is Off ⛔️",

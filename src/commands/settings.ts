@@ -2,7 +2,7 @@ import TelegramBot from "node-telegram-bot-api";
 import { onlyForKnownUsers, transformMsg } from "./decorators";
 import { Content, DialogKey, Difficulty, Lang } from "../constants";
 import { difficultyNameByLevel, isValidTimezoneCheck } from "../helpers";
-import { UsersRepo } from "../db";
+import { User, UsersRepo } from "../db";
 import logger from "../logger";
 
 export class Settings {
@@ -77,10 +77,10 @@ export class Settings {
    */
   @transformMsg
   @onlyForKnownUsers
-  public async onTimezone(msg: TelegramBot.Message) {
-    await UsersRepo.updateUser(msg.chat.id, { timezone: null });
-    await this._image(msg.user, "timezone.jpg", "Timezone with Google");
+  public async onTimezone(msg: TelegramBot.Message, update: Partial<User> = {}) {
+    await UsersRepo.updateUser(msg.chat.id, { ...update, timezone: null });
     await this._res(msg.user, Content.TIMEZONE);
+    await this._image(msg.user, "timezone.jpg", "Timezone with Google");
   }
 
   @transformMsg
