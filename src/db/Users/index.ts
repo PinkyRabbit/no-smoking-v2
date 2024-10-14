@@ -1,9 +1,10 @@
 import monk  from "monk";
+import { Message } from "node-telegram-bot-api";
 import logger from "../../logger";
 import { RequestOptions } from "../dbOptionsConstructor";
 import { Difficulty, Lang } from "../../constants";
 import { logWithTimestamps } from "../../lib_helpers/logger";
-import { tsToDateTime } from "../../lib_helpers/luxon";
+import { gmtToUtc, isValidTimeZoneCheck, tsToDateTime } from "../../lib_helpers/luxon";
 
 export type User = {
   /**
@@ -22,11 +23,12 @@ export type User = {
   lang: Lang;
   /**
    * @property timezone - timezone UTC string
-   * @type string | null
-   * @default null
-   * Provided by user, because telegram stores dates in UTC+0
+   * @type string | undefined
+   * @default undefined
+   * @default undefined
+   * Computed, based on value, provided by user
    */
-  timezone: string | null;
+  timezone: string | undefined;
   /**
    * @property minDeltaTimesInitial - array of delta times from Stage 1
    * Is using to calculate initial value for Stage 2 of the new user.
@@ -104,7 +106,7 @@ export class UsersRepo extends RequestOptions {
     const defaultUser: User = {
       chatId,
       lang,
-      timezone: null,
+      timezone: undefined,
       difficulty: null,
       minDeltaTime: 0,
       minDeltaTimesInitial: [],
@@ -118,10 +120,27 @@ export class UsersRepo extends RequestOptions {
     return that.Users.insert(defaultUser);
   }
 
-  static updateUser(chatId: number, update: Partial<User>) {
+  static async updateUser(msg: Message, update: Partial<User>) {
+    const chatId = msg.user.chatId;
     logWithTimestamps(`U-${chatId} [update]`, update);
     const that = new UsersRepo();
-    return that.Users.update({ chatId }, { $set: update });
+    await that.Users.update({ chatId }, { $set: update });
+    Object.entries(update).forEach(([key, value]) => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      msg.user[key] = value;
+    });
+  }
+
+  static setTimezone(msg: Message, timezone: string) {
+    const isValidTimezone = isValidTimeZoneCheck(timezone);
+    if (isValidTimezone) {
+      const update: Partial<User> = { timezone };
+      return UsersRepo.updateUser(msg, update);
+    }
+    const gmtFormatValue = gmtToUtc(timezone);
+    const update: Partial<User> = { timezone: gmtFormatValue };
+    return UsersRepo.updateUser(msg, update);
   }
 
   static removeUser(chatId: number) {

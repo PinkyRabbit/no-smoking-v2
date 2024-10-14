@@ -3,7 +3,7 @@ import { ButtonNames } from "./types";
 
 export const buttonsEn: ButtonNames = {
   [BTN.CallStart]: "/start",
-  [BTN.Beginning]: "Начинаем!",
+  [BTN.Beginning]: "Let's Get it Started!",
   [BTN.Im_Smoking]: "I'm Smoking 🚬",
   [BTN.Lang_RU]: "RU 🇷🇺",
   [BTN.Lang_EN]: "EN 🇬🇧",

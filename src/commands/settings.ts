@@ -1,13 +1,12 @@
 import TelegramBot from "node-telegram-bot-api";
 import { onlyForKnownUsers, transformMsg } from "./decorators";
 import { Content, DialogKey, Difficulty, Lang } from "../constants";
-import { difficultyNameByLevel, isValidTimezoneCheck } from "../helpers";
-import { User, UsersRepo } from "../db";
+import { getNextSmokingTime } from "../lib_helpers/luxon";
+import { difficultyNameByLevel } from "../helpers";
+import { UsersRepo } from "../db";
 import logger from "../logger";
 
 export class Settings {
-  constructor() {}
-
   /**
    * @see {import('./actions').Actions#_res}
    */
@@ -47,8 +46,7 @@ export class Settings {
   @transformMsg
   @onlyForKnownUsers
   public async changeLanguageHandler(msg: TelegramBot.Message, lang: Lang) {
-    await UsersRepo.updateUser(msg.chat.id, { lang });
-    msg.user.lang = lang;
+    await UsersRepo.updateUser(msg, { lang });
     await this._res(msg.user, Content.LANG_APPLIED);
     if (!msg.user.minDeltaTime && !msg.user.minDeltaTimesInitial.length) {
       await this.onStart(msg);
@@ -67,9 +65,13 @@ export class Settings {
   @transformMsg
   @onlyForKnownUsers
   public async changeLevelHandler(msg: TelegramBot.Message, difficulty: Difficulty) {
-    await UsersRepo.updateUser(msg.chat.id, { difficulty });
+    await UsersRepo.updateUser(msg, { difficulty });
     const difficultyName = difficultyNameByLevel(msg.user.lang, difficulty);
     await this._res(msg.user, Content.DIFFICULTY_SELECTED, { difficulty: difficultyName });
+    if (!msg.user.timezone) {
+      return this.onTimezone(msg);
+    }
+    return this.onSettingsDone(msg);
   }
 
   /**
@@ -77,23 +79,55 @@ export class Settings {
    */
   @transformMsg
   @onlyForKnownUsers
-  public async onTimezone(msg: TelegramBot.Message, update: Partial<User> = {}) {
-    await UsersRepo.updateUser(msg.chat.id, { ...update, timezone: null });
+  public async onTimezone(msg: TelegramBot.Message) {
+    await UsersRepo.updateUser(msg, { timezone: undefined });
     await this._res(msg.user, Content.TIMEZONE);
     await this._image(msg.user, "timezone.jpg", "Timezone with Google");
   }
 
   @transformMsg
-  @onlyForKnownUsers
   public async onMessage(msg: TelegramBot.Message) {
+    // not for new users
+    if (!msg.user) {
+      return Promise.resolve();
+    }
+    // not for Stage 1 users
+    if (!msg.user.minDeltaTime) {
+      return Promise.resolve();
+    }
+    // not for users with timezone
     if (msg.user.timezone) {
       return Promise.resolve();
     }
-    const text = msg.text!.trim();
-    if (isValidTimezoneCheck(text)) {
-      const timezone = text;
-      await UsersRepo.updateUser(msg.chat.id, { timezone });
-      await this._res(msg.user, Content.TIMEZONE_SELECTED, { timezone });
+    // difficulty level should be set before timezone
+    if (!msg.user.difficulty && !msg.user.timezone) {
+      return Promise.resolve();
     }
+    try {
+      await UsersRepo.setTimezone(msg, msg.text!.trim());
+    } catch(error) {
+      logger.debug("Save timezone error", error);
+      await this._res(msg.user, Content.TIMEZONE_INVALID);
+      return Promise.resolve();
+    }
+    await this._res(msg.user, Content.TIMEZONE_SELECTED, { timezone: msg.text });
+    if (!msg.user.difficulty) {
+      return this.onLevel(msg);
+    }
+    return this.onSettingsDone(msg);
+  }
+
+  /**
+   * When everything is set up
+   * @private
+   */
+  private async onSettingsDone(msg: TelegramBot.Message) {
+    await this._res(msg.user, Content.SETTINGS_DONE);
+    if (msg.user.nextTime || !msg.user.timezone) {
+      logger.error("Incorrect call of onSettingsDone");
+      return;
+    }
+    const time_to_get_smoke = getNextSmokingTime(msg);
+    await this._res(msg.user, Content.STAGE_2_INITIAL,  { time_to_get_smoke }, DialogKey.im_smoking);
   }
 }

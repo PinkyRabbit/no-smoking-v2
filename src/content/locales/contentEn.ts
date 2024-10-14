@@ -87,6 +87,7 @@ export const contentEn: MultilineContent = {
   [Content.TIMEZONE]: DEFAULT,
   [Content.TIMEZONE_INTRO]: DEFAULT,
   [Content.TIMEZONE_SELECTED]: DEFAULT,
+  [Content.TIMEZONE_INVALID]: DEFAULT,
   [Content.SETTINGS]: DEFAULT,
   [Content.SETTINGS_DONE]: DEFAULT,
   // dev

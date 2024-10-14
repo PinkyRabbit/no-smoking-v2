@@ -11,7 +11,7 @@ import { MIN_INTERVAL, STAGE_1_MAX, STAGE_1_STEPS, USER_IDLE_TIME } from "./cons
 import { minsToTimeString } from "../lib_helpers/humanize-duration";
 import { LogActionCalls, onlyForKnownUsers, transformMsg } from "./decorators";
 import { tgLangCodeToLang } from "../lib_helpers/i18n";
-import { secToTime, tsToDateTime } from "../lib_helpers/luxon";
+import { getNextSmokingTime, tsToDateTime } from "../lib_helpers/luxon";
 import logger from "../logger";
 import { getButtons } from "../buttons";
 
@@ -116,13 +116,11 @@ export class Actions extends Mixin(DevActions, Settings) {
     const update: Partial<User> = {
       lastTime: msg.ts,
     };
-    // @FIXME:
-    // if (!msg.user.tgLastCallTime) {
-    //   update.minDeltaTimesInitial = [msg.ts];
-    //   await UsersRepo.updateUser(msg.chat.id, update);
-    //   await this._res(msg.user, Content.FIRST_STEP, { stage_1_left: STAGE_1_STEPS - 1 }, DialogKey.im_smoking);
-    //   return;
-    // }
+    if (!msg.user.lastTime) {
+      await UsersRepo.updateUser(msg, update);
+      await this._res(msg.user, Content.FIRST_STEP, { stage_1_left: STAGE_1_STEPS }, DialogKey.im_smoking);
+      return;
+    }
     const timeDifferenceMs = msg.ts - msg.user.lastTime;
     const deltaTime = Math.round(timeDifferenceMs / 60 / 1000); // in minutes
     logger.debug(`timeDifferenceMs = ${msg.ts} - ${msg.user.lastTime} = ${timeDifferenceMs} (${deltaTime} min)`);
@@ -151,24 +149,22 @@ export class Actions extends Mixin(DevActions, Settings) {
     if (isValidDeltaTime && deltaTimesLeft > 0) {
       await this._res(msg.user, Content.STAGE_1_PROCESSING, { stage_1_left: deltaTimesLeft }, DialogKey.im_smoking);
     }
-    if (isValidDeltaTime && deltaTimesLeft < 1) {
-      const summaryStage1Delta = update.minDeltaTimesInitial!.reduce((a, b) => a + b, 0);
-      const stage1DeltaCount = update.minDeltaTimesInitial!.length;
-      const stage1DeltaAvg = Math.round(summaryStage1Delta / stage1DeltaCount);
-      update.minDeltaTimesInitial = [];
-      update.minDeltaTime = stage1DeltaAvg;
-      update.deltaTime = stage1DeltaAvg;
-      // update.nextTime = msg.ts + (stage1DeltaAvg * 60 * 1000);
-      const contentProps = { delta_time: minsToTimeString(stage1DeltaAvg, msg.user.lang) };
-      await this._res(msg.user, Content.STAGE_1_END, contentProps);
-      await this._res(msg.user, Content.SETTINGS);
-      return this.onTimezone(msg, update);
-      // const time_to_get_smoke = secToTime(msg.date + (stage1DeltaAvg * 60));
-      // await this._res(msg.user, Content.STAGE_2_INITIAL,  { time_to_get_smoke }, DialogKey.im_smoking);
-      // await this._res(msg.user, Content.TIMEZONE_INTRO);
-      // await this._res(msg.user, Content.TIMEZONE);
+    if (!isValidDeltaTime || deltaTimesLeft > 0) {
+      await UsersRepo.updateUser(msg, update);
+      return;
     }
-    UsersRepo.updateUser(msg.chat.id, update);
+    // on complete
+    const summaryStage1Delta = update.minDeltaTimesInitial!.reduce((a, b) => a + b, 0);
+    const stage1DeltaCount = update.minDeltaTimesInitial!.length;
+    const stage1DeltaAvg = Math.round(summaryStage1Delta / stage1DeltaCount);
+    update.minDeltaTimesInitial = [];
+    update.minDeltaTime = stage1DeltaAvg;
+    update.deltaTime = stage1DeltaAvg;
+    const contentProps = { delta_time: minsToTimeString(stage1DeltaAvg, msg.user.lang) };
+    await this._res(msg.user, Content.STAGE_1_END, contentProps);
+    await this._res(msg.user, Content.SETTINGS);
+    await UsersRepo.updateUser(msg, update);
+    return this.onLevel(msg);
   }
 
   @transformMsg
@@ -213,7 +209,7 @@ export class Actions extends Mixin(DevActions, Settings) {
       content.push(getContent(msg.user.lang, Content.ON_IDLE_END, {
         prev_delta: minsToTimeString(msg.user.deltaTime, msg.user.lang),
         new_delta: minsToTimeString(newDelta, msg.user.lang),
-        time_to_get_smoke: secToTime(msg.date + (newDelta * 60)),
+        time_to_get_smoke: getNextSmokingTime(msg, newDelta),
         penalty: minsToTimeString(msg.user.penalty, msg.user.lang),
         step: minsToTimeString(DIFFICULTY_LEVEL, msg.user.lang),
       }));
@@ -223,11 +219,11 @@ export class Actions extends Mixin(DevActions, Settings) {
     }
     // normal stage 2
     if (currentDelta < USER_IDLE_TIME) {
-      const time_to_get_smoke = secToTime(msg.date + (msg.user.deltaTime * 60));
+      const time_to_get_smoke = getNextSmokingTime(msg);
       await this._res(msg.user, Content.STAGE_2, { time_to_get_smoke }, DialogKey.im_smoking);
     }
     // update user
-    await UsersRepo.updateUser(msg.chat.id, update);
+    await UsersRepo.updateUser(msg, update);
   }
 
   /**
@@ -236,7 +232,7 @@ export class Actions extends Mixin(DevActions, Settings) {
   @transformMsg
   @onlyForKnownUsers
   public async resetIgnoreHandler(msg: TelegramBot.Message) {
-    await UsersRepo.updateUser(msg.chat.id, {
+    await UsersRepo.updateUser(msg, {
       lastTime: 0,
       nextTime: 0,
     });
@@ -247,7 +243,7 @@ export class Actions extends Mixin(DevActions, Settings) {
   @transformMsg
   @onlyForKnownUsers
   public async resetToStage1Handler(msg: TelegramBot.Message) {
-    await UsersRepo.updateUser(msg.chat.id, {
+    await UsersRepo.updateUser(msg, {
       lastTime: 0,
       nextTime: 0,
       deltaTime: 0,
@@ -261,7 +257,7 @@ export class Actions extends Mixin(DevActions, Settings) {
   @transformMsg
   @onlyForKnownUsers
   public async resetToStage2Handler(msg: TelegramBot.Message) {
-    await UsersRepo.updateUser(msg.chat.id, {
+    await UsersRepo.updateUser(msg, {
       lastTime: 0,
       nextTime: 0,
       deltaTime: msg.user.minDeltaTime,

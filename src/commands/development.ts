@@ -4,14 +4,16 @@ import { Content, DialogKey } from "../constants";
 import { devModeOnly, onlyForKnownUsers, transformMsg } from "./decorators";
 import { User, UsersRepo } from "../db";
 import { STAGE_1_MAX, MIN_INTERVAL, STAGE_1_STEPS, USER_IDLE_TIME } from "./constants";
+import { dateNow } from "../lib_helpers/luxon";
 
 /**
  * Class for development actions
  * @remark This class should be inherited by Actions class
  */
 export class DevActions {
-  constructor() {}
-
+  /**
+   * @see {import('./actions').Actions#_res}
+   */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   protected _res(...args: unknown[]): Promise<void> {
     logger.error("Method this._res is not implemented");
@@ -48,8 +50,10 @@ export class DevActions {
       nextTime: 0,
       minDeltaTime: 0,
       minDeltaTimesInitial: [],
+      timezone: undefined,
+      difficulty: null,
     };
-    await UsersRepo.updateUser(msg.chat.id, update);
+    await UsersRepo.updateUser(msg, update);
     await this._res(msg.user, Content.DEV_TO_STAGE_1);
   }
 
@@ -64,11 +68,11 @@ export class DevActions {
       minDeltaTimesInitial.push(MIN_INTERVAL + 1);
     }
     const update: Partial<User> = {
-      lastTime: Date.now() - (60 * 60 * 1000),
+      lastTime: dateNow() - (60 * 60 * 1000),
       nextTime: 0,
       minDeltaTimesInitial: minDeltaTimesInitial,
     };
-    await UsersRepo.updateUser(msg.chat.id, update);
+    await UsersRepo.updateUser(msg, update);
     await this._res(msg.user, Content.DEV_FILL_STAGE_1, { stepsAdded });
   }
 
@@ -79,7 +83,7 @@ export class DevActions {
     const update: Partial<User> = {
       lastTime: Date.now() - (60 * 60 * 1000),
     };
-    await UsersRepo.updateUser(msg.chat.id, update);
+    await UsersRepo.updateUser(msg, update);
     await this._res(msg.user, Content.DEV_LAST_TIME_MINUS_HOUR);
   }
 
@@ -91,7 +95,7 @@ export class DevActions {
     const update: Partial<User> = {
       lastTime: Date.now() - (moreThanMax * 60 * 1000),
     };
-    await UsersRepo.updateUser(msg.chat.id, update);
+    await UsersRepo.updateUser(msg, update);
     await this._res(msg.user, Content.DEV_STAGE_1_MORE_THAN_MAX);
   }
 
@@ -105,7 +109,7 @@ export class DevActions {
       lastTime,
       nextTime: lastTime + msg.user.deltaTime * 60 * 1000,
     };
-    await UsersRepo.updateUser(msg.chat.id, update);
+    await UsersRepo.updateUser(msg, update);
     await this._res(msg.user, Content.DEV_TO_IDLE);
   }
 
@@ -118,7 +122,7 @@ export class DevActions {
       lastTime: Date.now() - (validInterval * 60 * 1000),
       nextTime: Date.now() - 60 * 1000,
     };
-    await UsersRepo.updateUser(msg.chat.id, update);
+    await UsersRepo.updateUser(msg, update);
     await this._res(msg.user, Content.DEV_NEXT);
   }
 }
