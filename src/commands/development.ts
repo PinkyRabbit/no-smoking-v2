@@ -1,6 +1,6 @@
 import TelegramBot from "node-telegram-bot-api";
 import logger from "../logger";
-import { Content, DialogKey } from "../constants";
+import { Content, DialogKey, Difficulty } from "../constants";
 import { dateNow } from "../lib_helpers/luxon";
 import { User, UsersRepo } from "../db";
 import { devModeOnly, onlyForKnownUsers, transformMsg } from "./decorators";
@@ -51,7 +51,7 @@ export class DevActions {
       minDeltaTime: 0,
       minDeltaTimesInitial: [],
       timezone: undefined,
-      difficulty: null,
+      difficulty: Difficulty.DOESNT_SET,
     };
     await UsersRepo.updateUser(msg, update);
     await this._res(msg.user, Content.DEV_TO_STAGE_1);
@@ -82,6 +82,7 @@ export class DevActions {
   public async devLastTimeMinusHour(msg: TelegramBot.Message) {
     const update: Partial<User> = {
       lastTime: dateNow() - (60 * 60 * 1000),
+      nextTime: dateNow() - 1,
     };
     await UsersRepo.updateUser(msg, update);
     await this._res(msg.user, Content.DEV_LAST_TIME_MINUS_HOUR);

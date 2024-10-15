@@ -198,15 +198,15 @@ export class Actions extends Mixin(DevActions, Settings) {
     // penalty
     if (msg.ts < msg.user.nextTime) {
       logger.debug(`U-${msg.user.chatId} [penalty] ${tsToDateTime(msg.ts)} < ${tsToDateTime(msg.user.nextTime)}`);
-      const penalty = msg.user.penalty + 1;
+      const penalty = ((msg.user.penalty * 10) + (msg.user.difficulty * 10)) / 10;
       update.penalty = penalty;
       await this._res(msg.user, Content.PENALTY, { penalty });
     }
     // idle
     if (currentDelta >= USER_IDLE_TIME) {
       logger.debug(`U-${msg.user.chatId} [idle] ${currentDelta} >= ${USER_IDLE_TIME}`);
-      const DIFFICULTY_LEVEL = 1;
-      const newDelta = msg.user.deltaTime + DIFFICULTY_LEVEL - msg.user.penalty;
+      const { deltaTime, difficulty, penalty } = msg.user;
+      const newDelta = ((deltaTime * 10)  + (difficulty * 10) - (penalty * 10)) / 10;
       const newNextTime = msg.ts + (newDelta * 60 * 1000);
       update.penalty = 0;
       update.deltaTime = newDelta;
@@ -214,11 +214,11 @@ export class Actions extends Mixin(DevActions, Settings) {
       const content: string[] = [];
       content.push(getContent(msg.user.lang, Content.ON_IDLE_START));
       content.push(getContent(msg.user.lang, Content.ON_IDLE_END, {
-        prev_delta: minsToTimeString(msg.user.deltaTime, msg.user.lang),
+        prev_delta: minsToTimeString(deltaTime, msg.user.lang),
         new_delta: minsToTimeString(newDelta, msg.user.lang),
         time_to_get_smoke: getNextSmokingTime(msg, newDelta),
-        penalty: minsToTimeString(msg.user.penalty, msg.user.lang),
-        step: minsToTimeString(DIFFICULTY_LEVEL, msg.user.lang),
+        penalty: minsToTimeString(penalty, msg.user.lang),
+        step: minsToTimeString(difficulty, msg.user.lang),
       }));
       const { reply_markup } = getButtons(msg.user.lang, DialogKey.im_smoking);
       const ops: TelegramBot.SendMessageOptions = { parse_mode: "Markdown", reply_markup };
