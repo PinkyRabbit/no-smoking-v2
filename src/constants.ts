@@ -43,6 +43,7 @@ export enum Content {
   STAGE_2_INITIAL = "Stage_2_Initial",
   STAGE_2 = "Stage_2",
   STAGE_2_IGNORE_MIN = "Stage_2_Ignore_Min",
+  STAGE_2_PROPS_MISSING = "Stage_2_Props_Missing",
   PENALTY = "Penalty",
   TIME_FOR_A_SMOKE = "Time_For_a_Smoke",
   ON_IDLE_START = "On_Idle_Start",

@@ -70,6 +70,7 @@ export const contentEn: MultilineContent = {
   [Content.STAGE_2]: DEFAULT,
   [Content.STAGE_2_INITIAL]: DEFAULT,
   [Content.STAGE_2_IGNORE_MIN]: DEFAULT,
+  [Content.STAGE_2_PROPS_MISSING]: DEFAULT,
   [Content.PENALTY]: `
     The app has a ${I}Motivating Penalty System${I}.${N2}
     If you don't keep to the schedule, we slightly reduce the difficulty.${N2}

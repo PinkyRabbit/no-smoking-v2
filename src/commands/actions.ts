@@ -14,6 +14,7 @@ import { tgLangCodeToLang } from "../lib_helpers/i18n";
 import { getNextSmokingTime, tsToDateTime } from "../lib_helpers/luxon";
 import logger from "../logger";
 import { getButtons } from "../buttons";
+import { stage2 } from "./decorators/stage2";
 
 @LogActionCalls
 export class Actions extends Mixin(DevActions, Settings) {
@@ -73,10 +74,20 @@ export class Actions extends Mixin(DevActions, Settings) {
   /**
    * This method is called by decorator "onlyForKnownUsers",
    * when non-authorized user trying to make a call to private route
+   * @see {onlyForKnownUsers} - decorator
    */
   public async onUserUnknown(msg: TelegramBot.Message) {
     const fakeUser = { chatId: msg.chat.id, lang: tgLangCodeToLang(msg.from!.language_code) } as User;
     await this._res(fakeUser, Content.USER_UNKNOWN, {}, DialogKey.to_start);
+  }
+
+  /**
+   * This route to protect stage 2 from calls by users without required properties
+   * @see {stage2} - decorator
+   */
+  public async stage2Protected(msg: TelegramBot.Message) {
+    const admin_email = process.env.ADMIN_EMAIL;
+    await this._res(msg.user, Content.STAGE_2_PROPS_MISSING, { admin_email });
   }
 
   /**
@@ -167,15 +178,11 @@ export class Actions extends Mixin(DevActions, Settings) {
     return this.onLevel(msg);
   }
 
-  @transformMsg
-  @onlyForKnownUsers
-  public async imSmokingHandler(msg: TelegramBot.Message) {
-    if (!msg.user.minDeltaTime) {
-      return this._stage1(msg);
-    }
-    /**
-     * Stage 2
-     */
+  /**
+   * Stage 2
+   */
+  @stage2
+  private async _stage2(msg: TelegramBot.Message) {
     const timeDifferenceMs = msg.ts - msg.user.lastTime;
     const currentDelta = Math.round(timeDifferenceMs / 60 / 1000); // in minutes
     logger.debug(`timeDifferenceMs = ${msg.ts} - ${msg.user.lastTime} = ${currentDelta} min (${Math.floor(currentDelta / 60 / 24)} days)`);
@@ -224,6 +231,15 @@ export class Actions extends Mixin(DevActions, Settings) {
     }
     // update user
     await UsersRepo.updateUser(msg, update);
+  }
+
+  @transformMsg
+  @onlyForKnownUsers
+  public async imSmokingHandler(msg: TelegramBot.Message) {
+    if (!msg.user.minDeltaTime) {
+      return this._stage1(msg);
+    }
+    return this._stage2(msg);
   }
 
   /**
