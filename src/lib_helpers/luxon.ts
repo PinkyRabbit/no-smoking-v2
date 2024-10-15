@@ -18,7 +18,7 @@ export const dateNow = () => {
 };
 
 export const isValidTimeZoneCheck = (zone: string) => {
-  const ms = Date.now();
+  const ms = dateNow();
   return DateTime.fromMillis(ms, { zone }).isValid;
 };
 

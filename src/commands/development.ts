@@ -1,10 +1,10 @@
 import TelegramBot from "node-telegram-bot-api";
 import logger from "../logger";
 import { Content, DialogKey } from "../constants";
-import { devModeOnly, onlyForKnownUsers, transformMsg } from "./decorators";
-import { User, UsersRepo } from "../db";
-import { STAGE_1_MAX, MIN_INTERVAL, STAGE_1_STEPS, USER_IDLE_TIME } from "./constants";
 import { dateNow } from "../lib_helpers/luxon";
+import { User, UsersRepo } from "../db";
+import { devModeOnly, onlyForKnownUsers, transformMsg } from "./decorators";
+import { STAGE_1_MAX, MIN_INTERVAL, STAGE_1_STEPS, USER_IDLE_TIME } from "./constants";
 
 /**
  * Class for development actions
@@ -81,7 +81,7 @@ export class DevActions {
   @onlyForKnownUsers
   public async devLastTimeMinusHour(msg: TelegramBot.Message) {
     const update: Partial<User> = {
-      lastTime: Date.now() - (60 * 60 * 1000),
+      lastTime: dateNow() - (60 * 60 * 1000),
     };
     await UsersRepo.updateUser(msg, update);
     await this._res(msg.user, Content.DEV_LAST_TIME_MINUS_HOUR);
@@ -93,7 +93,7 @@ export class DevActions {
   public async devStage1MoreThanMax(msg: TelegramBot.Message) {
     const moreThanMax = STAGE_1_MAX + 1;
     const update: Partial<User> = {
-      lastTime: Date.now() - (moreThanMax * 60 * 1000),
+      lastTime: dateNow() - (moreThanMax * 60 * 1000),
     };
     await UsersRepo.updateUser(msg, update);
     await this._res(msg.user, Content.DEV_STAGE_1_MORE_THAN_MAX);
@@ -104,7 +104,7 @@ export class DevActions {
   @onlyForKnownUsers
   public async devToIdle(msg: TelegramBot.Message) {
     const moreThanMax = USER_IDLE_TIME + 1;
-    const lastTime = Date.now() - (moreThanMax * 60 * 1000);
+    const lastTime = dateNow() - (moreThanMax * 60 * 1000);
     const update: Partial<User> = {
       lastTime,
       nextTime: lastTime + msg.user.deltaTime * 60 * 1000,
@@ -119,8 +119,8 @@ export class DevActions {
   public async devByTimer(msg: TelegramBot.Message) {
     const validInterval = MIN_INTERVAL + 1;
     const update: Partial<User> = {
-      lastTime: Date.now() - (validInterval * 60 * 1000),
-      nextTime: Date.now() - 60 * 1000,
+      lastTime: dateNow() - (validInterval * 60 * 1000),
+      nextTime: dateNow() - 60 * 1000,
     };
     await UsersRepo.updateUser(msg, update);
     await this._res(msg.user, Content.DEV_NEXT);

@@ -4,7 +4,7 @@ import logger from "../../logger";
 import { RequestOptions } from "../dbOptionsConstructor";
 import { Difficulty, Lang } from "../../constants";
 import { logWithTimestamps } from "../../lib_helpers/logger";
-import { gmtToUtc, isValidTimeZoneCheck, tsToDateTime } from "../../lib_helpers/luxon";
+import { dateNow, gmtToUtc, isValidTimeZoneCheck, tsToDateTime } from "../../lib_helpers/luxon";
 
 export type User = {
   /**
@@ -154,7 +154,7 @@ export class UsersRepo extends RequestOptions {
    */
   static async getAllSmokersToSmoke(): Promise<User[]> {
     const that = new UsersRepo();
-    const ts = Date.now();
+    const ts = dateNow();
     const users = await that.Users.find({
       $and: [
         { endDate: { $eq: null } },

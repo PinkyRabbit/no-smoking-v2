@@ -178,7 +178,7 @@ export class Actions extends Mixin(DevActions, Settings) {
      */
     const timeDifferenceMs = msg.ts - msg.user.lastTime;
     const currentDelta = Math.round(timeDifferenceMs / 60 / 1000); // in minutes
-    logger.debug(`timeDifferenceMs = ${msg.ts} - ${msg.user.lastTime} = ${timeDifferenceMs} (${currentDelta} min)`);
+    logger.debug(`timeDifferenceMs = ${msg.ts} - ${msg.user.lastTime} = ${currentDelta} min (${Math.floor(currentDelta / 60 / 24)} days)`);
     // ignore spam
     if (currentDelta < MIN_INTERVAL) {
       await this._res(msg.user, Content.STAGE_2_IGNORE_MIN, { min_interval: minsToTimeString(MIN_INTERVAL) });
