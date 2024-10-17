@@ -30,7 +30,17 @@ const transformMultilineContent = (content: MultilineContent): MultilineContent 
   return result;
 };
 
-const transformMotivizerContent = (content: string[]): string[] => content.map(transformSingleLineContent);
+const transformMotivizerContent = (content: string[]): string[] => content
+  .map((c) => c
+    .replace(/\n/g, " ")
+    .replace(/\s+/g, " ")
+    .replace(/-/g, "\-")
+    .replace(/\+/g, "\\+")
+    .replace(/=/g, "\=")
+    .replace(/!/g, "\!")
+    .trim()
+    + "\n"
+  );
 
 const catalog = i18n.getCatalog();
 catalog[Lang.RU] = {

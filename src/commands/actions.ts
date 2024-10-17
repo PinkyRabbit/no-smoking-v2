@@ -221,7 +221,7 @@ export class Actions extends Mixin(DevActions, Settings) {
         step: minsToTimeString(difficulty, msg.user.lang),
       }));
       const { reply_markup } = getButtons(msg.user.lang, DialogKey.im_smoking);
-      const ops: TelegramBot.SendMessageOptions = { parse_mode: "Markdown", reply_markup };
+      const ops: TelegramBot.SendMessageOptions = { parse_mode: "MarkdownV2", reply_markup };
       await this.bot.sendMessage(msg.user.chatId, content.join(""), ops);
     }
     // normal stage 2

@@ -1,6 +1,6 @@
 import { Content } from "../../constants";
 import { MultilineContent } from "../types";
-import { NL, N2, ND, B, I } from "./constants";
+import { NL, N2, ND, B, I, NDv2 } from "./constants";
 
 // https://en.wikipedia.org/wiki/List_of_emojis
 export const dialogsRu: MultilineContent = {
@@ -135,13 +135,13 @@ export const dialogsRu: MultilineContent = {
     🚭 Текущее число штрафных баллов: ${B}{{penalty}}${B}
   `,
   [Content.TIME_FOR_A_SMOKE]: "🔥 Время для перекура! 🔥",
-  [Content.ON_IDLE_START]: `💤💤💤 ${B}Большой Интервал${B}${N2}`,
+  [Content.ON_IDLE_START]: `💤💤💤 ${B}Большой Интервал${B}${NL}`,
   [Content.ON_IDLE_END]: `
     Время следующего перекура пересчитано:${NL}
     прошлое время {{prev_delta}}${NL}
-    - штрафные баллы {{penalty}}${NL}
-    + шаг {{step}}${NL}
-    = в итоге ${I}{{new_delta}}${I}${ND}
+    \\- штрафные баллы {{penalty}}${NL}
+    \\+ шаг {{step}}${NL}
+    \\= в итоге ${I}{{new_delta}}${I}${NDv2}
     Следующий перекур будет после {{time_to_get_smoke}} ⏰️ 
   `,
   [Content.DIFFICULTY]: `
