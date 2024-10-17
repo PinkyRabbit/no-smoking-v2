@@ -2,9 +2,8 @@ import { CallbackQuery } from "node-telegram-bot-api";
 import TgBot from "../telegram-bot";
 import logger from "../logger";
 import { BotEvent } from "./keys";
-import { Callback } from "../buttons/keys";
 import { Actions } from "./actions";
-import { Difficulty, Lang } from "../constants";
+import { Difficulty, Lang, BTN } from "../constants";
 
 export const botActionsInit = (bot: TgBot) => {
   const act = new Actions(bot);
@@ -16,64 +15,64 @@ export const botActionsInit = (bot: TgBot) => {
   bot.onText(BotEvent.SelectTimezone, act.onTimezone);
   bot.onText(BotEvent.Dev, act.onDev);
   bot.on(BotEvent.Callback, (callbackQuery: CallbackQuery) => {
-    const callbackType = callbackQuery.data as Callback;
+    const callbackType = callbackQuery.data as BTN;
     const message = callbackQuery.message;
     if (!message || !callbackType) {
       return;
     }
     switch (callbackType) {
-      case Callback.start:
+      case BTN.CallStart:
         act.onStart(message);
         break;
-      case Callback.beginning:
+      case BTN.Beginning:
         act.toStage1(message);
         break;
-      case Callback.im_smoking:
+      case BTN.Im_Smoking:
         act.imSmokingHandler(message);
         break;
-      case Callback.lang_ru:
+      case BTN.Lang_RU:
         act.changeLanguageHandler(message, Lang.RU);
         break;
-      case Callback.lang_en:
+      case BTN.Lang_EN:
         act.changeLanguageHandler(message, Lang.EN);
         break;
-      case Callback.Level_Easy:
+      case BTN.Level_Easy:
         act.changeLevelHandler(message, Difficulty.EASY);
         break;
-      case Callback.Level_Medium:
+      case BTN.Level_Medium:
         act.changeLevelHandler(message, Difficulty.MEDIUM);
         break;
-      case Callback.Level_Hard:
+      case BTN.Level_Hard:
         act.changeLevelHandler(message, Difficulty.HARD);
         break;
-      case Callback.reset_ignore:
+      case BTN.Reset_Ignore:
         act.resetIgnoreHandler(message);
         break;
-      case Callback.reset_to_stage_1:
+      case BTN.Reset_Stage_1:
         act.resetToStage1Handler(message);
         break;
-      case Callback.reset_to_stage_2:
+      case BTN.Reset_Stage_2:
         act.resetToStage2Handler(message);
         break;
-      case Callback.Dev_Delete_User:
+      case BTN.Dev_Delete_User:
         act.devOnDel(message);
         break;
-      case Callback.Dev_To_Stage_1:
+      case BTN.Dev_To_Stage_1:
         act.devResetToStage1(message);
         break;
-      case Callback.Dev_Fill_Stage_1:
+      case BTN.Dev_Fill_Stage_1:
         act.devFillStage1(message);
         break;
-      case Callback.Dev_Last_Time_1_Hour:
+      case BTN.Dev_Last_Time_1_Hour:
         act.devLastTimeMinusHour(message);
         break;
-      case Callback.Dev_Stage_1_More_Max:
+      case BTN.Dev_Stage_1_More_Max:
         act.devStage1MoreThanMax(message);
         break;
-      case Callback.Dev_To_Idle:
+      case BTN.Dev_To_Idle:
         act.devToIdle(message);
         break;
-      case Callback.Dev_Next:
+      case BTN.Dev_Next:
         act.devByTimer(message);
         break;
       default:

@@ -2,7 +2,7 @@ import TelegramBot from "node-telegram-bot-api";
 import TgBot from "../telegram-bot";
 import { join as pathJoin } from "path";
 import { Mixin } from "ts-mixer";
-import { ContentProps, getContent } from "../content";
+import { ContentProps, getContent, getButtons } from "../content";
 import { Content, DialogKey, Motivizer } from "../constants";
 import { DevActions } from "./development";
 import { Settings } from "./settings";
@@ -13,7 +13,6 @@ import { LogActionCalls, onlyForKnownUsers, transformMsg } from "./decorators";
 import { tgLangCodeToLang } from "../lib_helpers/i18n";
 import { getNextSmokingTime, tsToDateTime } from "../lib_helpers/luxon";
 import logger from "../logger";
-import { getButtons } from "../buttons";
 import { stage2 } from "./decorators/stage2";
 
 @LogActionCalls

@@ -1,5 +1,5 @@
-import { BTN } from "../keys";
-import { ButtonNames } from "./types";
+import { BTN } from "../../constants";
+import { ButtonNames } from "../types";
 
 export const buttonsRu: ButtonNames  = {
   [BTN.CallStart]: "/start",

@@ -1,7 +1,6 @@
 import TelegramBot from "node-telegram-bot-api";
 import { User } from "./db";
-import { ContentProps, getContent } from "./content";
-import { getButtons } from "./buttons";
+import { ContentProps, getContent, getButtons } from "./content";
 import { Content, DialogKey } from "./constants";
 
 /**
