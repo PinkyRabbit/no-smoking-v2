@@ -1,5 +1,5 @@
-import { MultilineContent } from "./types";
 import { Content } from "../../constants";
+import { MultilineContent } from "../types";
 import { B, I, N2, ND, NL } from "./constants";
 
 const DEFAULT = `
@@ -7,7 +7,7 @@ The text of the message has not yet been translated.${N2}
 All questions to @PinkyaRabbit
 `;
 
-export const contentEn: MultilineContent = {
+export const dialogsEn: MultilineContent = {
   [Content.MESSAGE]: "Received your message",
   [Content.USER_UNKNOWN]: `
     🤖 All the bot functionality is available only to authorized users.${ND}

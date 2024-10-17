@@ -3,7 +3,7 @@ import TgBot from "../telegram-bot";
 import { join as pathJoin } from "path";
 import { Mixin } from "ts-mixer";
 import { ContentProps, getContent } from "../content";
-import { Content, DialogKey } from "../constants";
+import { Content, DialogKey, Motivizer } from "../constants";
 import { DevActions } from "./development";
 import { Settings } from "./settings";
 import { User, UsersRepo } from "../db";
@@ -213,6 +213,7 @@ export class Actions extends Mixin(DevActions, Settings) {
       update.nextTime = newNextTime;
       const content: string[] = [];
       content.push(getContent(msg.user.lang, Content.ON_IDLE_START));
+      content.push(getContent(msg.user.lang, Motivizer)[0]);
       content.push(getContent(msg.user.lang, Content.ON_IDLE_END, {
         prev_delta: minsToTimeString(deltaTime, msg.user.lang),
         new_delta: minsToTimeString(newDelta, msg.user.lang),

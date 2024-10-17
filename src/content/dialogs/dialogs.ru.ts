@@ -1,9 +1,9 @@
 import { Content } from "../../constants";
-import { MultilineContent } from "./types";
+import { MultilineContent } from "../types";
 import { NL, N2, ND, B, I } from "./constants";
 
 // https://en.wikipedia.org/wiki/List_of_emojis
-export const contentRu: MultilineContent = {
+export const dialogsRu: MultilineContent = {
   [Content.MESSAGE]: "Received your message",
   [Content.USER_UNKNOWN]: `
     🤖 Функционал доступен только для авторизированных пользователей.${ND}
