@@ -83,6 +83,11 @@ export type User = {
    */
   penalty: number;
   /**
+   * @property motivizerIndex - index of motivizer
+   * @type number
+   */
+  motivizerIndex: number;
+  /**
    * @property startDate - to know the day when user starts the journey
    * @type Date
    */
@@ -115,6 +120,7 @@ export class UsersRepo extends RequestOptions {
       lastTime: 0,
       nextTime: 0,
       penalty: 0,
+      motivizerIndex: 0,
       startDate: new Date(),
       endDate: null,
     };

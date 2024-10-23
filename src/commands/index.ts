@@ -75,6 +75,12 @@ export const botActionsInit = (bot: TgBot) => {
       case BTN.Dev_Next:
         act.devByTimer(message);
         break;
+      case BTN.Dev_Motivizer_25:
+        act.devMotivizer(message, 25);
+        break;
+      case BTN.Dev_Motivizer_Last:
+        act.devMotivizer(message);
+        break;
       default:
         logger.error(`Unsupported callback "${callbackType}"`);
     }

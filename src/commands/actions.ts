@@ -212,7 +212,12 @@ export class Actions extends Mixin(DevActions, Settings) {
       update.nextTime = newNextTime;
       const content: string[] = [];
       content.push(getContent(msg.user.lang, Content.ON_IDLE_START));
-      content.push(getContent(msg.user.lang, Motivizer)[0]);
+
+      const motivizer = getContent(msg.user.lang, Motivizer);
+      content.push(motivizer[msg.user.motivizerIndex]);
+      const motivizerNext = msg.user.motivizerIndex + 1;
+      update.motivizerIndex = motivizerNext !== motivizer.length ? motivizerNext : 0;
+
       content.push(getContent(msg.user.lang, Content.ON_IDLE_END, {
         prev_delta: minsToTimeString(deltaTime, msg.user.lang),
         new_delta: minsToTimeString(newDelta, msg.user.lang),

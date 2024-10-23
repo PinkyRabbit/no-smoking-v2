@@ -1,10 +1,11 @@
 import TelegramBot from "node-telegram-bot-api";
 import logger from "../logger";
-import { Content, DialogKey, Difficulty } from "../constants";
+import { Content, DialogKey, Difficulty, Motivizer } from "../constants";
 import { dateNow } from "../lib_helpers/luxon";
 import { User, UsersRepo } from "../db";
 import { devModeOnly, onlyForKnownUsers, transformMsg } from "./decorators";
 import { STAGE_1_MAX, MIN_INTERVAL, STAGE_1_STEPS, USER_IDLE_TIME } from "./constants";
+import { getContent } from "../content";
 
 /**
  * Class for development actions
@@ -125,5 +126,19 @@ export class DevActions {
     };
     await UsersRepo.updateUser(msg, update);
     await this._res(msg.user, Content.DEV_NEXT);
+  }
+
+  @devModeOnly
+  @transformMsg
+  @onlyForKnownUsers
+  public async devMotivizer(msg: TelegramBot.Message, to?: number) {
+    let nextMotivizer = to;
+    if (!nextMotivizer) {
+      const motivizer = getContent(msg.user.lang, Motivizer);
+      nextMotivizer = motivizer.length - 1;
+    }
+    const update: Partial<User> = { motivizerIndex: nextMotivizer };
+    await UsersRepo.updateUser(msg, update);
+    await this._res(msg.user, Content.DEV_MOTIVIZER);
   }
 }

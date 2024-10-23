@@ -101,4 +101,5 @@ export const dialogsEn: MultilineContent = {
   [Content.DEV_STAGE_1_MORE_THAN_MAX]: "🔮 Last time set to more than max value",
   [Content.DEV_TO_IDLE]: "🔮 User switched to Idle mode",
   [Content.DEV_NEXT]: "🔮 Next smoke break will happen in 1 minute",
+  [Content.DEV_MOTIVIZER]: "🔮 Motivizer Updated",
 };

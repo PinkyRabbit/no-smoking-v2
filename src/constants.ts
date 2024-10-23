@@ -70,6 +70,7 @@ export enum Content {
   DEV_STAGE_1_MORE_THAN_MAX = "Dev_Last_Time_More_Than_Max",
   DEV_TO_IDLE = "Dev_To_Idle",
   DEV_NEXT = "Dev_Next",
+  DEV_MOTIVIZER = "Dev_Motivizer",
 }
 
 /**
@@ -115,4 +116,6 @@ export enum BTN {
   Dev_Stage_1_More_Max = "dev_stage_1_more_than_max",
   Dev_To_Idle = "dev_to_idle",
   Dev_Next = "dev_next",
+  Dev_Motivizer_25 = "dev_motivizer_25",
+  Dev_Motivizer_Last = "dev_motivizer_last",
 }
