@@ -22,6 +22,15 @@ export class DevActions {
   }
 
   /**
+   * @see {import('./actions').Actions#_resV2}
+   */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  protected _resV2(...args: unknown[]): Promise<void> {
+    logger.error("Method this._resV2 is not implemented");
+    return Promise.resolve();
+  }
+
+  /**
    * This method is called by "devModeOnly" decorator when dev mode is disabled
    */
   public async devModeDisabled(msg: TelegramBot.Message) {
@@ -132,12 +141,31 @@ export class DevActions {
   @transformMsg
   @onlyForKnownUsers
   public async devMotivizer(msg: TelegramBot.Message, to?: number) {
-    let nextMotivizer = to;
-    if (!nextMotivizer) {
-      const motivizer = getContent(msg.user.lang, Motivizer);
-      nextMotivizer = motivizer.length - 1;
+    if (!to) {
+      const allContent = getContent(msg.user.lang, Motivizer) as unknown as string[];
+      const messageStart = getContent(msg.user.lang, Content.ON_IDLE_START);
+      const messageEnd = getContent(msg.user.lang, Content.ON_IDLE_END, {
+        prev_delta: "1 час 11 минут",
+        new_delta: "1 час 12 минут",
+        time_to_get_smoke: "13:20",
+        penalty: "2",
+        step: "1"
+      });
+      while (allContent.length > 0) {
+        const motivation = allContent.shift();
+        if (!motivation) {
+          logger.error("motivation is undefined");
+          continue;
+        }
+        const content: string[] = [];
+        content.push(messageStart);
+        content.push(motivation);
+        content.push(messageEnd);
+        await this._resV2(msg.user.chatId, content.join(""));
+      }
+      return;
     }
-    const update: Partial<User> = { motivizerIndex: nextMotivizer };
+    const update: Partial<User> = { motivizerIndex: to };
     await UsersRepo.updateUser(msg, update);
     await this._res(msg.user, Content.DEV_MOTIVIZER);
   }

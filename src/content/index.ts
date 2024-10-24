@@ -124,7 +124,7 @@ const selectButtonsByKey = (key: DialogKey, locale: Lang): InlineKeyboard => {
       ],
       [
         buttonFor(BTN.Dev_Motivizer_25, locale),
-        buttonFor(BTN.Dev_Motivizer_Last, locale),
+        buttonFor(BTN.Dev_Motivizer_Full, locale),
       ],
       [
         buttonFor(BTN.Dev_Next, locale),

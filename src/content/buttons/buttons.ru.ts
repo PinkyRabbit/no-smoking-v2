@@ -21,5 +21,5 @@ export const buttonsRu: ButtonNames  = {
   [BTN.Dev_To_Idle]: "To idle mode 💤",
   [BTN.Dev_Next]: "По таймеру ⏰️",
   [BTN.Dev_Motivizer_25]: "Мотивайзер на 25 ⛹️",
-  [BTN.Dev_Motivizer_Last]: "Мотивайзер на конец ⛹️",
+  [BTN.Dev_Motivizer_Full]: "Мотивайзер весь ⛹️",
 };

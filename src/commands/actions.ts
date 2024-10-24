@@ -49,6 +49,16 @@ export class Actions extends Mixin(DevActions, Settings) {
     });
   }
 
+  protected override _resV2( chatId: number, content: string  ): Promise<void> {
+    return new Promise((resolve) => {
+      setTimeout(async () => {
+        const ops: TelegramBot.SendMessageOptions = { parse_mode: "MarkdownV2" };
+        this.bot.sendMessage(chatId, content, ops);
+        resolve();
+      }, 400);
+    });
+  }
+
   /**
    * Method to send an image
    * @protected

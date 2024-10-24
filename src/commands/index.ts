@@ -78,7 +78,7 @@ export const botActionsInit = (bot: TgBot) => {
       case BTN.Dev_Motivizer_25:
         act.devMotivizer(message, 25);
         break;
-      case BTN.Dev_Motivizer_Last:
+      case BTN.Dev_Motivizer_Full:
         act.devMotivizer(message);
         break;
       default:

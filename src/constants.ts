@@ -117,5 +117,5 @@ export enum BTN {
   Dev_To_Idle = "dev_to_idle",
   Dev_Next = "dev_next",
   Dev_Motivizer_25 = "dev_motivizer_25",
-  Dev_Motivizer_Last = "dev_motivizer_last",
+  Dev_Motivizer_Full = "dev_motivizer_full",
 }
