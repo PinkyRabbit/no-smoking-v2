@@ -62,6 +62,9 @@ export enum Content {
   SETTINGS_DONE = "setting_done",
   BOT_IGNORE = "bot_ignore",
   BOT_IGNORE_BUSY = "bot_ignore_busy",
+  BOT_IGNORE_PENALTY_10 = "bot_ignore_penalty_10",
+  BOT_IGNORE_FAILED = "bot_ignore_failed",
+  BOT_IGNORE_SUCCESS = "bot_ignore_success",
   // TEST
   DEV = "Dev",
   DEV_OFF = "Dev_Off",

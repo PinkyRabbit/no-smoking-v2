@@ -81,6 +81,14 @@ export class Actions extends Mixin(DevActions, Settings) {
   }
 
   /**
+   * Helper to calculate new delta time
+   */
+  private computeNewDelta = ({ deltaTime, difficulty, penalty, minDeltaTime }: Pick<User, "deltaTime" | "difficulty" | "penalty" | "minDeltaTime">) => {
+    const newDelta = ((deltaTime * 10)  + (difficulty * 10) - (penalty * 10)) / 10;
+    return newDelta >= minDeltaTime ? newDelta : minDeltaTime;
+  };
+
+  /**
    * This method is called by decorator "onlyForKnownUsers",
    * when non-authorized user trying to make a call to private route
    * @see {onlyForKnownUsers} - decorator
@@ -216,7 +224,7 @@ export class Actions extends Mixin(DevActions, Settings) {
     if (currentDelta >= USER_IDLE_TIME) {
       logger.debug(`U-${msg.user.chatId} [idle] ${currentDelta} >= ${USER_IDLE_TIME}`);
       const { deltaTime, difficulty, penalty } = msg.user;
-      const newDelta = ((deltaTime * 10)  + (difficulty * 10) - (penalty * 10)) / 10;
+      const newDelta = this.computeNewDelta(msg.user);
       const newNextTime = msg.ts + (newDelta * 60 * 1000);
       update.penalty = 0;
       update.deltaTime = newDelta;
@@ -303,5 +311,16 @@ export class Actions extends Mixin(DevActions, Settings) {
   public async ignoreBusy(msg: TelegramBot.Message) {
     const contentProps = { delta_time: minsToTimeString(msg.user.minDeltaTime, msg.user.lang) };
     await this._res(msg.user, Content.BOT_IGNORE_BUSY, contentProps, DialogKey.im_smoking);
+  }
+
+  @transformMsg
+  @onlyForKnownUsers
+  public async ignorePenalty10(msg: TelegramBot.Message) {
+    const newDelta = this.computeNewDelta({ ...msg.user, penalty: 10 });
+    await UsersRepo.updateUser(msg, { deltaTime: newDelta });
+    const delta_time = minsToTimeString(newDelta, msg.user.lang);
+    const delta_min = minsToTimeString(msg.user.minDeltaTime, msg.user.lang);
+    const contentProps = { delta_min, delta_time };
+    await this._res(msg.user, Content.BOT_IGNORE_PENALTY_10, contentProps, DialogKey.im_smoking);
   }
 }
