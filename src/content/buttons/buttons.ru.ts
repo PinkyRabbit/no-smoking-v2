@@ -13,6 +13,10 @@ export const buttonsRu: ButtonNames  = {
   [BTN.Level_Easy]: "Легко 👍",
   [BTN.Level_Medium]: "Нормальный",
   [BTN.Level_Hard]: "Тяжёлый",
+  [BTN.Ignore_Success]: "Я бросил!",
+  [BTN.Ignore_Failed]: "Не буду бросать",
+  [BTN.Ignore_Busy]: "Я был занят",
+  [BTN.Ignore_Penalty_10]: "Начислить штраф 10",
   [BTN.Dev_Delete_User]: "Удалить пользователя 🗑️",
   [BTN.Dev_To_Stage_1]: "Сбросить до Stage 1 🗯️",
   [BTN.Dev_Fill_Stage_1]: "Заполнить Stage 1 📈",
@@ -22,4 +26,5 @@ export const buttonsRu: ButtonNames  = {
   [BTN.Dev_Next]: "По таймеру ⏰️",
   [BTN.Dev_Motivizer_25]: "Мотивайзер на 25 ⛹️",
   [BTN.Dev_Motivizer_Full]: "Мотивайзер весь ⛹️",
+  [BTN.Dev_Ignore]: "В режим Ignore 🌀",
 };

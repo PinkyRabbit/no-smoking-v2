@@ -203,6 +203,7 @@ export class Actions extends Mixin(DevActions, Settings) {
     const update: Partial<User> = {
       lastTime: msg.ts,
       nextTime: msg.ts + (msg.user.deltaTime * 60 * 1000),
+      ignoreTime: msg.ts + (2 * 24 * 60 * 1000),
     };
     // penalty
     if (msg.ts < msg.user.nextTime) {

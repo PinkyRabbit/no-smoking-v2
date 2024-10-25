@@ -60,6 +60,7 @@ export enum Content {
   TIMEZONE_INVALID = "timezone_invalid",
   SETTINGS = "setting",
   SETTINGS_DONE = "setting_done",
+  BOT_IGNORE = "bot_ignore",
   // TEST
   DEV = "Dev",
   DEV_OFF = "Dev_Off",
@@ -71,6 +72,7 @@ export enum Content {
   DEV_TO_IDLE = "Dev_To_Idle",
   DEV_NEXT = "Dev_Next",
   DEV_MOTIVIZER = "Dev_Motivizer",
+  DEV_IGNORE = "Dev_Ignore",
 }
 
 /**
@@ -86,6 +88,7 @@ export enum DialogKey {
   start_existing = "start_existing",
   dev = "dev",
   difficulty = "difficulty",
+  ignore = "ignore",
 }
 /**
  * Constant represents a motivizer keys
@@ -109,6 +112,10 @@ export enum BTN {
   Level_Easy = "level_easy",
   Level_Medium = "level_medium",
   Level_Hard = "level_hard",
+  Ignore_Success = "ignore_success",
+  Ignore_Failed = "ignore_failed",
+  Ignore_Busy = "ignore_busy",
+  Ignore_Penalty_10 = "ignore_penalty_10",
   Dev_Delete_User = "dev_delete_user",
   Dev_To_Stage_1 = "dev_to_stage_1",
   Dev_Fill_Stage_1 = "dev_fill_stage_1",
@@ -118,4 +125,5 @@ export enum BTN {
   Dev_Next = "dev_next",
   Dev_Motivizer_25 = "dev_motivizer_25",
   Dev_Motivizer_Full = "dev_motivizer_full",
+  Dev_Ignore = "dev_Ignore",
 }

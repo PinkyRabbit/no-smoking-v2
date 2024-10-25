@@ -81,6 +81,9 @@ export const botActionsInit = (bot: TgBot) => {
       case BTN.Dev_Motivizer_Full:
         act.devMotivizer(message);
         break;
+      case BTN.Dev_Ignore:
+        act.devIgnore(message);
+        break;
       default:
         logger.error(`Unsupported callback "${callbackType}"`);
     }

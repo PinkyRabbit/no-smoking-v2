@@ -69,6 +69,12 @@ export type User = {
    */
   nextTime: number;
   /**
+   * @property ignoreTime - marker to identify a user who has stopped using the bot
+   * @type number - timestamp Server
+   * 0 - default value
+   */
+  ignoreTime: number;
+  /**
    * @property difficulty - type of difficulty level
    * @type Difficulty - enum
    * 0 - default value
@@ -92,11 +98,6 @@ export type User = {
    * @type Date
    */
   startDate: Date;
-  /**
-   * @property endDate - to know when user quite of smoking
-   * @type Date | null
-   */
-  endDate: Date | null;
 };
 
 export class UsersRepo extends RequestOptions {
@@ -119,10 +120,10 @@ export class UsersRepo extends RequestOptions {
       deltaTime: 0,
       lastTime: 0,
       nextTime: 0,
+      ignoreTime: 0,
       penalty: 0,
       motivizerIndex: 0,
       startDate: new Date(),
-      endDate: null,
     };
     return that.Users.insert(defaultUser);
   }
@@ -164,7 +165,6 @@ export class UsersRepo extends RequestOptions {
     const ts = dateNow();
     const users = await that.Users.find({
       $and: [
-        { endDate: { $eq: null } },
         { nextTime: { $ne: 0 } },
         { nextTime: { $lte: ts } },
       ]
@@ -174,6 +174,26 @@ export class UsersRepo extends RequestOptions {
     const dateTimeString = tsToDateTime(ts);
     logger.info(`[${dateTimeString}] smokingTimeTest call, ${chatIds.length} affected`);
     await that.Users.update({ _id: { $in: userIds } }, { $set: { nextTime: 0 } });
+    return users;
+  }
+
+  /**
+   * Method returns all users who reached their targeted time
+   */
+  static async getAllIgnoringBot(): Promise<User[]> {
+    const that = new UsersRepo();
+    const ts = dateNow();
+    const users = await that.Users.find({
+      $and: [
+        { ignoreTime: { $ne: 0 } },
+        { ignoreTime: { $lte: ts } },
+      ]
+    });
+    const userIds = users.map(({ _id }) => _id);
+    const chatIds = users.map(({ chatId }) => chatId);
+    const dateTimeString = tsToDateTime(ts);
+    logger.info(`[${dateTimeString}] ignoringBot call, ${chatIds.length} affected`);
+    await that.Users.update({ _id: { $in: userIds } }, { $set: { ignoreTime: 0 } });
     return users;
   }
 }

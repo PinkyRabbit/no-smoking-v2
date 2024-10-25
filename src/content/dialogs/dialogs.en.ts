@@ -91,6 +91,7 @@ export const dialogsEn: MultilineContent = {
   [Content.TIMEZONE_INVALID]: DEFAULT,
   [Content.SETTINGS]: DEFAULT,
   [Content.SETTINGS_DONE]: DEFAULT,
+  [Content.BOT_IGNORE]: DEFAULT,
   // dev
   [Content.DEV]: `⚒️ ${B}Development Mode is ON${B} ⚒️`,
   [Content.DEV_OFF]: "Dev Mode is Off ⛔️",
@@ -102,4 +103,5 @@ export const dialogsEn: MultilineContent = {
   [Content.DEV_TO_IDLE]: "🔮 User switched to Idle mode",
   [Content.DEV_NEXT]: "🔮 Next smoke break will happen in 1 minute",
   [Content.DEV_MOTIVIZER]: "🔮 Motivizer Updated",
+  [Content.DEV_IGNORE]: "🔮 User switched to Ignore Mode",
 };

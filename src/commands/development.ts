@@ -169,4 +169,18 @@ export class DevActions {
     await UsersRepo.updateUser(msg, update);
     await this._res(msg.user, Content.DEV_MOTIVIZER);
   }
+
+  @devModeOnly
+  @transformMsg
+  @onlyForKnownUsers
+  public async devIgnore(msg: TelegramBot.Message) {
+    const validInterval = MIN_INTERVAL + 1;
+    const update: Partial<User> = {
+      lastTime: dateNow() - (validInterval * 60 * 1000),
+      nextTime: 0,
+      ignoreTime: dateNow() - 60 * 1000,
+    };
+    await UsersRepo.updateUser(msg, update);
+    await this._res(msg.user, Content.DEV_IGNORE);
+  }
 }

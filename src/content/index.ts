@@ -127,8 +127,17 @@ const selectButtonsByKey = (key: DialogKey, locale: Lang): InlineKeyboard => {
         buttonFor(BTN.Dev_Motivizer_Full, locale),
       ],
       [
+        buttonFor(BTN.Dev_Ignore, locale),
         buttonFor(BTN.Dev_Next, locale),
       ]
+    ];
+  }
+  if (key === DialogKey.ignore) {
+    return [
+      [buttonFor(BTN.Ignore_Success, locale)],
+      [buttonFor(BTN.Ignore_Failed, locale)],
+      [buttonFor(BTN.Ignore_Penalty_10, locale)],
+      [buttonFor(BTN.Ignore_Busy, locale)],
     ];
   }
   return [];
