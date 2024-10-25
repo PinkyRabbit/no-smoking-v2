@@ -54,6 +54,9 @@ export const botActionsInit = (bot: TgBot) => {
       case BTN.Reset_Stage_2:
         act.resetToStage2Handler(message);
         break;
+      case BTN.Ignore_Busy:
+        act.ignoreBusy(message);
+        break;
       case BTN.Dev_Delete_User:
         act.devOnDel(message);
         break;

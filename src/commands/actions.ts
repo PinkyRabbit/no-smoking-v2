@@ -297,4 +297,11 @@ export class Actions extends Mixin(DevActions, Settings) {
     const contentProps = { min_delta: minsToTimeString(msg.user.minDeltaTime, msg.user.lang) };
     await this._res(msg.user, Content.START_RESET_TO_STAGE_2, contentProps, DialogKey.im_smoking);
   }
+
+  @transformMsg
+  @onlyForKnownUsers
+  public async ignoreBusy(msg: TelegramBot.Message) {
+    const contentProps = { delta_time: minsToTimeString(msg.user.minDeltaTime, msg.user.lang) };
+    await this._res(msg.user, Content.BOT_IGNORE_BUSY, contentProps, DialogKey.im_smoking);
+  }
 }

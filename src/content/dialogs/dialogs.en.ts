@@ -92,6 +92,7 @@ export const dialogsEn: MultilineContent = {
   [Content.SETTINGS]: DEFAULT,
   [Content.SETTINGS_DONE]: DEFAULT,
   [Content.BOT_IGNORE]: DEFAULT,
+  [Content.BOT_IGNORE_BUSY]: DEFAULT,
   // dev
   [Content.DEV]: `⚒️ ${B}Development Mode is ON${B} ⚒️`,
   [Content.DEV_OFF]: "Dev Mode is Off ⛔️",
