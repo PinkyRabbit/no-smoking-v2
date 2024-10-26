@@ -60,6 +60,9 @@ export const botActionsInit = (bot: TgBot) => {
       case BTN.Ignore_Penalty_10:
         act.ignorePenalty10(message);
         break;
+      case BTN.Ignore_Failed:
+        act.ignoreFailed(message);
+        break;
       case BTN.Dev_Delete_User:
         act.devOnDel(message);
         break;

@@ -323,4 +323,10 @@ export class Actions extends Mixin(DevActions, Settings) {
     const contentProps = { delta_min, delta_time };
     await this._res(msg.user, Content.BOT_IGNORE_PENALTY_10, contentProps, DialogKey.im_smoking);
   }
+
+  @transformMsg
+  @onlyForKnownUsers
+  public async ignoreFailed(msg: TelegramBot.Message) {
+    await this._res(msg.user, Content.BOT_IGNORE_FAILED, {}, DialogKey.to_start);
+  }
 }
