@@ -487,6 +487,5 @@ export const motivizerRu: string[] = (() => {
       }
     }
   });
-  console.log(result);
   return result;
 })();
