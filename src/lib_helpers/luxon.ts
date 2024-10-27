@@ -1,4 +1,6 @@
 import { DateTime } from "luxon";
+import { Lang } from "../constants";
+import { daysToTimeString } from "./humanize-duration";
 
 export const tsToDateTime = (ts: unknown) => {
   const dateTime = typeof ts === "number" ? DateTime.fromMillis(ts) : DateTime.now();
@@ -7,6 +9,16 @@ export const tsToDateTime = (ts: unknown) => {
 
 export const mssToTime = (mss: number, zone: string) => {
   return DateTime.fromMillis(mss, { zone }).toFormat("HH:mm");
+};
+
+export const getFormattedStartDate = (jsDate: Date, locale: Lang) => {
+  const luxonDate = DateTime.fromJSDate(jsDate);
+  const start_date = luxonDate.setLocale(locale).toFormat("d MMMM yyyy");
+  const today = DateTime.now();
+  const diff = luxonDate.diff(today, "days");
+  const days = Math.floor(diff.days);
+  const days_from_start = daysToTimeString(days, locale);
+  return { start_date, days_from_start };
 };
 
 export const dateNow = () => {

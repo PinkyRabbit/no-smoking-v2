@@ -2,7 +2,7 @@ export const BotEvent =  {
   Message: "message",
   Callback: "callback_query",
   Start: /\/start/,
-  Help: /\/help/,
+  Stats: /\/stats/,
   SelectLanguage: /\/lang/,
   SelectTimezone: /\/time/,
   SelectLevel: /\/level/,

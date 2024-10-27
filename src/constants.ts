@@ -66,6 +66,7 @@ export enum Content {
   BOT_IGNORE_PENALTY_10 = "bot_ignore_penalty_10",
   BOT_IGNORE_FAILED = "bot_ignore_failed",
   BOT_IGNORE_SUCCESS = "bot_ignore_success",
+  STATS = "get_stats",
   // TEST
   DEV = "Dev",
   DEV_OFF = "Dev_Off",

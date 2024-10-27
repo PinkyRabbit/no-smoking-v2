@@ -11,7 +11,7 @@ import { MIN_INTERVAL, STAGE_1_MAX, STAGE_1_STEPS, USER_IDLE_TIME } from "./cons
 import { minsToTimeString } from "../lib_helpers/humanize-duration";
 import { LogActionCalls, onlyForKnownUsers, transformMsg } from "./decorators";
 import { tgLangCodeToLang } from "../lib_helpers/i18n";
-import { tsToDateTime, mssToTime } from "../lib_helpers/luxon";
+import { tsToDateTime, mssToTime, getFormattedStartDate } from "../lib_helpers/luxon";
 import logger from "../logger";
 import { stage2 } from "./decorators/stage2";
 
@@ -25,6 +25,7 @@ export class Actions extends Mixin(DevActions, Settings) {
     this.onLevel = this.onLevel.bind(this);
     this.onLang = this.onLang.bind(this);
     this.onTimezone = this.onTimezone.bind(this);
+    this.onStats = this.onStats.bind(this);
     this.onMessage = this.onMessage.bind(this);
     this.onUserUnknown = this.onUserUnknown.bind(this);
     this.onDev = this.onDev.bind(this);
@@ -118,6 +119,7 @@ export class Actions extends Mixin(DevActions, Settings) {
       await this._res(user, Content.START_NEW, {}, DialogKey.beginning);
       return;
     }
+    await UsersRepo.updateUser(msg, { startDate: new Date() });
     if (!msg.user.minDeltaTime) {
       await this._res(msg.user, Content.START_EXISTING_STAGE_1);
       await this.toStage1(msg);
@@ -218,6 +220,7 @@ export class Actions extends Mixin(DevActions, Settings) {
       logger.debug(`U-${msg.user.chatId} [penalty] ${tsToDateTime(msg.ts)} < ${tsToDateTime(msg.user.nextTime)}`);
       const penalty = ((msg.user.penalty * 10) + (msg.user.difficulty * 10)) / 10;
       update.penalty = penalty;
+      update.penaltyAll = ((penalty * 10) + (msg.user.penaltyAll * 10)) / 10;
       await this._res(msg.user, Content.PENALTY, { penalty });
     }
     // idle
@@ -317,7 +320,7 @@ export class Actions extends Mixin(DevActions, Settings) {
   @onlyForKnownUsers
   public async ignorePenalty10(msg: TelegramBot.Message) {
     const newDelta = this.computeNewDelta({ ...msg.user, penalty: 10 });
-    await UsersRepo.updateUser(msg, { deltaTime: newDelta });
+    await UsersRepo.updateUser(msg, { deltaTime: newDelta, penaltyAll: msg.user.penaltyAll + 10 });
     const delta_time = minsToTimeString(newDelta, msg.user.lang);
     const delta_min = minsToTimeString(msg.user.minDeltaTime, msg.user.lang);
     const contentProps = { delta_min, delta_time };
@@ -334,5 +337,20 @@ export class Actions extends Mixin(DevActions, Settings) {
   @onlyForKnownUsers
   public async ignoreSuccess(msg: TelegramBot.Message) {
     await this._res(msg.user, Content.BOT_IGNORE_SUCCESS, {});
+  }
+
+  @transformMsg
+  @onlyForKnownUsers
+  @stage2
+  public async onStats(msg: TelegramBot.Message) {
+    const { start_date, days_from_start } = getFormattedStartDate(msg.user.startDate, msg.user.lang);
+    const contentProps = {
+      start_date,
+      days_from_start,
+      penalty: minsToTimeString(msg.user.penaltyAll, msg.user.lang),
+      delta_min: minsToTimeString(msg.user.minDeltaTime, msg.user.lang),
+      delta: minsToTimeString(msg.user.deltaTime, msg.user.lang),
+    };
+    await this._res(msg.user, Content.STATS, contentProps);
   }
 }

@@ -1,5 +1,7 @@
 import { expect } from "chai";
-import { simpleOffsetToUtc, GmtRegex, gmtToUtc } from "./luxon";
+import sinon from "sinon";
+import { getFormattedStartDate, GmtRegex, gmtToUtc, simpleOffsetToUtc } from "./luxon";
+import { Lang } from "../constants";
 
 describe("lib_helpers.luxon", () => {
   describe("simpleOffsetToUtc", () => {
@@ -110,6 +112,42 @@ describe("lib_helpers.luxon", () => {
     it("should handle offsets with leading zeros", () => {
       expect(gmtToUtc("GMT+02:00")).to.equal("UTC+02:00");
       expect(gmtToUtc("GMT-09:30")).to.equal("UTC-09:30");
+    });
+  });
+
+  describe("getFormattedStartDate", () => {
+    let clock: sinon.SinonFakeTimers;
+
+    beforeEach(() => {
+      clock = sinon.useFakeTimers(new Date("2024-02-15T00:00:00.000Z").getTime());
+    });
+
+    afterEach(() => {
+      clock.restore();
+    });
+
+    it("should format the date correctly for English locale", () => {
+      const jsDate = new Date("2024-04-01");
+      const result = getFormattedStartDate(jsDate, Lang.EN);
+
+      expect(result.start_date).to.equal("1 April 2024");
+      expect(result.days_from_start).to.equal("46 days");
+    });
+
+    it("should format the date correctly for French locale", () => {
+      const jsDate = new Date("2024-03-15");
+      const result = getFormattedStartDate(jsDate, Lang.RU);
+
+      expect(result.start_date).to.equal("15 марта 2024");
+      expect(result.days_from_start).to.equal("29 дней");
+    });
+
+    it("should handle the current date", () => {
+      const jsDate = new Date("2024-02-15");
+      const result = getFormattedStartDate(jsDate, Lang.EN);
+
+      expect(result.start_date).to.equal("15 February 2024");
+      expect(result.days_from_start).to.equal("0 days");
     });
   });
 });

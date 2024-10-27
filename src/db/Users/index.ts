@@ -89,6 +89,11 @@ export type User = {
    */
   penalty: number;
   /**
+   * @property penaltyAll - sum of all penalties
+   * @type number
+   */
+  penaltyAll: number;
+  /**
    * @property motivizerIndex - index of motivizer
    * @type number
    */
@@ -122,6 +127,7 @@ export class UsersRepo extends RequestOptions {
       nextTime: 0,
       ignoreTime: 0,
       penalty: 0,
+      penaltyAll: 0,
       motivizerIndex: 0,
       startDate: new Date(),
     };

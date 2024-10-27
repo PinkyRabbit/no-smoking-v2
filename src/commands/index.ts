@@ -9,7 +9,7 @@ export const botActionsInit = (bot: TgBot) => {
   const act = new Actions(bot);
   bot.on(BotEvent.Message, act.onMessage);
   bot.onText(BotEvent.Start, act.onStart);
-  bot.onText(BotEvent.Help, act.onStart);
+  bot.onText(BotEvent.Stats, act.onStats);
   bot.onText(BotEvent.SelectLanguage, act.onLang);
   bot.onText(BotEvent.SelectLevel, act.onLevel);
   bot.onText(BotEvent.SelectTimezone, act.onTimezone);
