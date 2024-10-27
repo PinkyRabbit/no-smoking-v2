@@ -140,15 +140,17 @@ export class UsersRepo extends RequestOptions {
     });
   }
 
-  static setTimezone(msg: Message, timezone: string) {
+  static async setTimezone(msg: Message, timezone: string) {
     const isValidTimezone = isValidTimeZoneCheck(timezone);
     if (isValidTimezone) {
       const update: Partial<User> = { timezone };
-      return UsersRepo.updateUser(msg, update);
+      await UsersRepo.updateUser(msg, update);
+      return timezone;
     }
     const gmtFormatValue = gmtToUtc(timezone);
     const update: Partial<User> = { timezone: gmtFormatValue };
-    return UsersRepo.updateUser(msg, update);
+    await UsersRepo.updateUser(msg, update);
+    return gmtFormatValue;
   }
 
   static removeUser(chatId: number) {

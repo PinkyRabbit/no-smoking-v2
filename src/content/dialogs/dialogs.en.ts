@@ -91,6 +91,7 @@ export const dialogsEn: MultilineContent = {
   [Content.TIMEZONE_INVALID]: DEFAULT,
   [Content.SETTINGS]: DEFAULT,
   [Content.SETTINGS_DONE]: DEFAULT,
+  [Content.SETTINGS_UPDATED]: DEFAULT,
   [Content.BOT_IGNORE]: DEFAULT,
   [Content.BOT_IGNORE_BUSY]: DEFAULT,
   [Content.BOT_IGNORE_PENALTY_10]: DEFAULT,

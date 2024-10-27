@@ -60,6 +60,7 @@ export enum Content {
   TIMEZONE_INVALID = "timezone_invalid",
   SETTINGS = "setting",
   SETTINGS_DONE = "setting_done",
+  SETTINGS_UPDATED = "settings_updated",
   BOT_IGNORE = "bot_ignore",
   BOT_IGNORE_BUSY = "bot_ignore_busy",
   BOT_IGNORE_PENALTY_10 = "bot_ignore_penalty_10",

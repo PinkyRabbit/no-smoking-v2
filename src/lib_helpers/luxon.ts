@@ -1,15 +1,11 @@
 import { DateTime } from "luxon";
-import { Message } from "node-telegram-bot-api";
 
 export const tsToDateTime = (ts: unknown) => {
   const dateTime = typeof ts === "number" ? DateTime.fromMillis(ts) : DateTime.now();
   return dateTime.toFormat("dd.MM.yyyy HH:mm");
 };
 
-export const getNextSmokingTime = (msg: Message, newDelta?: number) => {
-  const delta = newDelta || msg.user.deltaTime;
-  const zone = msg.user.timezone;
-  const mss = msg.ts + (delta * 60 * 1000);
+export const mssToTime = (mss: number, zone: string) => {
   return DateTime.fromMillis(mss, { zone }).toFormat("HH:mm");
 };
 

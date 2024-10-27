@@ -4,7 +4,7 @@ export const BotEvent =  {
   Start: /\/start/,
   Help: /\/help/,
   SelectLanguage: /\/lang/,
-  SelectTimezone: /\/timezone/,
+  SelectTimezone: /\/time/,
   SelectLevel: /\/level/,
   Dev: /\/dev/,
 };

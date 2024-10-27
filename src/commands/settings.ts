@@ -1,10 +1,11 @@
 import TelegramBot from "node-telegram-bot-api";
 import { onlyForKnownUsers, transformMsg } from "./decorators";
 import { Content, DialogKey, Difficulty, Lang } from "../constants";
-import { getNextSmokingTime } from "../lib_helpers/luxon";
+import { mssToTime } from "../lib_helpers/luxon";
 import { difficultyNameByLevel } from "../helpers";
 import { UsersRepo } from "../db";
 import logger from "../logger";
+import { DateTime } from "luxon";
 
 export class Settings {
   /**
@@ -104,13 +105,14 @@ export class Settings {
       return Promise.resolve();
     }
     try {
-      await UsersRepo.setTimezone(msg, msg.text!.trim());
+      const zone = await UsersRepo.setTimezone(msg, msg.text!.trim());
+      const local_time = DateTime.fromMillis(Date.now(), { zone }).toFormat("HH:mm");
+      await this._res(msg.user, Content.TIMEZONE_SELECTED, { timezone: msg.text, local_time });
     } catch(error) {
       logger.debug("Save timezone error", error);
       await this._res(msg.user, Content.TIMEZONE_INVALID);
       return Promise.resolve();
     }
-    await this._res(msg.user, Content.TIMEZONE_SELECTED, { timezone: msg.text });
     if (!msg.user.difficulty) {
       return this.onLevel(msg);
     }
@@ -122,12 +124,22 @@ export class Settings {
    * @private
    */
   private async onSettingsDone(msg: TelegramBot.Message) {
-    await this._res(msg.user, Content.SETTINGS_DONE);
-    if (msg.user.nextTime || !msg.user.timezone) {
+    if (!msg.user.deltaTime || !msg.user.timezone) {
       logger.error("Incorrect call of onSettingsDone");
       return;
     }
-    const time_to_get_smoke = getNextSmokingTime(msg);
-    await this._res(msg.user, Content.STAGE_2_INITIAL,  { time_to_get_smoke }, DialogKey.im_smoking);
+    if (!msg.user.nextTime) {
+      await this._res(msg.user, Content.SETTINGS_DONE);
+      const nextTime = msg.ts + (msg.user.deltaTime * 60 * 1000);
+      await UsersRepo.updateUser(msg, {
+        nextTime,
+        ignoreTime: msg.ts + (2 * 24 * 60 * 1000),
+      });
+      const time_to_get_smoke = mssToTime(nextTime, msg.user.timezone!);
+      await this._res(msg.user, Content.STAGE_2_INITIAL,  { time_to_get_smoke }, DialogKey.im_smoking);
+      return;
+    }
+    const time_to_get_smoke = mssToTime(msg.user.nextTime, msg.user.timezone!);
+    await this._res(msg.user, Content.SETTINGS_UPDATED,  { time_to_get_smoke }, DialogKey.im_smoking);
   }
 }

@@ -11,7 +11,7 @@ import { MIN_INTERVAL, STAGE_1_MAX, STAGE_1_STEPS, USER_IDLE_TIME } from "./cons
 import { minsToTimeString } from "../lib_helpers/humanize-duration";
 import { LogActionCalls, onlyForKnownUsers, transformMsg } from "./decorators";
 import { tgLangCodeToLang } from "../lib_helpers/i18n";
-import { getNextSmokingTime, tsToDateTime } from "../lib_helpers/luxon";
+import { tsToDateTime, mssToTime } from "../lib_helpers/luxon";
 import logger from "../logger";
 import { stage2 } from "./decorators/stage2";
 
@@ -240,7 +240,7 @@ export class Actions extends Mixin(DevActions, Settings) {
       content.push(getContent(msg.user.lang, Content.ON_IDLE_END, {
         prev_delta: minsToTimeString(deltaTime, msg.user.lang),
         new_delta: minsToTimeString(newDelta, msg.user.lang),
-        time_to_get_smoke: getNextSmokingTime(msg, newDelta),
+        time_to_get_smoke: mssToTime(update.nextTime, msg.user.timezone!),
         penalty: minsToTimeString(penalty, msg.user.lang),
         step: minsToTimeString(difficulty, msg.user.lang),
       }));
@@ -250,7 +250,7 @@ export class Actions extends Mixin(DevActions, Settings) {
     }
     // normal stage 2
     if (currentDelta < USER_IDLE_TIME) {
-      const time_to_get_smoke = getNextSmokingTime(msg);
+      const time_to_get_smoke = mssToTime(update.nextTime!, msg.user.timezone!);
       await this._res(msg.user, Content.STAGE_2, { time_to_get_smoke }, DialogKey.im_smoking);
     }
     // update user
