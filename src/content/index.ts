@@ -40,6 +40,7 @@ export const transformMotivizerContent = (content: string[]): string[] => conten
     .replace(/=/g, "\=")
     .replace(/!/g, "\\!")
     .trim()
+    .replace(newLineRegexp, "\n")
     + "\n"
   );
 
