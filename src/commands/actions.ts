@@ -120,7 +120,7 @@ export class Actions extends Mixin(DevActions, Settings) {
       await this._res(user, Content.START_NEW, {}, DialogKey.beginning);
       return;
     }
-    await UsersRepo.updateUser(msg, { startDate: new Date() });
+    await UsersRepo.updateUser(msg, { startDate: new Date(), penaltyAll: 0 });
     if (!msg.user.minDeltaTime) {
       await UsersRepo.updateUser(msg, {
         lastTime: 0,
@@ -280,17 +280,19 @@ export class Actions extends Mixin(DevActions, Settings) {
    */
   @transformMsg
   @onlyForKnownUsers
+  @stage2
   public async resetIgnoreHandler(msg: TelegramBot.Message) {
     await UsersRepo.updateUser(msg, {
       lastTime: 0,
       nextTime: 0,
     });
-    const contentProps = { min_delta: minsToTimeString(msg.user.minDeltaTime, msg.user.lang) };
+    const contentProps = { delta_time: minsToTimeString(msg.user.deltaTime, msg.user.lang) };
     await this._res(msg.user, Content.START_RESET_IGNORE,contentProps, DialogKey.im_smoking);
   }
 
   @transformMsg
   @onlyForKnownUsers
+  @stage2
   public async resetToStage1Handler(msg: TelegramBot.Message) {
     await UsersRepo.updateUser(msg, {
       lastTime: 0,
@@ -305,13 +307,14 @@ export class Actions extends Mixin(DevActions, Settings) {
 
   @transformMsg
   @onlyForKnownUsers
+  @stage2
   public async resetToStage2Handler(msg: TelegramBot.Message) {
     await UsersRepo.updateUser(msg, {
       lastTime: 0,
       nextTime: 0,
       deltaTime: msg.user.minDeltaTime,
     });
-    const contentProps = { min_delta: minsToTimeString(msg.user.minDeltaTime, msg.user.lang) };
+    const contentProps = { delta_time: minsToTimeString(msg.user.minDeltaTime, msg.user.lang) };
     await this._res(msg.user, Content.START_RESET_TO_STAGE_2, contentProps, DialogKey.im_smoking);
   }
 
