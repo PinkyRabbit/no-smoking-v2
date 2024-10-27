@@ -28,6 +28,7 @@ export enum Content {
   MESSAGE = "MESSAGE",
   USER_UNKNOWN = "User_Unknown",
   START_NEW = "Start_New_User",
+  START_ALPHA = "Start_Alpha",
   START_EXISTING = "Start_Existing_User",
   START_EXISTING_STAGE_1 = "Start_Existing_Stage_1",
   START_RESET_IGNORE = "Start_Reset_Ignore",

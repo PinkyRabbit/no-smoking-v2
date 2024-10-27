@@ -13,6 +13,7 @@ export const dialogsEn: MultilineContent = {
     🤖 All the bot functionality is available only to authorized users.${ND}
     Please authorize first by clicking the button below.
   `,
+  [Content.START_ALPHA]: DEFAULT,
   [Content.START_NEW]: `
     Hi mate!${N2}
     Are tobacco corporations profiting off your health?${N2}

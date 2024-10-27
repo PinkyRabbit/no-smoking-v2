@@ -3,7 +3,7 @@ import TgBot from "../telegram-bot";
 import { join as pathJoin } from "path";
 import { Mixin } from "ts-mixer";
 import { ContentProps, getContent, getButtons } from "../content";
-import { Content, DialogKey, Motivizer } from "../constants";
+import { Content, DialogKey, Lang, Motivizer } from "../constants";
 import { DevActions } from "./development";
 import { Settings } from "./settings";
 import { User, UsersRepo } from "../db";
@@ -115,9 +115,10 @@ export class Actions extends Mixin(DevActions, Settings) {
   @transformMsg
   public async onStart(msg: TelegramBot.Message) {
     if (!msg.user) {
-      const lang = tgLangCodeToLang(msg.from!.language_code);
+      // const lang = tgLangCodeToLang(msg.from!.language_code);
+      const lang = Lang.RU;
       const user = await UsersRepo.addNewUser(msg.chat.id, lang);
-      await this._res(user, Content.START_NEW, {}, DialogKey.beginning);
+      await this._res(user, Content.START_ALPHA, {}, DialogKey.beginning);
       return;
     }
     await UsersRepo.updateUser(msg, { startDate: new Date(), penaltyAll: 0 });
