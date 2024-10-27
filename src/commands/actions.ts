@@ -29,6 +29,7 @@ export class Actions extends Mixin(DevActions, Settings) {
     this.onMessage = this.onMessage.bind(this);
     this.onUserUnknown = this.onUserUnknown.bind(this);
     this.onDev = this.onDev.bind(this);
+    this.onHow = this.onHow.bind(this);
     this.devModeDisabled = this.devModeDisabled.bind(this);
   }
 
@@ -352,5 +353,13 @@ export class Actions extends Mixin(DevActions, Settings) {
       delta: minsToTimeString(msg.user.deltaTime, msg.user.lang),
     };
     await this._res(msg.user, Content.STATS, contentProps);
+  }
+
+  @transformMsg
+  @onlyForKnownUsers
+  public async onHow(msg: TelegramBot.Message) {
+    const donate_link = process.env.DONATE_LINK;
+    const email = process.env.ADMIN_EMAIL;
+    await this._res(msg.user, Content.HOW, { donate_link, email });
   }
 }

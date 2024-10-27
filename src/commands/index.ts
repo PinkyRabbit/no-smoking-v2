@@ -14,6 +14,7 @@ export const botActionsInit = (bot: TgBot) => {
   bot.onText(BotEvent.SelectLevel, act.onLevel);
   bot.onText(BotEvent.SelectTimezone, act.onTimezone);
   bot.onText(BotEvent.Dev, act.onDev);
+  bot.onText(BotEvent.How, act.onHow);
   bot.on(BotEvent.Callback, (callbackQuery: CallbackQuery) => {
     const callbackType = callbackQuery.data as BTN;
     const message = callbackQuery.message;
