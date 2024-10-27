@@ -122,6 +122,11 @@ export class Actions extends Mixin(DevActions, Settings) {
     }
     await UsersRepo.updateUser(msg, { startDate: new Date() });
     if (!msg.user.minDeltaTime) {
+      await UsersRepo.updateUser(msg, {
+        lastTime: 0,
+        nextTime: 0,
+        minDeltaTimesInitial: [],
+      });
       await this._res(msg.user, Content.START_EXISTING_STAGE_1);
       await this.toStage1(msg);
       return;
