@@ -329,4 +329,10 @@ export class Actions extends Mixin(DevActions, Settings) {
   public async ignoreFailed(msg: TelegramBot.Message) {
     await this._res(msg.user, Content.BOT_IGNORE_FAILED, {}, DialogKey.to_start);
   }
+
+  @transformMsg
+  @onlyForKnownUsers
+  public async ignoreSuccess(msg: TelegramBot.Message) {
+    await this._res(msg.user, Content.BOT_IGNORE_SUCCESS, {});
+  }
 }
