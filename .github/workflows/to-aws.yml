@@ -23,7 +23,7 @@ jobs:
         run: npm ci --only=production
       - name: Prepare deployment package
         run: |
-          cp -r dist node_modules dist/
+          cp -r node_modules dist/
           cp package.json dist/
       - name: Deploy to my EC2 instance
         uses: easingthemes/ssh-deploy@main
