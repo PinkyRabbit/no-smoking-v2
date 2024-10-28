@@ -53,5 +53,8 @@ module.exports = [
             "object-curly-spacing": ["error", "always"],
         },
     },
+    {
+        ignores: ['**/node_modules/**', '**/dist/**'],
+    },
 ];
 

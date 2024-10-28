@@ -168,7 +168,7 @@ export class Actions extends Mixin(DevActions, Settings) {
       logger.debug(`deltaTime < MIN_INTERVAL, ${deltaTime} < ${MIN_INTERVAL}`);
       isValidDeltaTime = false;
       update.lastTime = msg.user.lastTime;
-      const contentProps = { min_stage_1: minsToTimeString(MIN_INTERVAL), stage_1_left: deltaTimesLeft };
+      const contentProps = { min_stage_1: minsToTimeString(MIN_INTERVAL, msg.user.lang), stage_1_left: deltaTimesLeft };
       await this._res(msg.user, Content.STAGE_1_IGNORE_MIN, contentProps, DialogKey.im_smoking);
     }
     // to skip calculation if delta is too big
@@ -214,7 +214,7 @@ export class Actions extends Mixin(DevActions, Settings) {
     logger.debug(`timeDifferenceMs = ${msg.ts} - ${msg.user.lastTime} = ${currentDelta} min (${Math.floor(currentDelta / 60 / 24)} days)`);
     // ignore spam
     if (currentDelta < MIN_INTERVAL) {
-      await this._res(msg.user, Content.STAGE_2_IGNORE_MIN, { min_interval: minsToTimeString(MIN_INTERVAL) });
+      await this._res(msg.user, Content.STAGE_2_IGNORE_MIN, { min_interval: minsToTimeString(MIN_INTERVAL, msg.user.lang) });
       return;
     }
     const update: Partial<User> = {
