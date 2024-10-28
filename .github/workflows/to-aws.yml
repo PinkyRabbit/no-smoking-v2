@@ -33,5 +33,3 @@ jobs:
           REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
           REMOTE_USER: ${{ secrets.REMOTE_USER }}
           TARGET: ${{ secrets.DIR_NAME }}
-          SCRIPT_AFTER: pm2 restart /var/www/ecosystem.config.cjs
-          SCRIPT_AFTER_REQUIRED: true
