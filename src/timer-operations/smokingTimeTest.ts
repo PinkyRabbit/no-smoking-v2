@@ -5,27 +5,29 @@ import { Content, DialogKey } from "../constants";
 /**
  * Helper to make messages to send delayed
  * Only to use in smokingTimeTest
+ * @private
  */
-const sendDelayedToSmokers = (bot: TgBot, users: User[]) => {
+export const _sendDelayedToSmokers = (bot: TgBot, users: User[]) => {
   const user = users.pop();
   if (!user) {
     return;
   }
   bot.sendToUser(user, Content.TIME_FOR_A_SMOKE, {}, DialogKey.im_smoking);
-  setTimeout(() => sendDelayedToSmokers(bot, users.slice(1)), 10);
+  setTimeout(() => _sendDelayedToSmokers(bot, users), 10);
 };
 
 /**
  * Helper to make messages to send delayed
  * Only to use in smokingTimeTest
+ * @private
  */
-const sendDelayedToIgnore = (bot: TgBot, users: User[]) => {
+export const _sendDelayedToIgnore = (bot: TgBot, users: User[]) => {
   const user = users.pop();
   if (!user) {
     return;
   }
   bot.sendToUser(user, Content.BOT_IGNORE, {}, DialogKey.ignore);
-  setTimeout(() => sendDelayedToIgnore(bot, users.slice(1)), 10);
+  setTimeout(() => _sendDelayedToIgnore(bot, users), 10);
 };
 
 /**
@@ -34,7 +36,7 @@ const sendDelayedToIgnore = (bot: TgBot, users: User[]) => {
  */
 export const smokingTimeTest = async (bot: TgBot) => {
   const usersToSmoke = await UsersRepo.getAllSmokersToSmoke();
-  sendDelayedToSmokers(bot, usersToSmoke);
+  _sendDelayedToSmokers(bot, usersToSmoke);
   const usersIgnoringBot = await UsersRepo.getAllIgnoringBot();
-  sendDelayedToIgnore(bot, usersIgnoringBot);
+  _sendDelayedToIgnore(bot, usersIgnoringBot);
 };
