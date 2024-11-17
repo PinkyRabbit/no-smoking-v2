@@ -1,5 +1,6 @@
 const typescript = require('@typescript-eslint/eslint-plugin');
 const prettierPlugin = require('eslint-plugin-prettier');
+const chaiFriendlyPlugin = require('eslint-plugin-chai-friendly');
 const prettierConfig = require('eslint-config-prettier');
 
 module.exports = [
@@ -56,5 +57,15 @@ module.exports = [
     {
         ignores: ['**/node_modules/**', '**/dist/**'],
     },
+    {
+        "files": ["**/*.spec.ts", "**/*.test.ts"],
+        "plugins": {
+            "chai-friendly": chaiFriendlyPlugin,
+        },
+        "rules": {
+            "@typescript-eslint/no-unused-expressions": "off",
+            "chai-friendly/no-unused-expressions": "error"
+        }
+    }
 ];
 

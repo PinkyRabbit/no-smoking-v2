@@ -1,9 +1,26 @@
 import winston from "winston";
 
 const isProduction = process.env.NODE_ENV === "production";
+const isFileLoggingEnabled = `${process.env.LOGS_FOR_PROD_DEBUG}` === "true";
+
+const level = isProduction && !isFileLoggingEnabled ? "info" : "debug";
+
+const transports: winston.transport[] = [new winston.transports.Console()];
+if (isFileLoggingEnabled) {
+  const options = {
+    maxsize: 5242880, // 5MB
+    maxFiles: 5,
+    dirname: "logs/",
+    tailable: true
+  };
+  const onlyErrors = new winston.transports.File({ ...options, filename: "error.log", level: "error" });
+  const allLogs = new winston.transports.File({ ...options, filename: "combined.log" });
+  transports.push(onlyErrors, allLogs);
+}
 
 const logger = winston.createLogger({
-  level: isProduction ? "info" : "debug",
+  level,
+  transports,
   format: winston.format.combine(
     winston.format.timestamp(),
     isProduction
@@ -13,9 +30,6 @@ const logger = winston.createLogger({
       return `${timestamp} ${level}: ${message}`;
     })
   ),
-  transports: [
-    new winston.transports.Console()
-  ],
 });
 
 export default logger;

@@ -41,6 +41,7 @@ export enum Content {
   STAGE_1_IGNORE_MIN = "Stage_1_Ignore_Min",
   STAGE_1_IGNORE_MAX = "Stage_1_Ignore_Max",
   STAGE_1_PROCESSING = "Stage_1_Processing",
+  STAGE_1_YOU_CAN_RESET = "Stage_1_You_Can_Reset",
   STAGE_1_END = "Stage_1_End",
   STAGE_2_INITIAL = "Stage_2_Initial",
   STAGE_2 = "Stage_2",

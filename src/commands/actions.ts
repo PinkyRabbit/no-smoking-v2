@@ -183,6 +183,14 @@ export class Actions extends Mixin(DevActions, Settings) {
       deltaTimesLeft -= 1;
       update.minDeltaTimesInitial = msg.user.minDeltaTimesInitial.concat(deltaTime);
     }
+    if (isValidDeltaTime && msg.user.minDeltaTimesInitial.length > 3) {
+      const currentDeltaValues = msg.user.minDeltaTimesInitial;
+      const deltaSum = currentDeltaValues.reduce((acc, curr) => acc + curr, 0);
+      const currentDelta = deltaSum / currentDeltaValues.length;
+      if (deltaTime > currentDelta * 2) {
+        await this._res(msg.user, Content.STAGE_1_YOU_CAN_RESET);
+      }
+    }
     if (isValidDeltaTime && deltaTimesLeft > 0) {
       await this._res(msg.user, Content.STAGE_1_PROCESSING, { stage_1_left: deltaTimesLeft }, DialogKey.im_smoking);
     }

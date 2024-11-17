@@ -67,6 +67,7 @@ export const dialogsEn: MultilineContent = {
   [Content.STAGE_1_IGNORE_MIN]: DEFAULT,
   [Content.STAGE_1_IGNORE_MAX]: DEFAULT,
   [Content.STAGE_1_PROCESSING]: DEFAULT,
+  [Content.STAGE_1_YOU_CAN_RESET]: DEFAULT,
   [Content.STAGE_1_END]: DEFAULT,
   [Content.STAGE_2]: DEFAULT,
   [Content.STAGE_2_INITIAL]: DEFAULT,
