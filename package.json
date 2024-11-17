@@ -9,7 +9,7 @@
   },
   "scripts": {
     "start": "nodemon -r dotenv/config --exec ts-node src/index.ts",
-    "build": "tsc",
+    "build": "tsc -p tsconfig.prod.json",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write \"src/**/*.ts\"",
