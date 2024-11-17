@@ -1,6 +1,6 @@
 {
   "name": "no-smoking-v2",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "main": "index.js",
   "author": "Mikita Melnikau <usesa@yandex.com>",
   "license": "MIT",
@@ -9,7 +9,7 @@
   },
   "scripts": {
     "start": "nodemon -r dotenv/config --exec ts-node src/index.ts",
-    "build": "tsc",
+    "build": "tsc -p tsconfig.prod.json",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write \"src/**/*.ts\"",

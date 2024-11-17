@@ -7,10 +7,11 @@ const level = isProduction && !isFileLoggingEnabled ? "info" : "debug";
 
 const transports: winston.transport[] = [new winston.transports.Console()];
 if (isFileLoggingEnabled) {
+  const dirname = isProduction ? "logger/logs/" : "logs/";
   const options = {
+    dirname,
     maxsize: 5242880, // 5MB
     maxFiles: 5,
-    dirname: "logs/",
     tailable: true
   };
   const onlyErrors = new winston.transports.File({ ...options, filename: "error.log", level: "error" });
