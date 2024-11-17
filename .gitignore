@@ -8,6 +8,5 @@ jspm_packages/
 .env
 .cache
 dist
-logs
 *.log
 npm-debug.log*
