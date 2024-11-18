@@ -25,6 +25,7 @@ jobs:
         run: |
           cp -r node_modules dist/
           cp package.json dist/
+          mkdir dist/logs
       - name: Deploy to my EC2 instance
         uses: easingthemes/ssh-deploy@main
         env:
