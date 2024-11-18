@@ -8,7 +8,7 @@ const level = isProduction && !isFileLoggingEnabled ? "info" : "debug";
 const transports: winston.transport[] = [new winston.transports.Console()];
 if (isFileLoggingEnabled) {
   const options = {
-    dirname: "logger/logs/",
+    dirname: "logs/",
     maxsize: 5242880, // 5MB
     maxFiles: 5,
     tailable: true
