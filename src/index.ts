@@ -17,7 +17,7 @@ if (!token) {
 initDatabase()
   .then(() => {
     logger.info("Connected to database");
-    const bot = new TgBot(token, { polling: true });
+    const bot = new TgBot(token);
     botActionsInit(bot);
     startMinutelySmokingTimeTest(bot);
   })
