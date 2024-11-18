@@ -158,6 +158,7 @@ export class Actions extends Mixin(DevActions, Settings) {
       await this._res(msg.user, Content.FIRST_STEP, { stage_1_left: STAGE_1_STEPS }, DialogKey.im_smoking);
       return;
     }
+    logger.debug("_stage1 handler"); // @FIXME: to remove!
     const timeDifferenceMs = msg.ts - msg.user.lastTime;
     const deltaTime = Math.round(timeDifferenceMs / 60 / 1000); // in minutes
     logger.debug(`timeDifferenceMs = ${msg.ts} - ${msg.user.lastTime} = ${timeDifferenceMs} (${deltaTime} min)`);
@@ -196,6 +197,7 @@ export class Actions extends Mixin(DevActions, Settings) {
     }
     if (!isValidDeltaTime || deltaTimesLeft > 0) {
       await UsersRepo.updateUser(msg, update);
+      logger.debug("exit", !isValidDeltaTime, deltaTimesLeft > 0); // @FIXME: to remove!
       return;
     }
     // on complete
@@ -278,9 +280,12 @@ export class Actions extends Mixin(DevActions, Settings) {
   @transformMsg
   @onlyForKnownUsers
   public async imSmokingHandler(msg: TelegramBot.Message) {
+    logger.debug("imSmokingHandler"); // @FIXME: to remove!
     if (!msg.user.minDeltaTime) {
+      logger.debug("stage 1 call"); // @FIXME: to remove!
       return this._stage1(msg);
     }
+    logger.debug("stage 2 call"); // @FIXME: to remove!
     return this._stage2(msg);
   }
 
