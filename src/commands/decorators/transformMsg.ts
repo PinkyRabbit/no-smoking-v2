@@ -6,9 +6,9 @@ import { dateNow } from "../../lib_helpers/luxon";
 export function transformMsg(target: unknown, propertyKey: string, descriptor: PropertyDescriptor) {
   const originalMethod = descriptor.value;
   descriptor.value = async function(msg: Message, ...args: unknown[]) {
-    if (!msg.from || !msg.chat || !msg.message_id || !msg.date) {
+    if (!msg.chat.id) {
       logger.error("Invalid message", msg);
-      return Promise.resolve();
+      return;
     }
     msg.ts = dateNow();
     const user = await UsersRepo.getByChatId(msg.chat.id);

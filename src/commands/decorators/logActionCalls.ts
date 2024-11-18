@@ -13,17 +13,35 @@ export function LogActionCalls<T extends new (...args: any[]) => Actions>(constr
       super(...args);
 
       const methods = Object.getOwnPropertyNames(constructor.prototype)
-        .filter(name => typeof this[name as keyof this] === "function" && name !== "constructor" && !/_/.test(name));
+        .filter(name =>
+          typeof this[name as keyof this] === "function" &&
+          name !== "constructor" &&
+          !/_/.test(name)
+        );
 
-      // Replace each method with a wrapped version that logs the call
       for (const methodName of methods) {
         const originalMethod = this[methodName as keyof this];
         if (typeof originalMethod === "function") {
-          this[methodName as keyof Actions] = function(this: Actions, msg: Message, ...args: unknown[]) {
-            const argsStr = (args || []).map(arg => JSON.stringify(arg)).join(", ");
-            logger.info(`U-${msg.chat.id} ${methodName} ${argsStr}`);
-            return originalMethod.apply(this, [msg, ...args]);
+          const decoratedMethod = async function(this: Actions, msg: Message, ...args: unknown[]) {
+            try {
+              const argsStr = (args || []).map(arg => JSON.stringify(arg)).join(", ");
+              logger.info(`U-${msg.chat.id} ${methodName} ${argsStr}`);
+              return await originalMethod.apply(this, [msg, ...args]);
+            } catch (error) {
+              logger.error(`Error in ${methodName}:`, error);
+              throw error; // Re-throw to maintain error handling chain
+            }
           };
+          // Preserve method properties and descriptors
+          const descriptor = Object.getOwnPropertyDescriptor(constructor.prototype, methodName);
+          if (descriptor) {
+            Object.defineProperty(this, methodName, {
+              ...descriptor,
+              value: decoratedMethod
+            });
+          } else {
+            this[methodName as keyof Actions] = decoratedMethod;
+          }
         }
       }
     }
