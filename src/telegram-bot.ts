@@ -1,6 +1,6 @@
 import TelegramBot from "node-telegram-bot-api";
 import logger from "./logger";
-import { User } from "./db";
+import { User, UsersRepo } from "./db";
 import { ContentProps, getContent, getButtons } from "./content";
 import { Content, DialogKey } from "./constants";
 
@@ -37,6 +37,7 @@ class TgBot extends TelegramBot {
   private handleShutdown(signal: string): void {
     logger.info(`Received ${signal}, shutting down gracefully...`);
     this.stopPolling();
+    UsersRepo.closeConnection();
     process.exit(0);
   }
 
