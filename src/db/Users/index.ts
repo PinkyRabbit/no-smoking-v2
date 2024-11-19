@@ -1,4 +1,4 @@
-import monk  from "monk";
+import monk, { IMonkManager } from "monk";
 import { Message } from "node-telegram-bot-api";
 import logger from "../../logger";
 import { RequestOptions } from "../dbOptionsConstructor";
@@ -106,7 +106,33 @@ export type User = {
 };
 
 export class UsersRepo extends RequestOptions {
+  private static instance: UsersRepo | null = null;
+  private static db: IMonkManager | null = null;
   public readonly Users = monk(this.connectionString, this.options).get<User>("users");
+
+  constructor() {
+    super();
+    if (!UsersRepo.instance) {
+      UsersRepo.db = monk(this.connectionString, this.options);
+      this.Users = UsersRepo.db.get<User>("users");
+      UsersRepo.instance = this;
+      return this;
+    }
+    return UsersRepo.instance;
+  }
+
+  static async closeConnection(): Promise<void> {
+    if (!UsersRepo.db) {
+      return;
+    }
+    try {
+      await UsersRepo.db.close();
+      UsersRepo.instance = null;
+      UsersRepo.db = null;
+    } catch(e) {
+      logger.error(e);
+    }
+  }
 
   static getByChatId(chatId: number) {
     const that = new UsersRepo();
