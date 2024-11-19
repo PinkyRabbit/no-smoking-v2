@@ -1,4 +1,4 @@
-import monk  from "monk";
+import monk, { IMonkManager, ICollection } from "monk";
 import { Message } from "node-telegram-bot-api";
 import logger from "../../logger";
 import { RequestOptions } from "../dbOptionsConstructor";
@@ -106,15 +106,48 @@ export type User = {
 };
 
 export class UsersRepo extends RequestOptions {
-  public readonly Users = monk(this.connectionString, this.options).get<User>("users");
+  private static instance: UsersRepo | null = null;
+  public static db: IMonkManager | null = null;
+
+  constructor() {
+    super();
+    if (!UsersRepo.instance) {
+      UsersRepo.db = monk(this.connectionString, this.options);
+      UsersRepo.instance = this;
+      return this;
+    }
+    return UsersRepo.instance;
+  }
+
+  public static get call(): ICollection<User> {
+    if (!UsersRepo.instance) {
+      UsersRepo.instance = new UsersRepo();
+    }
+    if (!UsersRepo.db) {
+      throw new Error("Database connection not initialized");
+    }
+    return UsersRepo.db.get<User>("users");
+  }
+
+  static async closeConnection(): Promise<void> {
+    if (!UsersRepo.db) {
+      return;
+    }
+    try {
+      await UsersRepo.db.close();
+      UsersRepo.instance = null;
+      UsersRepo.db = null;
+      logger.info("DB connection closed");
+    } catch(e) {
+      logger.error(e);
+    }
+  }
 
   static getByChatId(chatId: number) {
-    const that = new UsersRepo();
-    return that.Users.findOne({ chatId });
+    return UsersRepo.call.findOne({ chatId });
   }
 
   static addNewUser(chatId: number, lang: Lang) {
-    const that = new UsersRepo();
     const defaultUser: User = {
       chatId,
       lang,
@@ -131,14 +164,13 @@ export class UsersRepo extends RequestOptions {
       motivizerIndex: 0,
       startDate: new Date(),
     };
-    return that.Users.insert(defaultUser);
+    return UsersRepo.call.insert(defaultUser);
   }
 
   static async updateUser(msg: Message, update: Partial<User>) {
     const chatId = msg.user.chatId;
     logWithTimestamps(`U-${chatId} [update]`, update);
-    const that = new UsersRepo();
-    await that.Users.update({ chatId }, { $set: update });
+    await UsersRepo.call.update({ chatId }, { $set: update });
     Object.entries(update).forEach(([key, value]) => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-expect-error
@@ -161,17 +193,15 @@ export class UsersRepo extends RequestOptions {
 
   static removeUser(chatId: number) {
     logger.debug(`U-${chatId} [delete]`);
-    const that = new UsersRepo();
-    return that.Users.remove({ chatId });
+    return UsersRepo.call.remove({ chatId });
   }
 
   /**
    * Method returns all users who reached their targeted time
    */
   static async getAllSmokersToSmoke(): Promise<User[]> {
-    const that = new UsersRepo();
     const ts = dateNow();
-    const users = await that.Users.find({
+    const users = await UsersRepo.call.find({
       $and: [
         { nextTime: { $ne: 0 } },
         { nextTime: { $lte: ts } },
@@ -181,7 +211,7 @@ export class UsersRepo extends RequestOptions {
     const chatIds = users.map(({ chatId }) => chatId);
     const dateTimeString = tsToDateTime(ts);
     logger.info(`[${dateTimeString}] smokingTimeTest call, ${chatIds.length} affected`);
-    await that.Users.update({ _id: { $in: userIds } }, { $set: { nextTime: 0 } });
+    await UsersRepo.call.update({ _id: { $in: userIds } }, { $set: { nextTime: 0 } });
     return users;
   }
 
@@ -189,9 +219,8 @@ export class UsersRepo extends RequestOptions {
    * Method returns all users who reached their targeted time
    */
   static async getAllIgnoringBot(): Promise<User[]> {
-    const that = new UsersRepo();
     const ts = dateNow();
-    const users = await that.Users.find({
+    const users = await UsersRepo.call.find({
       $and: [
         { ignoreTime: { $ne: 0 } },
         { ignoreTime: { $lte: ts } },
@@ -201,7 +230,7 @@ export class UsersRepo extends RequestOptions {
     const chatIds = users.map(({ chatId }) => chatId);
     const dateTimeString = tsToDateTime(ts);
     logger.info(`[${dateTimeString}] ignoringBot call, ${chatIds.length} affected`);
-    await that.Users.update({ _id: { $in: userIds } }, { $set: { ignoreTime: 0 } });
+    await UsersRepo.call.update({ _id: { $in: userIds } }, { $set: { ignoreTime: 0 } });
     return users;
   }
 }
