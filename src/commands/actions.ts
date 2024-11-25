@@ -33,7 +33,7 @@ export class Actions extends Mixin(DevActions, Settings) {
     this.devModeDisabled = this.devModeDisabled.bind(this);
   }
 
-  protected override _res(
+  override _res(
     user: User,
     contentKey: Content,
     contentProps: ContentProps = {},

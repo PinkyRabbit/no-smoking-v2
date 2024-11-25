@@ -4,8 +4,11 @@
     <node-options />
     <working-directory />
     <pass-parent-env>true</pass-parent-env>
+    <envs>
+      <env name="NODE_ENV" value="test" />
+    </envs>
     <ui />
-    <extra-mocha-options />
+    <extra-mocha-options>--no-cache</extra-mocha-options>
     <test-kind>DIRECTORY</test-kind>
     <test-directory />
     <recursive>false</recursive>
