@@ -3,12 +3,13 @@ import { expect } from "chai";
 import sinon from "sinon";
 import { Chat, Message } from "node-telegram-bot-api";
 import { IObjectID } from "monk";
+import { DateTime, Settings as LuxonSettings } from "luxon";
 import TgBot from "../telegram-bot";
-import { Actions } from "./actions";
 import { Content, DialogKey, Lang } from "../constants";
 import logger from "../logger";
 import { PlainUser } from "../global";
 import { UsersRepo } from "../db";
+import { Actions } from "./actions";
 
 describe("Actions", () => {
   let botMock: sinon.SinonStubbedInstance<TgBot>;
@@ -19,8 +20,14 @@ describe("Actions", () => {
   let updateUserStub: sinon.SinonStub;
   let _resSpy: sinon.SinonSpy;
 
-
   beforeEach(() => {
+    // lock time
+    const currentDate = new Date("2023-06-15T12:00:00Z");
+    const dateNow = currentDate.getTime();
+    clock = sinon.useFakeTimers(dateNow);
+    LuxonSettings.defaultZone = "Etc/GMT";
+    LuxonSettings.now = () => currentDate.getTime();
+
     const _id = "unit-test-user-id" as unknown as IObjectID;
     user = {
       _id,
@@ -36,17 +43,17 @@ describe("Actions", () => {
       penalty: 0,
       penaltyAll: 0,
       motivizerIndex: 0,
-      startDate: new Date(),
+      startDate: currentDate,
     };
     msg = {
       user,
       chat: { id: user.chatId } as Chat,
-      ts: Date.now(),
+      ts: dateNow,
       message_id: 123,
       date: 123,
     };
     sinon.stub(logger, "debug");
-    clock = sinon.useFakeTimers();
+
     const decoratorStub = sinon.stub().callsFake(
       function testDecorator(target: unknown, propertyKey: string, descriptor: PropertyDescriptor) {
         return descriptor;
@@ -86,11 +93,18 @@ describe("Actions", () => {
     sinon.restore();
   });
 
+  it ("timers should be frozen", () => {
+    expect(new Date().toISOString()).to.equal("2023-06-15T12:00:00.000Z");
+    expect(DateTime.now().toISO()).to.equal("2023-06-15T12:00:00.000+00:00");
+  });
+
   describe("imSmokingHandler", () => {
-    it ("Stage 1. Should send a welcome message on first button click.", async () => {
+    it ("Stage 1. Should send a FIRST_STEP message on first button click.", async () => {
       await actions.imSmokingHandler(msg);
       expect(_resSpy.calledOnce).to.be.true;
       expect(_resSpy.firstCall.args).to.be.deep.equal([user, Content.FIRST_STEP, { stage_1_left: 20 }, DialogKey.im_smoking]);
+      expect(updateUserStub.calledOnce).to.be.true;
+      expect(updateUserStub.firstCall.args[1]).to.be.deep.equal({ lastTime: Date.now() });
     });
   });
 });
