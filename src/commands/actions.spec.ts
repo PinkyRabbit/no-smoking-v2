@@ -106,5 +106,51 @@ describe("Actions", () => {
       expect(updateUserStub.calledOnce).to.be.true;
       expect(updateUserStub.firstCall.args[1]).to.be.deep.equal({ lastTime: Date.now() });
     });
+
+    it("Stage 1. Should send a STAGE_1_PROCESSING message on second button click.", async () => {
+      user.lastTime = Date.now();
+
+      // shift time 20 minutes
+      const timeShift = 20 * 60 * 1000;
+      msg.ts += timeShift;
+      clock.tick(timeShift);
+
+      await actions.imSmokingHandler(msg);
+      expect(_resSpy.calledOnce).to.be.true;
+      expect(_resSpy.firstCall.args).to.be.deep.equal([user, Content.STAGE_1_PROCESSING, { stage_1_left: 19 }, DialogKey.im_smoking]);
+    });
+
+    it ("Stage 1. On STAGE_1_PROCESSING second click should correctly update the User", async () => {
+      user.lastTime = Date.now();
+
+      const minutes = 47;
+      const timeShift = minutes * 60 * 1000;
+      msg.ts += timeShift;
+      clock.tick(timeShift);
+
+      await actions.imSmokingHandler(msg);
+      expect(updateUserStub.calledOnce).to.be.true;
+      expect(updateUserStub.firstCall.args[1]).to.be.deep.equal({
+        lastTime: msg.ts,
+        minDeltaTimesInitial: [minutes],
+      });
+    });
+
+    it ("Stage 1. On STAGE_1_PROCESSING should correctly shift time in middle", async () => {
+      user.lastTime = Date.now();
+      user.minDeltaTimesInitial = [10, 20, 30, 40];
+
+      const minutes = 47;
+      const timeShift = minutes * 60 * 1000;
+      msg.ts += timeShift;
+      clock.tick(timeShift);
+
+      await actions.imSmokingHandler(msg);
+      expect(updateUserStub.calledOnce).to.be.true;
+      expect(updateUserStub.firstCall.args[1]).to.be.deep.equal({
+        lastTime: msg.ts,
+        minDeltaTimesInitial: [...msg.user.minDeltaTimesInitial, minutes],
+      });
+    });
   });
 });
