@@ -9,6 +9,7 @@ import { Content, DialogKey, Lang } from "../constants";
 import logger from "../logger";
 import { PlainUser } from "../global";
 import { UsersRepo } from "../db";
+import { MIN_INTERVAL, STAGE_1_MAX, STAGE_1_STEPS } from "./constants";
 import { Actions } from "./actions";
 
 describe("Actions", () => {
@@ -146,6 +147,77 @@ describe("Actions", () => {
       clock.tick(timeShift);
 
       await actions.imSmokingHandler(msg);
+      expect(updateUserStub.calledOnce).to.be.true;
+      expect(updateUserStub.firstCall.args[1]).to.be.deep.equal({
+        lastTime: msg.ts,
+        minDeltaTimesInitial: [...msg.user.minDeltaTimesInitial, minutes],
+      });
+    });
+
+    it ("Stage 1. Show notification if user clicking too quickly", async () => {
+      user.lastTime = Date.now();
+      user.minDeltaTimesInitial = [10, 20, 30, 40];
+
+      const minutes = MIN_INTERVAL - 1;
+      const timeShift = minutes * 60 * 1000;
+      msg.ts += timeShift;
+      clock.tick(timeShift);
+
+      await actions.imSmokingHandler(msg);
+      expect(_resSpy.calledOnce).to.be.true;
+      expect(_resSpy.firstCall.args).to.be.deep.equal(
+        [
+          user,
+          Content.STAGE_1_IGNORE_MIN,
+          {
+            min_stage_1: `${MIN_INTERVAL} minutes`,
+            stage_1_left: STAGE_1_STEPS - user.minDeltaTimesInitial.length,
+          },
+          DialogKey.im_smoking,
+        ]);
+      expect(updateUserStub.calledOnce).to.be.true;
+      expect(updateUserStub.firstCall.args[1]).to.be.deep.equal({ lastTime: msg.user.lastTime });
+    });
+
+    it ("Stage 1. Show notification if click delay is bigger than maximum", async () => {
+      user.lastTime = Date.now();
+      user.minDeltaTimesInitial = [10, 20, 30, 40];
+
+      const minutes = STAGE_1_MAX + 1;
+      const timeShift = minutes * 60 * 1000;
+      msg.ts += timeShift;
+      clock.tick(timeShift);
+
+      await actions.imSmokingHandler(msg);
+      expect(_resSpy.calledOnce).to.be.true;
+      expect(_resSpy.firstCall.args).to.be.deep.equal(
+        [
+          user,
+          Content.STAGE_1_IGNORE_MAX ,
+          {
+            max_stage_1: STAGE_1_MAX,
+            stage_1_left: STAGE_1_STEPS - user.minDeltaTimesInitial.length,
+          },
+          DialogKey.im_smoking,
+        ]);
+      expect(updateUserStub.calledOnce).to.be.true;
+      expect(updateUserStub.firstCall.args[1]).to.be.deep.equal({ lastTime: msg.ts });
+    });
+
+    it ("Stage 1. Should show additional hint if the value is twice more than middle value", async () => {
+      user.lastTime = Date.now();
+      user.minDeltaTimesInitial = [10, 20, 30, 40];
+      const middleValue = user.minDeltaTimesInitial.reduce((a, b) => a + b, 0) / user.minDeltaTimesInitial.length;
+      const minutes = middleValue * 2 + 1;
+      const timeShift = minutes * 60 * 1000;
+      msg.ts += timeShift;
+      clock.tick(timeShift);
+      const expectedStage1Left = STAGE_1_STEPS - user.minDeltaTimesInitial.length - 1;
+
+      await actions.imSmokingHandler(msg);
+      expect(_resSpy.calledTwice).to.be.true;
+      expect(_resSpy.firstCall.args).to.be.deep.equal([user, Content.STAGE_1_YOU_CAN_RESET ]);
+      expect(_resSpy.secondCall.args).to.be.deep.equal([user, Content.STAGE_1_PROCESSING, { stage_1_left: expectedStage1Left }, DialogKey.im_smoking]);
       expect(updateUserStub.calledOnce).to.be.true;
       expect(updateUserStub.firstCall.args[1]).to.be.deep.equal({
         lastTime: msg.ts,
