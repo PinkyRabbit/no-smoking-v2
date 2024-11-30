@@ -5,11 +5,11 @@ import { Chat, Message } from "node-telegram-bot-api";
 import { IObjectID } from "monk";
 import { DateTime, Settings as LuxonSettings } from "luxon";
 import TgBot from "../telegram-bot";
-import { Content, DialogKey, Lang } from "../constants";
+import { Content, DialogKey, Difficulty, Lang } from "../constants";
 import logger from "../logger";
 import { PlainUser } from "../global";
 import { UsersRepo } from "../db";
-import { MIN_INTERVAL, STAGE_1_MAX, STAGE_1_STEPS } from "./constants";
+import { IGNORE_TIME, MIN_INTERVAL, STAGE_1_MAX, STAGE_1_STEPS, USER_IDLE_TIME } from "./constants";
 import { Actions } from "./actions";
 
 describe("Actions", () => {
@@ -53,7 +53,8 @@ describe("Actions", () => {
       message_id: 123,
       date: 123,
     };
-    sinon.stub(logger, "debug");
+    const loggerFake = ((log: string) => console.log(log)) as never;
+    sinon.stub(logger, "debug").callsFake(loggerFake);
 
     const decoratorStub = sinon.stub().callsFake(
       function testDecorator(target: unknown, propertyKey: string, descriptor: PropertyDescriptor) {
@@ -252,6 +253,133 @@ describe("Actions", () => {
         minDeltaTime: EXPECTED_MINUTES,
       });
       expect(onLevelStub.calledOnce).to.be.true;
+    });
+
+    it ("Stage 2. Should not enter stage 2 without required props", async () => {
+      const timeShift = 100 * 60 * 1000;
+      user.lastTime = Date.now();
+      user.deltaTime = 73;
+      user.minDeltaTime = 73;
+      msg.ts = user.lastTime  + timeShift;
+
+      await actions.imSmokingHandler(msg);
+      expect(_resSpy.calledOnce).to.be.true;
+      expect(_resSpy.firstCall.args[1]).to.be.deep.equal(Content.STAGE_2_PROPS_MISSING);
+    });
+
+    it ("Stage 2. Should correctly compute the next value for I'm smoking", async () => {
+      const timeShift = 100 * 60 * 1000;
+      user.lastTime = Date.now();
+      user.deltaTime = 73;
+      user.minDeltaTime = 52;
+      user.timezone = "UTC+01:00";
+      user.lang = Lang.RU;
+      user.difficulty = Difficulty.EASY;
+      msg.ts = user.lastTime + timeShift;
+
+      await actions.imSmokingHandler(msg);
+      expect(_resSpy.calledOnce).to.be.true;
+      expect(_resSpy.firstCall.args).to.be.deep.equal([
+        user,
+        Content.STAGE_2,
+        { time_to_get_smoke: "15:53" },
+        DialogKey.im_smoking,
+      ]);
+      expect(updateUserStub.calledOnce).to.be.true;
+      expect(updateUserStub.firstCall.args[1]).to.be.deep.equal({
+        lastTime: msg.ts,
+        nextTime: msg.ts + (user.deltaTime * 60 * 1000),
+        ignoreTime: msg.ts + IGNORE_TIME,
+      });
+    });
+
+    it ("Stage 2. Should ignore too quick calls", async () => {
+      const timeShift = (MIN_INTERVAL - 1) * 60 * 1000;
+      user.lastTime = Date.now();
+      user.deltaTime = 73;
+      user.minDeltaTime = 52;
+      user.timezone = "UTC+01:00";
+      user.lang = Lang.RU;
+      user.difficulty = Difficulty.EASY;
+      msg.ts = user.lastTime + timeShift;
+
+      await actions.imSmokingHandler(msg);
+      expect(_resSpy.calledOnce).to.be.true;
+      expect(_resSpy.firstCall.args[1]).to.be.equal(Content.STAGE_2_IGNORE_MIN);
+      expect(updateUserStub.called).to.be.false;
+    });
+
+    it ("Stage 2. Should use a penalty if value is lower than delta time", async () => {
+      user.lastTime = Date.now();
+      user.deltaTime = 73;
+      user.minDeltaTime = 52;
+      user.timezone = "UTC+01:00";
+      user.lang = Lang.RU;
+      user.difficulty = Difficulty.EASY;
+      user.penalty = 1.5;
+      user.penaltyAll = 2.5;
+      user.nextTime = user.lastTime + (user.deltaTime * 60 * 1000);
+      const timeShift = (user.deltaTime - 1) * 60 * 1000;
+      msg.ts = user.lastTime + timeShift;
+
+      await actions.imSmokingHandler(msg);
+      expect(_resSpy.calledTwice).to.be.true;
+      expect(_resSpy.firstCall.args[1]).to.be.equal(Content.PENALTY);
+      expect(_resSpy.firstCall.args[2]).to.be.deep.equal({ penalty: 2 });
+      expect(_resSpy.secondCall.args).to.be.deep.equal([
+        user,
+        Content.STAGE_2,
+        { time_to_get_smoke: "15:25" },
+        DialogKey.im_smoking,
+      ]);
+      expect(updateUserStub.calledOnce).to.be.true;
+      expect(updateUserStub.firstCall.args[1]).to.be.deep.equal({
+        lastTime: msg.ts,
+        nextTime: msg.ts + (user.deltaTime * 60 * 1000),
+        ignoreTime: msg.ts + IGNORE_TIME,
+        penalty: 2,
+        penaltyAll: 3,
+      });
+    });
+
+    it ("Stage 2. Should display motivizer for too big pause", async () => {
+      const timeShift = (USER_IDLE_TIME + 1)* 60 * 1000;
+      user.lastTime = Date.now();
+      user.deltaTime = 73;
+      user.minDeltaTime = 52;
+      user.timezone = "UTC+01:00";
+      user.lang = Lang.RU;
+      user.difficulty = Difficulty.EASY;
+      msg.ts = user.lastTime + timeShift;
+
+      await actions.imSmokingHandler(msg);
+      expect(_resSpy.called).to.be.false;
+      expect(botMock.sendMessage.calledOnce).to.be.true;
+    });
+
+    it ("Stage 2. Should correctly update the user for too big pause", async () => {
+      const timeShift = (USER_IDLE_TIME + 1) * 60 * 1000;
+      user.lastTime = Date.now();
+      user.deltaTime = 73.5;
+      user.penalty = 3;
+      user.minDeltaTime = 52;
+      user.timezone = "UTC+01:00";
+      user.lang = Lang.RU;
+      user.difficulty = Difficulty.EASY;
+      msg.ts = user.lastTime + timeShift;
+
+      await actions.imSmokingHandler(msg);
+
+      const newDelta = user.deltaTime - user.penalty + user.difficulty;
+      expect(updateUserStub.calledOnce).to.be.true;
+      expect(updateUserStub.firstCall.args[1]).to.be.deep.equal({
+        lastTime: msg.ts,
+        ignoreTime: msg.ts + IGNORE_TIME,
+        penalty: 0,
+        motivizerIndex: 1,
+        deltaTime: newDelta,
+        nextTime: msg.ts + (newDelta * 60 * 1000),
+      });
     });
   });
 });

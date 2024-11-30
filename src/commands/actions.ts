@@ -7,7 +7,7 @@ import { Content, DialogKey, Lang, Motivizer } from "../constants";
 import { DevActions } from "./development";
 import { Settings } from "./settings";
 import { User, UsersRepo } from "../db";
-import { MIN_INTERVAL, STAGE_1_MAX, STAGE_1_STEPS, USER_IDLE_TIME } from "./constants";
+import { IGNORE_TIME, MIN_INTERVAL, STAGE_1_MAX, STAGE_1_STEPS, USER_IDLE_TIME } from "./constants";
 import { minsToTimeString } from "../lib_helpers/humanize-duration";
 import { LogActionCalls, onlyForKnownUsers, transformMsg } from "./decorators";
 import { tgLangCodeToLang } from "../lib_helpers/i18n";
@@ -230,14 +230,14 @@ export class Actions extends Mixin(DevActions, Settings) {
     const update: Partial<User> = {
       lastTime: msg.ts,
       nextTime: msg.ts + (msg.user.deltaTime * 60 * 1000),
-      ignoreTime: msg.ts + (2 * 24 * 60 * 1000),
+      ignoreTime: msg.ts + IGNORE_TIME,
     };
     // penalty
     if (msg.ts < msg.user.nextTime) {
       logger.debug(`U-${msg.user.chatId} [penalty] ${tsToDateTime(msg.ts)} < ${tsToDateTime(msg.user.nextTime)}`);
       const penalty = ((msg.user.penalty * 10) + (msg.user.difficulty * 10)) / 10;
       update.penalty = penalty;
-      update.penaltyAll = ((penalty * 10) + (msg.user.penaltyAll * 10)) / 10;
+      update.penaltyAll = ((msg.user.difficulty * 10) + (msg.user.penaltyAll * 10)) / 10;
       await this._res(msg.user, Content.PENALTY, { penalty });
     }
     // idle
@@ -280,12 +280,9 @@ export class Actions extends Mixin(DevActions, Settings) {
   @transformMsg
   @onlyForKnownUsers
   public async imSmokingHandler(msg: TelegramBot.Message) {
-    logger.debug("imSmokingHandler"); // @FIXME: to remove!
     if (!msg.user.minDeltaTime) {
-      logger.debug("stage 1 call"); // @FIXME: to remove!
       return this._stage1(msg);
     }
-    logger.debug("stage 2 call"); // @FIXME: to remove!
     return this._stage2(msg);
   }
 
