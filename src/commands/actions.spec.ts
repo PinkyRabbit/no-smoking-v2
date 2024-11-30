@@ -81,11 +81,7 @@ describe("Actions", () => {
     const Actions = actionsModule.Actions;
     botMock = sinon.createStubInstance(TgBot);
     actions = new Actions(botMock);
-    actions._res = sinon.stub().callsFake(() => {
-      // actions._res = sinon.stub().callsFake((...args) => {
-      // console.log(args);
-      return Promise.resolve();
-    });
+    actions._res = sinon.stub().resolves();
     _resSpy = actions._res as sinon.SinonSpy;
   });
 
@@ -223,6 +219,39 @@ describe("Actions", () => {
         lastTime: msg.ts,
         minDeltaTimesInitial: [...msg.user.minDeltaTimesInitial, minutes],
       });
+    });
+
+    it("Stage 1. Should complete the Stage 1 on full minDeltaInitial", async () => {
+      const minDeltaTimesInitial = [];
+      let step = 30;
+      for (let i = 0; i < STAGE_1_STEPS - 1; i++) {
+        minDeltaTimesInitial.push(MIN_INTERVAL + step);
+        step += 3;
+      }
+      user.minDeltaTimesInitial = minDeltaTimesInitial;
+      user.lastTime = Date.now();
+      const minutes = 47;
+      const timeShift = minutes * 60 * 1000;
+      msg.ts += timeShift;
+
+      const EXPECTED_MINUTES = 76;
+      const EXPECTED_STRING = "1 hour 16 minutes";
+
+      const onLevelStub = sinon.stub(actions, "onLevel").resolves();
+
+      await actions.imSmokingHandler(msg);
+
+      expect(_resSpy.calledTwice).to.be.true;
+      expect(_resSpy.firstCall.args).to.be.deep.equal([user, Content.STAGE_1_END, { delta_time:  EXPECTED_STRING }]);
+      expect(_resSpy.secondCall.args).to.be.deep.equal([user, Content.SETTINGS]);
+      expect(updateUserStub.calledOnce).to.be.true;
+      expect(updateUserStub.firstCall.args[1]).to.be.deep.equal({
+        lastTime: msg.ts,
+        minDeltaTimesInitial: [],
+        deltaTime: EXPECTED_MINUTES,
+        minDeltaTime: EXPECTED_MINUTES,
+      });
+      expect(onLevelStub.calledOnce).to.be.true;
     });
   });
 });
