@@ -1,11 +1,12 @@
 import TelegramBot from "node-telegram-bot-api";
+import { DateTime } from "luxon";
 import { onlyForKnownUsers, transformMsg } from "./decorators";
 import { Content, DialogKey, Difficulty, Lang } from "../constants";
 import { mssToTime } from "../lib_helpers/luxon";
 import { difficultyNameByLevel } from "../helpers";
 import { UsersRepo } from "../db";
 import logger from "../logger";
-import { DateTime } from "luxon";
+import { IGNORE_TIME } from "./constants";
 
 export class Settings {
   /**
@@ -133,7 +134,7 @@ export class Settings {
       const nextTime = msg.ts + (msg.user.deltaTime * 60 * 1000);
       await UsersRepo.updateUser(msg, {
         nextTime,
-        ignoreTime: msg.ts + (2 * 24 * 60 * 1000),
+        ignoreTime: msg.ts + IGNORE_TIME,
       });
       const time_to_get_smoke = mssToTime(nextTime, msg.user.timezone!);
       await this._res(msg.user, Content.STAGE_2_INITIAL,  { time_to_get_smoke }, DialogKey.im_smoking);

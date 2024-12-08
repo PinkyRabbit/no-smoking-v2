@@ -7,13 +7,14 @@ import { Content, DialogKey, Lang, Motivizer } from "../constants";
 import { DevActions } from "./development";
 import { Settings } from "./settings";
 import { User, UsersRepo } from "../db";
-import { IGNORE_TIME, MIN_INTERVAL, STAGE_1_MAX, STAGE_1_STEPS, USER_IDLE_TIME } from "./constants";
+import { IGNORE_TIME, MIN_INTERVAL, PENALTY_STEP, STAGE_1_MAX, STAGE_1_STEPS, USER_IDLE_TIME } from "./constants";
 import { minsToTimeString } from "../lib_helpers/humanize-duration";
 import { LogActionCalls, onlyForKnownUsers, transformMsg } from "./decorators";
 import { tgLangCodeToLang } from "../lib_helpers/i18n";
 import { tsToDateTime, mssToTime, getFormattedStartDate } from "../lib_helpers/luxon";
 import logger from "../logger";
 import { stage2 } from "./decorators/stage2";
+import { cigarettesText } from "../helpers/content";
 
 @LogActionCalls
 export class Actions extends Mixin(DevActions, Settings) {
@@ -86,7 +87,7 @@ export class Actions extends Mixin(DevActions, Settings) {
    * Helper to calculate new delta time
    */
   private computeNewDelta = ({ deltaTime, difficulty, penalty, minDeltaTime }: Pick<User, "deltaTime" | "difficulty" | "penalty" | "minDeltaTime">) => {
-    const newDelta = ((deltaTime * 10)  + (difficulty * 10) - (penalty * 10)) / 10;
+    const newDelta = ((deltaTime * 10)  + (difficulty * 10) - (penalty * PENALTY_STEP * 10)) / 10;
     return newDelta >= minDeltaTime ? newDelta : minDeltaTime;
   };
 
@@ -154,11 +155,11 @@ export class Actions extends Mixin(DevActions, Settings) {
       lastTime: msg.ts,
     };
     if (!msg.user.lastTime) {
+      update.cigarettesSummary = 1;
       await UsersRepo.updateUser(msg, update);
       await this._res(msg.user, Content.FIRST_STEP, { stage_1_left: STAGE_1_STEPS }, DialogKey.im_smoking);
       return;
     }
-    logger.debug("_stage1 handler"); // @FIXME: to remove!
     const timeDifferenceMs = msg.ts - msg.user.lastTime;
     const deltaTime = Math.round(timeDifferenceMs / 60 / 1000); // in minutes
     logger.debug(`timeDifferenceMs = ${msg.ts} - ${msg.user.lastTime} = ${timeDifferenceMs} (${deltaTime} min)`);
@@ -171,6 +172,8 @@ export class Actions extends Mixin(DevActions, Settings) {
       update.lastTime = msg.user.lastTime;
       const contentProps = { min_stage_1: minsToTimeString(MIN_INTERVAL, msg.user.lang), stage_1_left: deltaTimesLeft };
       await this._res(msg.user, Content.STAGE_1_IGNORE_MIN, contentProps, DialogKey.im_smoking);
+    } else {
+      update.cigarettesSummary = msg.user.cigarettesSummary + 1;
     }
     // to skip calculation if delta is too big
     if (deltaTime > STAGE_1_MAX) {
@@ -231,37 +234,50 @@ export class Actions extends Mixin(DevActions, Settings) {
       lastTime: msg.ts,
       nextTime: msg.ts + (msg.user.deltaTime * 60 * 1000),
       ignoreTime: msg.ts + IGNORE_TIME,
+      cigarettesInDay: msg.user.cigarettesInDay + 1,
+      cigarettesSummary: msg.user.cigarettesSummary + 1,
     };
     // penalty
     if (msg.ts < msg.user.nextTime) {
       logger.debug(`U-${msg.user.chatId} [penalty] ${tsToDateTime(msg.ts)} < ${tsToDateTime(msg.user.nextTime)}`);
-      const penalty = ((msg.user.penalty * 10) + (msg.user.difficulty * 10)) / 10;
+      const penalty = msg.user.penalty + 1;
       update.penalty = penalty;
-      update.penaltyAll = ((msg.user.difficulty * 10) + (msg.user.penaltyAll * 10)) / 10;
+      update.penaltyAll = ((msg.user.difficulty * 10) + (PENALTY_STEP * 10)) / 10;
       await this._res(msg.user, Content.PENALTY, { penalty });
     }
     // idle
     if (currentDelta >= USER_IDLE_TIME) {
       logger.debug(`U-${msg.user.chatId} [idle] ${currentDelta} >= ${USER_IDLE_TIME}`);
-      const { deltaTime, difficulty, penalty } = msg.user;
+      const { deltaTime, difficulty, penalty, penaltyDays } = msg.user;
       const newDelta = this.computeNewDelta(msg.user);
       const newNextTime = msg.ts + (newDelta * 60 * 1000);
       update.penalty = 0;
+      update.penaltyDays = 0;
+      update.cigarettesInDay = 0;
       update.deltaTime = newDelta;
       update.nextTime = newNextTime;
+
+      if (penalty) {
+        update.penaltyDays = penaltyDays + 1;
+      }
+      if (update.penaltyDays === 3) {
+        update.penaltyDays = 0;
+        await this._res(msg.user, Content.PENALTY_3, {});
+      }
+
       const content: string[] = [];
-      content.push(getContent(msg.user.lang, Content.ON_IDLE_START));
+      const cigarettes = cigarettesText(msg);
+      content.push(getContent(msg.user.lang, Content.ON_IDLE_START, { cigarettes }));
 
       const motivizer = getContent(msg.user.lang, Motivizer);
       content.push(motivizer[msg.user.motivizerIndex]);
       const motivizerNext = msg.user.motivizerIndex + 1;
       update.motivizerIndex = motivizerNext !== motivizer.length ? motivizerNext : 0;
-
       content.push(getContent(msg.user.lang, Content.ON_IDLE_END, {
         prev_delta: minsToTimeString(deltaTime, msg.user.lang),
         new_delta: minsToTimeString(newDelta, msg.user.lang),
         time_to_get_smoke: mssToTime(update.nextTime, msg.user.timezone!),
-        penalty: minsToTimeString(penalty, msg.user.lang),
+        penalty: minsToTimeString(penalty * PENALTY_STEP, msg.user.lang),
         step: minsToTimeString(difficulty, msg.user.lang),
       }));
       const { reply_markup } = getButtons(msg.user.lang, DialogKey.im_smoking);
@@ -296,6 +312,7 @@ export class Actions extends Mixin(DevActions, Settings) {
     await UsersRepo.updateUser(msg, {
       lastTime: 0,
       nextTime: 0,
+      penaltyDays: 0,
     });
     const contentProps = { delta_time: minsToTimeString(msg.user.deltaTime, msg.user.lang) };
     await this._res(msg.user, Content.START_RESET_IGNORE,contentProps, DialogKey.im_smoking);
@@ -311,6 +328,11 @@ export class Actions extends Mixin(DevActions, Settings) {
       deltaTime: 0,
       minDeltaTime: 0,
       minDeltaTimesInitial: [],
+      cigarettesInDay: 0,
+      cigarettesSummary: 0,
+      penalty: 0,
+      penaltyDays: 0,
+      penaltyAll: 0,
     });
     await this._res(msg.user, Content.START_RESET_TO_STAGE_1);
     await this.toStage1(msg);
@@ -323,6 +345,7 @@ export class Actions extends Mixin(DevActions, Settings) {
     await UsersRepo.updateUser(msg, {
       lastTime: 0,
       nextTime: 0,
+      cigarettesInDay: 0,
       deltaTime: msg.user.minDeltaTime,
     });
     const contentProps = { delta_time: minsToTimeString(msg.user.minDeltaTime, msg.user.lang) };
@@ -340,7 +363,12 @@ export class Actions extends Mixin(DevActions, Settings) {
   @onlyForKnownUsers
   public async ignorePenalty10(msg: TelegramBot.Message) {
     const newDelta = this.computeNewDelta({ ...msg.user, penalty: 10 });
-    await UsersRepo.updateUser(msg, { deltaTime: newDelta, penaltyAll: msg.user.penaltyAll + 10 });
+    await UsersRepo.updateUser(msg, {
+      deltaTime: newDelta,
+      penaltyAll: msg.user.penaltyAll + 10,
+      penaltyDays: 0,
+      cigarettesInDay: 0,
+    });
     const delta_time = minsToTimeString(newDelta, msg.user.lang);
     const delta_min = minsToTimeString(msg.user.minDeltaTime, msg.user.lang);
     const contentProps = { delta_min, delta_time };
@@ -370,6 +398,7 @@ export class Actions extends Mixin(DevActions, Settings) {
       penalty: minsToTimeString(msg.user.penaltyAll, msg.user.lang),
       delta_min: minsToTimeString(msg.user.minDeltaTime, msg.user.lang),
       delta: minsToTimeString(msg.user.deltaTime, msg.user.lang),
+      cigarettes: msg.user.cigarettesSummary,
     };
     await this._res(msg.user, Content.STATS, contentProps);
   }

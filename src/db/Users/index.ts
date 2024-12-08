@@ -82,22 +82,37 @@ export type User = {
    */
   difficulty: Difficulty;
   /**
-   * @property penalty - count of penalties
+   * @property penalty - point, count of penalties
    * @type number
    * Reflects on deltaTime calculation on each Big Interval
    * Refreshes on each Big Interval
    */
   penalty: number;
   /**
-   * @property penaltyAll - sum of all penalties
+   * @property penaltyAll - minutes, sum of all penalties
    * @type number
    */
   penaltyAll: number;
+  /**
+   * @property penaltyDays - days, number of consecutive days
+   * @type number
+   */
+  penaltyDays: number;
   /**
    * @property motivizerIndex - index of motivizer
    * @type number
    */
   motivizerIndex: number;
+  /**
+   * @property cigarettesInDay - number of cigarettes smoked last day
+   * @type number
+   */
+  cigarettesInDay: number;
+  /**
+   * @property cigarettesSummary - number of cigarettes smoked summary
+   * @type number
+   */
+  cigarettesSummary: number;
   /**
    * @property startDate - to know the day when user starts the journey
    * @type Date
@@ -161,7 +176,10 @@ export class UsersRepo extends RequestOptions {
       ignoreTime: 0,
       penalty: 0,
       penaltyAll: 0,
+      penaltyDays: 0,
       motivizerIndex: 0,
+      cigarettesInDay: 0,
+      cigarettesSummary: 0,
       startDate: new Date(),
     };
     return UsersRepo.call.insert(defaultUser);
