@@ -12,7 +12,7 @@ export const _sendDelayedToSmokers = (bot: TgBot, users: User[]) => {
   if (!user) {
     return;
   }
-  bot.sendToUser(user, Content.TIME_FOR_A_SMOKE, {}, DialogKey.im_smoking);
+  bot.sendToUser(user, Content.TIME_FOR_A_SMOKE, {});
   setTimeout(() => _sendDelayedToSmokers(bot, users), 10);
 };
 
