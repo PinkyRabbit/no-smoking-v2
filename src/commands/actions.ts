@@ -246,7 +246,11 @@ export class Actions extends Mixin(DevActions, Settings) {
       await this._res(msg.user, Content.PENALTY, { penalty });
     }
     // idle
-    if (currentDelta >= USER_IDLE_TIME) {
+    if (currentDelta >= USER_IDLE_TIME && !msg.user.cigarettesInDay) {
+      const time_to_get_smoke = mssToTime(update.nextTime!, msg.user.timezone!);
+      await this._res(msg.user, Content.IDLE_NO_CIGARETTES, { time_to_get_smoke }, DialogKey.im_smoking);
+    }
+    if (currentDelta >= USER_IDLE_TIME && msg.user.cigarettesInDay > 0) {
       logger.debug(`U-${msg.user.chatId} [idle] ${currentDelta} >= ${USER_IDLE_TIME}`);
       const { deltaTime, difficulty, penalty, penaltyDays } = msg.user;
       const newDelta = this.computeNewDelta(msg.user);

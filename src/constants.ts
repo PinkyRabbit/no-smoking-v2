@@ -49,6 +49,7 @@ export enum Content {
   STAGE_2_PROPS_MISSING = "Stage_2_Props_Missing",
   PENALTY = "Penalty",
   PENALTY_3 = "Penalty_3",
+  IDLE_NO_CIGARETTES = "Idle_No_Cigarettes",
   TIME_FOR_A_SMOKE = "Time_For_a_Smoke",
   ON_IDLE_START = "On_Idle_Start",
   ON_IDLE_END = "On_Idle_End",
