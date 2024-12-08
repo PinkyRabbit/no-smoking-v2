@@ -99,6 +99,16 @@ export type User = {
    */
   motivizerIndex: number;
   /**
+   * @property number of cigarettes smoked last day
+   * @type number
+   */
+  cigarettesInDay: number;
+  /**
+   * @property number of cigarettes smoked summary
+   * @type number
+   */
+  cigarettesSummary: number;
+  /**
    * @property startDate - to know the day when user starts the journey
    * @type Date
    */
@@ -162,6 +172,8 @@ export class UsersRepo extends RequestOptions {
       penalty: 0,
       penaltyAll: 0,
       motivizerIndex: 0,
+      cigarettesInDay: 0,
+      cigarettesSummary: 0,
       startDate: new Date(),
     };
     return UsersRepo.call.insert(defaultUser);
