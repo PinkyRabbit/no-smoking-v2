@@ -238,7 +238,8 @@ export class Actions extends Mixin(DevActions, Settings) {
       cigarettesSummary: msg.user.cigarettesSummary + 1,
     };
     // penalty
-    if (msg.ts < msg.user.nextTime) {
+    const isPenalty = msg.ts < msg.user.nextTime;
+    if (isPenalty) {
       logger.debug(`U-${msg.user.chatId} [penalty] ${tsToDateTime(msg.ts)} < ${tsToDateTime(msg.user.nextTime)}`);
       const penalty = msg.user.penalty + 1;
       update.penalty = penalty;
@@ -291,7 +292,8 @@ export class Actions extends Mixin(DevActions, Settings) {
     // normal stage 2
     if (currentDelta < USER_IDLE_TIME) {
       const time_to_get_smoke = mssToTime(update.nextTime!, msg.user.timezone!);
-      await this._res(msg.user, Content.STAGE_2, { time_to_get_smoke }, DialogKey.im_smoking);
+      const content = !isPenalty && msg.user.cigarettesInDay ? Content.STAGE_2_SUCCESS : Content.STAGE_2;
+      await this._res(msg.user, content, { time_to_get_smoke }, DialogKey.im_smoking);
     }
     // update user
     await UsersRepo.updateUser(msg, update);

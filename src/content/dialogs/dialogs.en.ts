@@ -70,6 +70,7 @@ export const dialogsEn: MultilineContent = {
   [Content.STAGE_1_YOU_CAN_RESET]: DEFAULT,
   [Content.STAGE_1_END]: DEFAULT,
   [Content.STAGE_2]: DEFAULT,
+  [Content.STAGE_2_SUCCESS]: DEFAULT,
   [Content.STAGE_2_INITIAL]: DEFAULT,
   [Content.STAGE_2_IGNORE_MIN]: DEFAULT,
   [Content.STAGE_2_PROPS_MISSING]: DEFAULT,

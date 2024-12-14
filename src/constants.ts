@@ -45,6 +45,7 @@ export enum Content {
   STAGE_1_END = "Stage_1_End",
   STAGE_2_INITIAL = "Stage_2_Initial",
   STAGE_2 = "Stage_2",
+  STAGE_2_SUCCESS = "Stage_2_Success",
   STAGE_2_IGNORE_MIN = "Stage_2_Ignore_Min",
   STAGE_2_PROPS_MISSING = "Stage_2_Props_Missing",
   PENALTY = "Penalty",
