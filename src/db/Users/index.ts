@@ -248,7 +248,12 @@ export class UsersRepo extends RequestOptions {
     const chatIds = users.map(({ chatId }) => chatId);
     const dateTimeString = tsToDateTime(ts);
     logger.info(`[${dateTimeString}] ignoringBot call, ${chatIds.length} affected`);
-    await UsersRepo.call.update({ _id: { $in: userIds } }, { $set: { ignoreTime: 0 } });
+    await UsersRepo.call.update({ _id: { $in: userIds } }, {
+      $set: {
+        cigarettesInDay: 0,
+        ignoreTime: 0,
+      },
+    });
     return users;
   }
 }
