@@ -359,6 +359,7 @@ export class Actions extends Mixin(DevActions, Settings) {
   @transformMsg
   @onlyForKnownUsers
   public async ignoreBusy(msg: TelegramBot.Message) {
+    await UsersRepo.updateUser(msg, { ignoreTime: msg.ts + IGNORE_TIME });
     const contentProps = { delta_time: minsToTimeString(msg.user.minDeltaTime, msg.user.lang) };
     await this._res(msg.user, Content.BOT_IGNORE_BUSY, contentProps, DialogKey.im_smoking);
   }
@@ -372,6 +373,7 @@ export class Actions extends Mixin(DevActions, Settings) {
       penaltyAll: msg.user.penaltyAll + 10,
       penaltyDays: 0,
       cigarettesInDay: 0,
+      ignoreTime: msg.ts + IGNORE_TIME,
     });
     const delta_time = minsToTimeString(newDelta, msg.user.lang);
     const delta_min = minsToTimeString(msg.user.minDeltaTime, msg.user.lang);
