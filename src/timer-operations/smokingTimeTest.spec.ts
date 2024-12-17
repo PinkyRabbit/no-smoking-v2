@@ -24,7 +24,10 @@ describe("smokingTimeTest", () => {
       difficulty: 0,
       penalty: 0,
       penaltyAll: 0,
+      penaltyDays: 0,
       motivizerIndex: 0,
+      cigarettesInDay: 0,
+      cigarettesSummary: 0,
       startDate: new Date(),
     };
   });

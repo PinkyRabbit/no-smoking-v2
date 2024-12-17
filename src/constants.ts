@@ -14,9 +14,9 @@ export enum Lang {
  */
 export enum Difficulty {
   DOESNT_SET = 0,
-  EASY = 0.5,
-  MEDIUM = 1,
-  HARD = 2,
+  EASY = 1,
+  MEDIUM = 2,
+  HARD = 3,
 }
 
 /**

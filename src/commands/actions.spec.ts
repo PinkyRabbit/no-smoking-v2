@@ -43,7 +43,10 @@ describe("Actions", () => {
       difficulty: 0,
       penalty: 0,
       penaltyAll: 0,
+      penaltyDays: 0,
       motivizerIndex: 0,
+      cigarettesInDay: 0,
+      cigarettesSummary: 0,
       startDate: currentDate,
     };
     msg = {
@@ -379,6 +382,69 @@ describe("Actions", () => {
         motivizerIndex: 1,
         deltaTime: newDelta,
         nextTime: msg.ts + (newDelta * 60 * 1000),
+      });
+    });
+  });
+
+  describe("_computeNewDelta", () => {
+    beforeEach(() => {
+      user.deltaTime = 30.5;
+      user.minDeltaTime = 25;
+      user.penalty = 6;
+      user.difficulty = Difficulty.MEDIUM;
+    });
+
+    describe("with 10 minute penalty", () => {
+      it("should subtract 10 minutes from delta time when above minDeltaTime", () => {
+        user.deltaTime = 40;
+        const result = actions._computeNewDelta(msg.user, true);
+        expect(result).to.equal(user.deltaTime - 10);
+      });
+
+      it("should return minDeltaTime when result would be below minimum", () => {
+        user.deltaTime = 30;
+        const result = actions._computeNewDelta(msg.user, true);
+        expect(result).to.equal(user.minDeltaTime);
+      });
+    });
+
+    describe("without 10 minute penalty", () => {
+      it("should compute new delta correctly for MEDIUM difficulty without penalty", () => {
+        user.penalty = 0;
+        const result = actions._computeNewDelta(msg.user);
+        expect(result).to.equal(31.5);
+      });
+
+      it("should compute new delta correctly for HARD difficulty without penalty", () => {
+        user.penalty = 0;
+        user.difficulty = Difficulty.HARD;
+        const result = actions._computeNewDelta(msg.user);
+        expect(result).to.equal(32.5);
+      });
+
+      it("should ignore penalty for EASY difficulty", () => {
+        user.penalty = 3;
+        user.difficulty = Difficulty.EASY;
+        const result = actions._computeNewDelta(msg.user);
+        expect(result).to.equal(31);
+      });
+
+      it("should compute new delta correctly for MEDIUM with penalty", () => {
+        user.penalty = 5;
+        const result = actions._computeNewDelta(msg.user);
+        expect(result).to.equal(29); // - 2.5  (+ step 1)
+      });
+
+      it("should compute new delta correctly for HARD with penalty", () => {
+        user.penalty = 4;
+        const result = actions._computeNewDelta(msg.user);
+        expect(result).to.equal(29.5);  // - 4  (+ step 2)
+      });
+
+      it("should return minDeltaTime when computed value would be below minimum", () => {
+        user.penalty = 15;
+        const result = actions._computeNewDelta(msg.user);
+        expect(result).to.equal(user.minDeltaTime);
       });
     });
   });

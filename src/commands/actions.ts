@@ -15,6 +15,7 @@ import { tsToDateTime, mssToTime, getFormattedStartDate } from "../lib_helpers/l
 import logger from "../logger";
 import { stage2 } from "./decorators/stage2";
 import { cigarettesText } from "../helpers/content";
+import { penaltyByDifficulty, stepByDifficulty } from "../helpers";
 
 @LogActionCalls
 export class Actions extends Mixin(DevActions, Settings) {
@@ -86,8 +87,15 @@ export class Actions extends Mixin(DevActions, Settings) {
   /**
    * Helper to calculate new delta time
    */
-  private computeNewDelta = ({ deltaTime, difficulty, penalty, minDeltaTime }: Pick<User, "deltaTime" | "difficulty" | "penalty" | "minDeltaTime">) => {
-    const newDelta = ((deltaTime * 10)  + (difficulty * 10) - (penalty * PENALTY_STEP * 10)) / 10;
+  public _computeNewDelta = ({ deltaTime, difficulty, penalty, minDeltaTime }: Pick<User, "deltaTime" | "difficulty" | "penalty" | "minDeltaTime">, isTenMinPenalty?: boolean) => {
+    if (isTenMinPenalty) {
+      const newDeltaTime = deltaTime - 10;
+      return newDeltaTime >= minDeltaTime ? newDeltaTime : minDeltaTime;
+    }
+    const deltaTimeInt = deltaTime * 10;
+    const stepInt = stepByDifficulty(difficulty) * 10;
+    const penaltyInt = penaltyByDifficulty(difficulty, penalty) * 10;
+    const newDelta = (deltaTimeInt  + stepInt - penaltyInt) / 10;
     return newDelta >= minDeltaTime ? newDelta : minDeltaTime;
   };
 
@@ -254,7 +262,7 @@ export class Actions extends Mixin(DevActions, Settings) {
     if (currentDelta >= USER_IDLE_TIME && msg.user.cigarettesInDay > 0) {
       logger.debug(`U-${msg.user.chatId} [idle] ${currentDelta} >= ${USER_IDLE_TIME}`);
       const { deltaTime, difficulty, penalty, penaltyDays } = msg.user;
-      const newDelta = this.computeNewDelta(msg.user);
+      const newDelta = this._computeNewDelta(msg.user);
       const newNextTime = msg.ts + (newDelta * 60 * 1000);
       update.penalty = 0;
       update.penaltyDays = 0;
@@ -369,7 +377,7 @@ export class Actions extends Mixin(DevActions, Settings) {
   @transformMsg
   @onlyForKnownUsers
   public async ignorePenalty10(msg: TelegramBot.Message) {
-    const newDelta = this.computeNewDelta({ ...msg.user, penalty: 10 });
+    const newDelta = this._computeNewDelta(msg.user, true);
     await UsersRepo.updateUser(msg, {
       deltaTime: newDelta,
       penaltyAll: msg.user.penaltyAll + 10,
