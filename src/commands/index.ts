@@ -82,8 +82,11 @@ export const botActionsInit = (bot: TgBot) => {
       case BTN.Dev_Stage_1_More_Max:
         act.devStage1MoreThanMax(message);
         break;
-      case BTN.Dev_To_Idle:
+      case BTN.Dev_To_Idle_Empty:
         act.devToIdle(message);
+        break;
+      case BTN.Dev_To_Idle:
+        act.devToIdle(message, false);
         break;
       case BTN.Dev_Next:
         act.devByTimer(message);

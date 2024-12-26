@@ -23,6 +23,7 @@ export const buttonsEn: ButtonNames = {
   [BTN.Dev_Last_Time_1_Hour]: "Last Time to 1 hour ago 🕘",
   [BTN.Dev_Stage_1_More_Max]: "Stage 1 more than max 🕧",
   [BTN.Dev_To_Idle]: "To idle mode 💤",
+  [BTN.Dev_To_Idle_Empty]: "To idle EMPTY 💤",
   [BTN.Dev_Next]: "By timer ⏰️",
   [BTN.Dev_Motivizer_25]: "Motivizer to 25 ⛹️",
   [BTN.Dev_Motivizer_Full]: "Motivizer full ⛹️",

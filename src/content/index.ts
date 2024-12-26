@@ -105,8 +105,8 @@ const selectButtonsByKey = (key: DialogKey, locale: Lang): InlineKeyboard => {
   if (key === DialogKey.difficulty) {
     return [
       [buttonFor(BTN.Level_Easy, locale)],
-      [buttonFor(BTN.Level_Medium, locale)],
       [buttonFor(BTN.Level_Hard, locale)],
+      [buttonFor(BTN.Level_Medium, locale)],
     ];
   }
   if (key === DialogKey.dev) {
@@ -121,7 +121,11 @@ const selectButtonsByKey = (key: DialogKey, locale: Lang): InlineKeyboard => {
       ],
       [
         buttonFor(BTN.Dev_Last_Time_1_Hour, locale),
+        buttonFor(BTN.Dev_Next, locale),
+      ],
+      [
         buttonFor(BTN.Dev_To_Idle, locale),
+        buttonFor(BTN.Dev_To_Idle_Empty, locale),
       ],
       [
         buttonFor(BTN.Dev_Motivizer_25, locale),
@@ -129,7 +133,6 @@ const selectButtonsByKey = (key: DialogKey, locale: Lang): InlineKeyboard => {
       ],
       [
         buttonFor(BTN.Dev_Ignore, locale),
-        buttonFor(BTN.Dev_Next, locale),
       ]
     ];
   }

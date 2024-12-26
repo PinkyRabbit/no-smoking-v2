@@ -113,12 +113,14 @@ export class DevActions {
   @devModeOnly
   @transformMsg
   @onlyForKnownUsers
-  public async devToIdle(msg: TelegramBot.Message) {
+  public async devToIdle(msg: TelegramBot.Message, isEmpty = false) {
     const moreThanMax = USER_IDLE_TIME + 1;
     const lastTime = dateNow() - (moreThanMax * 60 * 1000);
     const update: Partial<User> = {
       lastTime,
       nextTime: lastTime + msg.user.deltaTime * 60 * 1000,
+      cigarettesInDay: isEmpty ? 0 : 2,
+      penalty: isEmpty ? 0 : 2,
     };
     await UsersRepo.updateUser(msg, update);
     await this._res(msg.user, Content.DEV_TO_IDLE);

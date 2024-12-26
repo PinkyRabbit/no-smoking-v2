@@ -83,6 +83,7 @@ export const dialogsEn: MultilineContent = {
   [Content.TIME_FOR_A_SMOKE]: "🔥 It's time for a smoke break! 🔥",
   [Content.ON_IDLE_START]: DEFAULT,
   [Content.ON_IDLE_END]: DEFAULT,
+  [Content.ON_IDLE_EASY_LEVEL]: DEFAULT,
   [Content.DIFFICULTY]: DEFAULT,
   [Content.DIFFICULTY_EASY]: DEFAULT,
   [Content.DIFFICULTY_MEDIUM]: DEFAULT,

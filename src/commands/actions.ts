@@ -2,8 +2,8 @@ import TelegramBot from "node-telegram-bot-api";
 import TgBot from "../telegram-bot";
 import { join as pathJoin } from "path";
 import { Mixin } from "ts-mixer";
-import { ContentProps, getContent, getButtons } from "../content";
-import { Content, DialogKey, Lang, Motivizer } from "../constants";
+import { ContentProps, getButtons, getContent } from "../content";
+import { Content, DialogKey, Difficulty, Lang, Motivizer } from "../constants";
 import { DevActions } from "./development";
 import { Settings } from "./settings";
 import { User, UsersRepo } from "../db";
@@ -11,7 +11,7 @@ import { IGNORE_TIME, MIN_INTERVAL, PENALTY_STEP, STAGE_1_MAX, STAGE_1_STEPS, US
 import { minsToTimeString } from "../lib_helpers/humanize-duration";
 import { LogActionCalls, onlyForKnownUsers, transformMsg } from "./decorators";
 import { tgLangCodeToLang } from "../lib_helpers/i18n";
-import { tsToDateTime, mssToTime, getFormattedStartDate } from "../lib_helpers/luxon";
+import { getFormattedStartDate, mssToTime, tsToDateTime } from "../lib_helpers/luxon";
 import logger from "../logger";
 import { stage2 } from "./decorators/stage2";
 import { cigarettesText } from "../helpers/content";
@@ -261,6 +261,9 @@ export class Actions extends Mixin(DevActions, Settings) {
     }
     if (currentDelta >= USER_IDLE_TIME && msg.user.cigarettesInDay > 0) {
       logger.debug(`U-${msg.user.chatId} [idle] ${currentDelta} >= ${USER_IDLE_TIME}`);
+      if (msg.user.difficulty === Difficulty.EASY && msg.user.penalty) {
+        await this._res(msg.user, Content.ON_IDLE_EASY_LEVEL);
+      }
       const { deltaTime, difficulty, penalty, penaltyDays } = msg.user;
       const newDelta = this._computeNewDelta(msg.user);
       const newNextTime = msg.ts + (newDelta * 60 * 1000);
