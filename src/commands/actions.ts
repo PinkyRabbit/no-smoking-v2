@@ -261,9 +261,6 @@ export class Actions extends Mixin(DevActions, Settings) {
     }
     if (currentDelta >= USER_IDLE_TIME && msg.user.cigarettesInDay > 0) {
       logger.debug(`U-${msg.user.chatId} [idle] ${currentDelta} >= ${USER_IDLE_TIME}`);
-      if (msg.user.difficulty === Difficulty.EASY && msg.user.penalty) {
-        await this._res(msg.user, Content.ON_IDLE_EASY_LEVEL);
-      }
       const { deltaTime, difficulty, penalty, penaltyDays } = msg.user;
       const newDelta = this._computeNewDelta(msg.user);
       const newNextTime = msg.ts + (newDelta * 60 * 1000);
@@ -299,6 +296,14 @@ export class Actions extends Mixin(DevActions, Settings) {
       const { reply_markup } = getButtons(msg.user.lang, DialogKey.im_smoking);
       const ops: TelegramBot.SendMessageOptions = { parse_mode: "MarkdownV2", reply_markup };
       await this.bot.sendMessage(msg.user.chatId, content.join(""), ops);
+
+      // display hint for easy level
+      const isEasyDifficulty = msg.user.difficulty === Difficulty.EASY;
+      const hasNoPenalty = !msg.user.penalty;
+      const userHas10MinProgress = msg.user.deltaTime - msg.user.minDeltaTime > 10;
+      if (isEasyDifficulty && hasNoPenalty && userHas10MinProgress) {
+        await this._res(msg.user, Content.ON_IDLE_EASY_LEVEL);
+      }
     }
     // normal stage 2
     if (currentDelta < USER_IDLE_TIME) {
