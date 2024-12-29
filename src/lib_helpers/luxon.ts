@@ -14,7 +14,7 @@ export const mssToTime = (mss: number, zone: string) => {
 export const getFormattedStartDate = (jsDate: Date, locale: Lang) => {
   const luxonDate = DateTime.fromJSDate(jsDate);
   const start_date = luxonDate.setLocale(locale).toFormat("d MMMM yyyy");
-  const today = DateTime.now();
+  const today = DateTime.now().setZone("GMT");
   const diff = luxonDate.diff(today, "days");
   const days = Math.floor(diff.days);
   const days_from_start = daysToTimeString(days, locale);

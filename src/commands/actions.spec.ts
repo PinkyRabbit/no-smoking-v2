@@ -27,7 +27,6 @@ describe("Actions", () => {
     const dateNow = currentDate.getTime();
     clock = sinon.useFakeTimers(dateNow);
     LuxonSettings.defaultZone = "Etc/GMT";
-    LuxonSettings.now = () => currentDate.getTime();
 
     const _id = "unit-test-user-id" as unknown as IObjectID;
     user = {
@@ -43,11 +42,11 @@ describe("Actions", () => {
       ignoreTime: 0,
       difficulty: 0,
       penalty: 0,
-      penaltyAll: 0,
-      penaltyDays: 0,
+      penaltyAll: 7,
+      penaltyDays: 1,
       motivizerIndex: 0,
-      cigarettesInDay: 0,
-      cigarettesSummary: 0,
+      cigarettesInDay: 2,
+      cigarettesSummary: 3,
       startDate: currentDate,
     };
     msg = {
@@ -102,11 +101,13 @@ describe("Actions", () => {
 
   describe("imSmokingHandler", () => {
     it ("Stage 1. Should send a FIRST_STEP message on first button click.", async () => {
+      user.cigarettesInDay = 0;
+      user.cigarettesSummary = 0;
       await actions.imSmokingHandler(msg);
       expect(_resSpy.calledOnce).to.be.true;
       expect(_resSpy.firstCall.args).to.be.deep.equal([user, Content.FIRST_STEP, { stage_1_left: 20 }, DialogKey.im_smoking]);
       expect(updateUserStub.calledOnce).to.be.true;
-      expect(updateUserStub.firstCall.args[1]).to.be.deep.equal({ lastTime: Date.now() });
+      expect(updateUserStub.firstCall.args[1]).to.be.deep.equal({ lastTime: Date.now(), cigarettesSummary: 1 });
     });
 
     it("Stage 1. Should send a STAGE_1_PROCESSING message on second button click.", async () => {
@@ -135,6 +136,7 @@ describe("Actions", () => {
       expect(updateUserStub.firstCall.args[1]).to.be.deep.equal({
         lastTime: msg.ts,
         minDeltaTimesInitial: [minutes],
+        cigarettesSummary: user.cigarettesSummary + 1,
       });
     });
 
@@ -152,6 +154,7 @@ describe("Actions", () => {
       expect(updateUserStub.firstCall.args[1]).to.be.deep.equal({
         lastTime: msg.ts,
         minDeltaTimesInitial: [...msg.user.minDeltaTimesInitial, minutes],
+        cigarettesSummary: user.cigarettesSummary + 1,
       });
     });
 
@@ -202,7 +205,10 @@ describe("Actions", () => {
           DialogKey.im_smoking,
         ]);
       expect(updateUserStub.calledOnce).to.be.true;
-      expect(updateUserStub.firstCall.args[1]).to.be.deep.equal({ lastTime: msg.ts });
+      expect(updateUserStub.firstCall.args[1]).to.be.deep.equal({
+        lastTime: msg.ts,
+        cigarettesSummary: user.cigarettesSummary + 1,
+      });
     });
 
     it ("Stage 1. Should show additional hint if the value is twice more than middle value", async () => {
@@ -223,6 +229,7 @@ describe("Actions", () => {
       expect(updateUserStub.firstCall.args[1]).to.be.deep.equal({
         lastTime: msg.ts,
         minDeltaTimesInitial: [...msg.user.minDeltaTimesInitial, minutes],
+        cigarettesSummary: user.cigarettesSummary + 1,
       });
     });
 
@@ -242,7 +249,7 @@ describe("Actions", () => {
       const EXPECTED_MINUTES = 76;
       const EXPECTED_STRING = "1 hour 16 minutes";
 
-      const onLevelStub = sinon.stub(actions, "onLevel").resolves();
+      const onLevelStub = sinon.stub(actions, "onTimezone").resolves();
 
       await actions.imSmokingHandler(msg);
 
@@ -255,6 +262,7 @@ describe("Actions", () => {
         minDeltaTimesInitial: [],
         deltaTime: EXPECTED_MINUTES,
         minDeltaTime: EXPECTED_MINUTES,
+        cigarettesSummary: user.cigarettesSummary + 1,
       });
       expect(onLevelStub.calledOnce).to.be.true;
     });
@@ -279,13 +287,15 @@ describe("Actions", () => {
       user.timezone = "UTC+01:00";
       user.lang = Lang.RU;
       user.difficulty = Difficulty.EASY;
+      user.cigarettesInDay += 1;
+      user.cigarettesSummary += 1;
       msg.ts = user.lastTime + timeShift;
 
       await actions.imSmokingHandler(msg);
       expect(_resSpy.calledOnce).to.be.true;
       expect(_resSpy.firstCall.args).to.be.deep.equal([
         user,
-        Content.STAGE_2,
+        Content.STAGE_2_SUCCESS,
         { time_to_get_smoke: "15:53" },
         DialogKey.im_smoking,
       ]);
@@ -294,6 +304,8 @@ describe("Actions", () => {
         lastTime: msg.ts,
         nextTime: msg.ts + (user.deltaTime * 60 * 1000),
         ignoreTime: msg.ts + IGNORE_TIME,
+        cigarettesInDay: user.cigarettesInDay + 1,
+        cigarettesSummary: user.cigarettesSummary + 1,
       });
     });
 
@@ -320,8 +332,8 @@ describe("Actions", () => {
       user.timezone = "UTC+01:00";
       user.lang = Lang.RU;
       user.difficulty = Difficulty.EASY;
-      user.penalty = 1.5;
-      user.penaltyAll = 2.5;
+      user.penalty = 2;
+      user.penaltyAll = 8;
       user.nextTime = user.lastTime + (user.deltaTime * 60 * 1000);
       const timeShift = (user.deltaTime - 1) * 60 * 1000;
       msg.ts = user.lastTime + timeShift;
@@ -329,7 +341,7 @@ describe("Actions", () => {
       await actions.imSmokingHandler(msg);
       expect(_resSpy.calledTwice).to.be.true;
       expect(_resSpy.firstCall.args[1]).to.be.equal(Content.PENALTY);
-      expect(_resSpy.firstCall.args[2]).to.be.deep.equal({ penalty: 2 });
+      expect(_resSpy.firstCall.args[2]).to.be.deep.equal({ penalty: user.penalty + 1 });
       expect(_resSpy.secondCall.args).to.be.deep.equal([
         user,
         Content.STAGE_2,
@@ -341,8 +353,10 @@ describe("Actions", () => {
         lastTime: msg.ts,
         nextTime: msg.ts + (user.deltaTime * 60 * 1000),
         ignoreTime: msg.ts + IGNORE_TIME,
-        penalty: 2,
-        penaltyAll: 3,
+        penalty: user.penalty + 1,
+        penaltyAll: user.penaltyAll + 1,
+        cigarettesInDay: user.cigarettesInDay + 1,
+        cigarettesSummary: user.cigarettesSummary + 1,
       });
     });
 
@@ -353,7 +367,7 @@ describe("Actions", () => {
       user.minDeltaTime = 52;
       user.timezone = "UTC+01:00";
       user.lang = Lang.RU;
-      user.difficulty = Difficulty.EASY;
+      user.difficulty = Difficulty.HARD;
       msg.ts = user.lastTime + timeShift;
 
       await actions.imSmokingHandler(msg);
@@ -369,20 +383,22 @@ describe("Actions", () => {
       user.minDeltaTime = 52;
       user.timezone = "UTC+01:00";
       user.lang = Lang.RU;
-      user.difficulty = Difficulty.EASY;
+      user.difficulty = Difficulty.HARD;
       msg.ts = user.lastTime + timeShift;
 
       await actions.imSmokingHandler(msg);
 
-      const newDelta = user.deltaTime - user.penalty + user.difficulty;
       expect(updateUserStub.calledOnce).to.be.true;
       expect(updateUserStub.firstCall.args[1]).to.be.deep.equal({
         lastTime: msg.ts,
         ignoreTime: msg.ts + IGNORE_TIME,
         penalty: 0,
+        penaltyDays: user.penaltyDays + 1,
         motivizerIndex: 1,
-        deltaTime: newDelta,
-        nextTime: msg.ts + (newDelta * 60 * 1000),
+        deltaTime: 72,
+        nextTime: 1686852780000,
+        cigarettesInDay: 0,
+        cigarettesSummary: user.cigarettesSummary + 1,
       });
     });
   });

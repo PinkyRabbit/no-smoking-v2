@@ -1,6 +1,6 @@
 {
   "name": "no-smoking-v2",
-  "version": "2.0.14",
+  "version": "2.0.15",
   "main": "index.js",
   "author": "Mikita Melnikau <usesa@yandex.com>",
   "license": "MIT",
@@ -13,7 +13,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write \"src/**/*.ts\"",
-    "test": "cross-env NODE_ENV=test mocha"
+    "test:unit": "cross-env NODE_ENV=test mocha"
   },
   "dependencies": {
     "humanize-duration": "^3.32.1",

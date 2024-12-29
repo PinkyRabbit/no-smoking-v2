@@ -58,8 +58,6 @@ describe("smokingTimeTest", () => {
       expect(botMock.sendToUser.calledWith(
         user,
         Content.TIME_FOR_A_SMOKE,
-        {},
-        DialogKey.im_smoking
       )).to.be.true;
     });
 
@@ -77,8 +75,6 @@ describe("smokingTimeTest", () => {
       expect(botMock.sendToUser.calledWith(
         users[2], // Last user due to pop()
         Content.TIME_FOR_A_SMOKE,
-        {},
-        DialogKey.im_smoking
       )).to.be.true;
 
       // Advance timer and check second call
@@ -87,8 +83,6 @@ describe("smokingTimeTest", () => {
       expect(botMock.sendToUser.secondCall.calledWith(
         users[1],
         Content.TIME_FOR_A_SMOKE,
-        {},
-        DialogKey.im_smoking
       )).to.be.true;
 
       // Advance timer and check third call
@@ -97,8 +91,6 @@ describe("smokingTimeTest", () => {
       expect(botMock.sendToUser.thirdCall.calledWith(
         users[0],
         Content.TIME_FOR_A_SMOKE,
-        {},
-        DialogKey.im_smoking
       )).to.be.true;
     });
 

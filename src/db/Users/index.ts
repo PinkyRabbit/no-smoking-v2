@@ -89,7 +89,7 @@ export type User = {
    */
   penalty: number;
   /**
-   * @property penaltyAll - minutes, sum of all penalties
+   * @property penaltyAll - all penalty points for all periods
    * @type number
    */
   penaltyAll: number;

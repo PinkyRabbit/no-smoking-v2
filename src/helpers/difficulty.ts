@@ -1,5 +1,7 @@
+import { User } from "../db";
 import { Content, Difficulty, Lang } from "../constants";
 import { getContent } from "../content";
+import { minsToTimeString } from "../lib_helpers/humanize-duration";
 
 export const difficultyNameByLevel = (lang: Lang, difficulty: Difficulty): string => {
   switch (difficulty) {
@@ -38,4 +40,9 @@ export const penaltyByDifficulty = (difficulty: Difficulty, penalty: number): nu
     hardLevelValue += step;
   }
   return hardLevelValue;
+};
+
+export const penaltyMinutesString = ({ difficulty, penalty, lang }: User) => {
+  const penaltyInt = penaltyByDifficulty(difficulty, penalty);
+  return minsToTimeString(penaltyInt, lang);
 };

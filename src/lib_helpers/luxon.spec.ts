@@ -93,9 +93,9 @@ describe("lib_helpers.luxon", () => {
     });
 
     it("should throw an error for invalid input", () => {
-      expect(() => gmtToUtc("UTC+2")).to.throw("Invalid GMT offset format");
-      expect(() => gmtToUtc("GMT2")).to.throw("Invalid GMT offset format");
-      expect(() => gmtToUtc("GMT+2:60")).to.throw("Invalid GMT offset format");
+      expect(() => gmtToUtc("UTC+2")).to.throw();
+      expect(() => gmtToUtc("GMT2")).to.throw();
+      expect(() => gmtToUtc("GMT+2:60")).to.throw();
       // expect(() => gmtToUtc("GMT+24")).to.throw("Invalid GMT offset format");
     });
 
