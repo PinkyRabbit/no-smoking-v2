@@ -116,6 +116,15 @@ export const botActionsInit = (bot: TgBot) => {
       case BTN.Dev_Content:
         act.devContent(message);
         break;
+      case BTN.Dev_Content_All:
+        act.devAllContent(message);
+        break;
+      case BTN.Dev_Content_RU:
+        act.devAllContentRecursive(message, Lang.RU);
+        break;
+      case BTN.Dev_Content_EN:
+        act.devAllContentRecursive(message, Lang.EN);
+        break;
       default:
         logger.error(`Unsupported callback "${callbackType}"`);
     }

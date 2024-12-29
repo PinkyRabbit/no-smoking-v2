@@ -1,6 +1,6 @@
 import TelegramBot from "node-telegram-bot-api";
 import logger from "../logger";
-import { Content, DialogKey, Difficulty, Motivizer } from "../constants";
+import { Content, DialogKey, Difficulty, Lang, Motivizer } from "../constants";
 import { dateNow } from "../lib_helpers/luxon";
 import { User, UsersRepo } from "../db";
 import { devModeOnly, onlyForKnownUsers, transformMsg } from "./decorators";
@@ -197,5 +197,35 @@ export class DevActions {
     // await this._res(msg.user, Content.MAXIMUM_REACHED, {}, DialogKey.max_time);
     // await this._res(msg.user, Content.DIFFICULTY_AUTO);
     // await this._res(msg.user, Content.TIMEZONE);
+  }
+
+  @devModeOnly
+  @transformMsg
+  @onlyForKnownUsers
+  public async devAllContent(msg: TelegramBot.Message) {
+    await this._res(msg.user, Content.DEV_LANG, {}, DialogKey.dev_lang);
+  }
+
+  @devModeOnly
+  @transformMsg
+  @onlyForKnownUsers
+  public async devAllContentRecursive(msg: TelegramBot.Message, lang: Lang) {
+    const user = {  ...msg.user, lang };
+    const callResRecursive = (promises: Array<() => Promise<void>>) => {
+      const oneSec = 1000;
+      const promiseToCall = promises.shift();
+      if (!promiseToCall) {
+        return;
+      }
+      setTimeout(async () => {
+        await promiseToCall();
+        callResRecursive(promises);
+      }, oneSec);
+    };
+    return callResRecursive([
+      () => this._res(user, Content.PENALTY_3),
+      () => this._res(user, Content.DIFFICULTY_AUTO),
+      () =>  this._res(user, Content.TIMEZONE),
+    ]);
   }
 }

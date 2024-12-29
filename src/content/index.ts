@@ -92,6 +92,12 @@ const selectButtonsByKey = (key: DialogKey, locale: Lang): InlineKeyboard => {
       buttonFor(BTN.Lang_EN, locale),
     ]];
   }
+  if (key === DialogKey.dev_lang) {
+    return [[
+      buttonFor(BTN.Dev_Content_RU, locale),
+      buttonFor(BTN.Dev_Content_EN, locale),
+    ]];
+  }
   if (key === DialogKey.im_smoking) {
     return [[buttonFor(BTN.Im_Smoking, locale)]];
   }
@@ -136,8 +142,11 @@ const selectButtonsByKey = (key: DialogKey, locale: Lang): InlineKeyboard => {
         buttonFor(BTN.Dev_Motivizer_Full, locale),
       ],
       [
-        buttonFor(BTN.Dev_Ignore, locale),
+        buttonFor(BTN.Dev_Content_All, locale),
         buttonFor(BTN.Dev_Content, locale),
+      ],
+      [
+        buttonFor(BTN.Dev_Ignore, locale),
       ]
     ];
   }

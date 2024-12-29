@@ -119,4 +119,5 @@ export const dialogsEn: MultilineContent = {
   [Content.DEV_NEXT]: "🔮 Next smoke break will happen in 1 minute",
   [Content.DEV_MOTIVIZER]: "🔮 Motivizer Updated",
   [Content.DEV_IGNORE]: "🔮 User switched to Ignore Mode",
+  [Content.DEV_LANG]: "🕉️ Select language:",
 };
