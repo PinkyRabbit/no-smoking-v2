@@ -33,6 +33,7 @@ describe("Actions", () => {
     user = {
       _id,
       chatId: 33333,
+      username: "unit-test-user",
       lang: Lang.EN,
       timezone: "0",
       minDeltaTimesInitial: [],

@@ -114,6 +114,12 @@ export type User = {
    */
   cigarettesSummary: number;
   /**
+   * @property username - Telegram username on /start
+   * @type string
+   * it's not making any big sense - only debug purpose
+   */
+  username: string;
+  /**
    * @property startDate - to know the day when user starts the journey
    * @type Date
    */
@@ -162,10 +168,11 @@ export class UsersRepo extends RequestOptions {
     return UsersRepo.call.findOne({ chatId });
   }
 
-  static addNewUser(chatId: number, lang: Lang) {
+  static addNewUser(chatId: number, lang: Lang, username = "Unknown") {
     const defaultUser: User = {
       chatId,
       lang,
+      username,
       timezone: undefined,
       difficulty: Difficulty.DOESNT_SET,
       minDeltaTime: 0,
