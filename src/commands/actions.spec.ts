@@ -27,7 +27,6 @@ describe("Actions", () => {
     const dateNow = currentDate.getTime();
     clock = sinon.useFakeTimers(dateNow);
     LuxonSettings.defaultZone = "Etc/GMT";
-    LuxonSettings.now = () => currentDate.getTime();
 
     const _id = "unit-test-user-id" as unknown as IObjectID;
     user = {
