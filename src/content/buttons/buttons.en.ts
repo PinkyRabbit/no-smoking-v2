@@ -26,9 +26,12 @@ export const buttonsEn: ButtonNames = {
   [BTN.Dev_Stage_1_More_Max]: "Stage 1 more than max 🕧",
   [BTN.Dev_To_Idle]: "To idle mode 💤",
   [BTN.Dev_To_Idle_Empty]: "To idle EMPTY 💤",
+  [BTN.Dev_To_Idle_Three_Times]: "To idle 3 💤",
+  [BTN.Dev_To_Idle_Max_Limit]: "To idle MAX 💤",
   [BTN.Dev_Next]: "By timer ⏰️",
   [BTN.Dev_Motivizer_25]: "Motivizer to 25 ⛹️",
   [BTN.Dev_Motivizer_Full]: "Motivizer full ⛹️",
   [BTN.Dev_Ignore]: "To Ignore Mode 🌀",
   [BTN.Dev_Content]: "Content 📋",
+  [BTN.Recommendations]: "Recommendations",
 };

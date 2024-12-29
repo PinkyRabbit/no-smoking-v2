@@ -75,6 +75,7 @@ export enum Content {
   BOT_IGNORE_SUCCESS = "bot_ignore_success",
   STATS = "get_stats",
   HOW = "how_to_help",
+  MAXIMUM_REACHED = "maximum_reached",
   // TEST
   DEV = "Dev",
   DEV_OFF = "Dev_Off",
@@ -104,6 +105,7 @@ export enum DialogKey {
   difficulty = "difficulty",
   ignore = "ignore",
   timezone = "timezone",
+  max_time = "max_time",
 }
 /**
  * Constant represents a motivizer keys
@@ -140,9 +142,12 @@ export enum BTN {
   Dev_Stage_1_More_Max = "dev_stage_1_more_than_max",
   Dev_To_Idle = "dev_to_idle",
   Dev_To_Idle_Empty = "dev_to_idle_empty",
+  Dev_To_Idle_Three_Times = "dev_to_idle_3_times",
+  Dev_To_Idle_Max_Limit = "dev_to_idle_max_limit",
   Dev_Next = "dev_next",
   Dev_Motivizer_25 = "dev_motivizer_25",
   Dev_Motivizer_Full = "dev_motivizer_full",
   Dev_Ignore = "dev_Ignore",
   Dev_Content = "dev_content",
+  Recommendations = "recommendations",
 }

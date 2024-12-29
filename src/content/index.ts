@@ -128,6 +128,10 @@ const selectButtonsByKey = (key: DialogKey, locale: Lang): InlineKeyboard => {
         buttonFor(BTN.Dev_To_Idle_Empty, locale),
       ],
       [
+        buttonFor(BTN.Dev_To_Idle_Three_Times, locale),
+        buttonFor(BTN.Dev_To_Idle_Max_Limit, locale),
+      ],
+      [
         buttonFor(BTN.Dev_Motivizer_25, locale),
         buttonFor(BTN.Dev_Motivizer_Full, locale),
       ],
@@ -152,6 +156,9 @@ const selectButtonsByKey = (key: DialogKey, locale: Lang): InlineKeyboard => {
         buttonFor(BTN.Timezone_Incorrect, locale),
       ],
     ];
+  }
+  if (key === DialogKey.max_time) {
+    return [[buttonFor(BTN.Recommendations, locale)]];
   }
   return [];
 };

@@ -255,28 +255,24 @@ export class Actions extends Mixin(DevActions, Settings) {
       await this._res(msg.user, Content.PENALTY, { penalty });
     }
     // idle
-    if (currentDelta >= USER_IDLE_TIME && !msg.user.cigarettesInDay) {
+    const isIdle = currentDelta >= USER_IDLE_TIME;
+    if (isIdle && !msg.user.cigarettesInDay) {
       const time_to_get_smoke = mssToTime(update.nextTime!, msg.user.timezone!);
       await this._res(msg.user, Content.IDLE_NO_CIGARETTES, { time_to_get_smoke }, DialogKey.im_smoking);
     }
-    if (currentDelta >= USER_IDLE_TIME && msg.user.cigarettesInDay > 0) {
+    const isNonEmptyIdle = isIdle && msg.user.cigarettesInDay > 0;
+    if (isNonEmptyIdle) {
+      // normal idle update
       logger.debug(`U-${msg.user.chatId} [idle] ${currentDelta} >= ${USER_IDLE_TIME}`);
       const { deltaTime, difficulty, penalty, penaltyDays } = msg.user;
-      const newDelta = this._computeNewDelta(msg.user);
+      const isMaxTimeLimitReached = msg.user.deltaTime >= USER_IDLE_TIME - 5;
+      const newDelta = isMaxTimeLimitReached ? msg.user.deltaTime : this._computeNewDelta(msg.user);
       const newNextTime = msg.ts + (newDelta * 60 * 1000);
       update.penalty = 0;
-      update.penaltyDays = 0;
+      update.penaltyDays = penalty ? penaltyDays + 1 : 0;
       update.cigarettesInDay = 0;
       update.deltaTime = newDelta;
       update.nextTime = newNextTime;
-
-      if (penalty) {
-        update.penaltyDays = penaltyDays + 1;
-      }
-      if (update.penaltyDays === 3) {
-        update.penaltyDays = 0;
-        await this._res(msg.user, Content.PENALTY_3, {});
-      }
 
       const content: string[] = [];
       const cigarettes = cigarettesText(msg);
@@ -297,12 +293,21 @@ export class Actions extends Mixin(DevActions, Settings) {
       const ops: TelegramBot.SendMessageOptions = { parse_mode: "MarkdownV2", reply_markup };
       await this.bot.sendMessage(msg.user.chatId, content.join(""), ops);
 
+      // hint three days penalty
+      if (update.penaltyDays === 3) {
+        update.penaltyDays = 0;
+        await this._res(msg.user, Content.PENALTY_3, {});
+      }
       // display hint for easy level
       const isEasyDifficulty = msg.user.difficulty === Difficulty.EASY;
       const hasNoPenalty = !msg.user.penalty;
       const userHas10MinProgress = msg.user.deltaTime - msg.user.minDeltaTime > 10;
       if (isEasyDifficulty && hasNoPenalty && userHas10MinProgress) {
         await this._res(msg.user, Content.ON_IDLE_EASY_LEVEL);
+      }
+      // display hint if limit is reached
+      if (isMaxTimeLimitReached) {
+        await this._res(msg.user, Content.MAXIMUM_REACHED, {}, DialogKey.max_time);
       }
     }
     // normal stage 2

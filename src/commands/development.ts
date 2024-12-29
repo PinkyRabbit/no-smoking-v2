@@ -114,7 +114,7 @@ export class DevActions {
   @devModeOnly
   @transformMsg
   @onlyForKnownUsers
-  public async devToIdle(msg: TelegramBot.Message, isEmpty = false) {
+  public async devToIdle(msg: TelegramBot.Message, isEmpty = false, { isThree, isMax }: Record<string, boolean> = {}) {
     const moreThanMax = USER_IDLE_TIME + 1;
     const lastTime = dateNow() - (moreThanMax * 60 * 1000);
     const update: Partial<User> = {
@@ -122,6 +122,8 @@ export class DevActions {
       nextTime: lastTime + msg.user.deltaTime * 60 * 1000,
       cigarettesInDay: isEmpty ? 0 : 2,
       penalty: isEmpty ? 0 : 2,
+      penaltyDays: isThree ? 2 : 0,
+      deltaTime: isMax ? USER_IDLE_TIME : msg.user.deltaTime,
     };
     await UsersRepo.updateUser(msg, update);
     await this._res(msg.user, Content.DEV_TO_IDLE);
@@ -191,7 +193,9 @@ export class DevActions {
   @transformMsg
   @onlyForKnownUsers
   public async devContent(msg: TelegramBot.Message) {
-    await this._res(msg.user, Content.DIFFICULTY_AUTO);
+    await this._res(msg.user, Content.PENALTY_3);
+    // await this._res(msg.user, Content.MAXIMUM_REACHED, {}, DialogKey.max_time);
+    // await this._res(msg.user, Content.DIFFICULTY_AUTO);
     // await this._res(msg.user, Content.TIMEZONE);
   }
 }
