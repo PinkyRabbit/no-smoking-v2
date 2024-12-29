@@ -222,10 +222,35 @@ export class DevActions {
         callResRecursive(promises);
       }, oneSec);
     };
-    return callResRecursive([
-      () => this._res(user, Content.PENALTY_3),
-      () => this._res(user, Content.DIFFICULTY_AUTO),
-      () =>  this._res(user, Content.TIMEZONE),
-    ]);
+    const fakeProps = {
+      stepsAdded: "5",
+      time_to_get_smoke: "17:34",
+      admin_email: "usesa@yandex.com",
+      delta_min: "1 час 24 минуты",
+      delta: "1 час 47 минут",
+      delta_time: "2 часa 8 минут",
+      prev_delta: "1 час 31 минута",
+      new_delta: "1 час 33 минуты",
+      real_delta: "2 часa 20 минут",
+      step: "30 секунд",
+      penalty: "3",
+      penalty_all: "141",
+      penalty_mins: "12 минут",
+      cigarettes: "217",
+      days_from_start: "22",
+      start_date: "12 октября 2024",
+      local_time: "14:08",
+      timezone: "+2",
+      difficulty: "Продвинутый",
+      min_interval: "30 минут",
+      min_stage_1: "20 минут",
+      max_stage_1: "2 часа",
+      stage_1_left: "12"
+    };
+    const allContentCalls =
+      Object.values(Content).map((contentKey) =>
+        () => this._res(user, contentKey, fakeProps)
+      );
+    return callResRecursive(allContentCalls);
   }
 }

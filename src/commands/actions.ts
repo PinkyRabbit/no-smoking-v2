@@ -424,7 +424,7 @@ export class Actions extends Mixin(DevActions, Settings) {
     const contentProps = {
       start_date,
       days_from_start,
-      penalty: minsToTimeString(msg.user.penaltyAll, msg.user.lang),
+      penalty_all: minsToTimeString(msg.user.penaltyAll, msg.user.lang),
       delta_min: minsToTimeString(msg.user.minDeltaTime, msg.user.lang),
       delta: minsToTimeString(msg.user.deltaTime, msg.user.lang),
       cigarettes: msg.user.cigarettesSummary,
@@ -436,7 +436,7 @@ export class Actions extends Mixin(DevActions, Settings) {
   @onlyForKnownUsers
   public async onHow(msg: TelegramBot.Message) {
     const donate_link = process.env.DONATE_LINK;
-    const email = process.env.ADMIN_EMAIL;
-    await this._res(msg.user, Content.HOW, { donate_link, email });
+    const admin_email = process.env.ADMIN_EMAIL;
+    await this._res(msg.user, Content.HOW, { donate_link, admin_email });
   }
 }
