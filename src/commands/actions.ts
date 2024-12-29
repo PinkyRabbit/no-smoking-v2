@@ -7,7 +7,7 @@ import { Content, DialogKey, Difficulty, Lang, Motivizer } from "../constants";
 import { DevActions } from "./development";
 import { Settings } from "./settings";
 import { User, UsersRepo } from "../db";
-import { IGNORE_TIME, MIN_INTERVAL, PENALTY_STEP, STAGE_1_MAX, STAGE_1_STEPS, USER_IDLE_TIME } from "./constants";
+import { IGNORE_TIME, MIN_INTERVAL, STAGE_1_MAX, STAGE_1_STEPS, USER_IDLE_TIME } from "./constants";
 import { minsToTimeString } from "../lib_helpers/humanize-duration";
 import { LogActionCalls, onlyForKnownUsers, transformMsg } from "./decorators";
 import { tgLangCodeToLang } from "../lib_helpers/i18n";
@@ -15,7 +15,7 @@ import { getFormattedStartDate, mssToTime, tsToDateTime } from "../lib_helpers/l
 import logger from "../logger";
 import { stage2 } from "./decorators/stage2";
 import { cigarettesText } from "../helpers/content";
-import { penaltyByDifficulty, stepByDifficulty } from "../helpers";
+import { penaltyByDifficulty, penaltyMinutesString, stepByDifficulty } from "../helpers";
 
 @LogActionCalls
 export class Actions extends Mixin(DevActions, Settings) {
@@ -209,7 +209,6 @@ export class Actions extends Mixin(DevActions, Settings) {
     }
     if (!isValidDeltaTime || deltaTimesLeft > 0) {
       await UsersRepo.updateUser(msg, update);
-      logger.debug("exit", !isValidDeltaTime, deltaTimesLeft > 0); // @FIXME: to remove!
       return;
     }
     // on complete
@@ -250,10 +249,9 @@ export class Actions extends Mixin(DevActions, Settings) {
     const isPenalty = msg.ts < msg.user.nextTime;
     if (isPenalty) {
       logger.debug(`U-${msg.user.chatId} [penalty] ${tsToDateTime(msg.ts)} < ${tsToDateTime(msg.user.nextTime)}`);
-      const penalty = msg.user.penalty + 1;
-      update.penalty = penalty;
-      update.penaltyAll = ((msg.user.difficulty * 10) + (PENALTY_STEP * 10)) / 10;
-      await this._res(msg.user, Content.PENALTY, { penalty });
+      update.penalty = msg.user.penalty + 1;
+      update.penaltyAll = msg.user.penaltyAll + 1;
+      await this._res(msg.user, Content.PENALTY, { penalty: update.penalty });
     }
     // idle
     const isIdle = currentDelta >= USER_IDLE_TIME;
@@ -287,7 +285,8 @@ export class Actions extends Mixin(DevActions, Settings) {
         prev_delta: minsToTimeString(deltaTime, msg.user.lang),
         new_delta: minsToTimeString(newDelta, msg.user.lang),
         time_to_get_smoke: mssToTime(update.nextTime, msg.user.timezone!),
-        penalty: minsToTimeString(penalty * PENALTY_STEP, msg.user.lang),
+        penalty,
+        penalty_mins: penaltyMinutesString(msg.user),
         step: minsToTimeString(difficulty, msg.user.lang),
       }));
       const { reply_markup } = getButtons(msg.user.lang, DialogKey.im_smoking);

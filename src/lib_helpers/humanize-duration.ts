@@ -1,11 +1,9 @@
 import humanizeDuration from "humanize-duration";
 
 export const minsToTimeString = (mins: number, language: string = "en") => {
-  if (!mins) {
-    return "0";
-  }
   const ms = mins * 60 * 1000;
-  return humanizeDuration (ms, { language, delimiter: " ", units: ["h", "m", "s"], round: true });
+  const units: humanizeDuration.Unit[] = mins ? ["h", "m", "s"] : ["m"];
+  return humanizeDuration (ms, { language, delimiter: " ", units, round: true });
 };
 
 export const daysToTimeString = (days: number = 0, language: string = "en") => {
