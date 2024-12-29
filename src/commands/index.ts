@@ -67,6 +67,12 @@ export const botActionsInit = (bot: TgBot) => {
       case BTN.Ignore_Success:
         act.ignoreSuccess(message);
         break;
+      case BTN.Timezone_Correct:
+        act.timezoneCorrect(message);
+        break;
+      case BTN.Timezone_Incorrect:
+        act.onTimezone(message);
+        break;
       case BTN.Dev_Delete_User:
         act.devOnDel(message);
         break;
@@ -99,6 +105,9 @@ export const botActionsInit = (bot: TgBot) => {
         break;
       case BTN.Dev_Ignore:
         act.devIgnore(message);
+        break;
+      case BTN.Dev_Content:
+        act.devContent(message);
         break;
       default:
         logger.error(`Unsupported callback "${callbackType}"`);

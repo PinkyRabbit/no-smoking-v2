@@ -89,6 +89,7 @@ export const dialogsEn: MultilineContent = {
   [Content.DIFFICULTY_MEDIUM]: DEFAULT,
   [Content.DIFFICULTY_HARD]: DEFAULT,
   [Content.DIFFICULTY_SELECTED]: DEFAULT,
+  [Content.DIFFICULTY_AUTO]: DEFAULT,
   [Content.TIMEZONE]: DEFAULT,
   [Content.TIMEZONE_INTRO]: DEFAULT,
   [Content.TIMEZONE_SELECTED]: DEFAULT,

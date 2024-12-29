@@ -222,7 +222,7 @@ export class Actions extends Mixin(DevActions, Settings) {
     await this._res(msg.user, Content.STAGE_1_END, contentProps);
     await this._res(msg.user, Content.SETTINGS);
     await UsersRepo.updateUser(msg, update);
-    return this.onLevel(msg);
+    return this.onTimezone(msg);
   }
 
   /**

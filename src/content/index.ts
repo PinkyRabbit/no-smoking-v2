@@ -133,6 +133,7 @@ const selectButtonsByKey = (key: DialogKey, locale: Lang): InlineKeyboard => {
       ],
       [
         buttonFor(BTN.Dev_Ignore, locale),
+        buttonFor(BTN.Dev_Content, locale),
       ]
     ];
   }
@@ -142,6 +143,14 @@ const selectButtonsByKey = (key: DialogKey, locale: Lang): InlineKeyboard => {
       [buttonFor(BTN.Ignore_Failed, locale)],
       [buttonFor(BTN.Ignore_Busy, locale)],
       [buttonFor(BTN.Ignore_Penalty_10, locale)],
+    ];
+  }
+  if (key === DialogKey.timezone) {
+    return [
+      [
+        buttonFor(BTN.Timezone_Correct, locale),
+        buttonFor(BTN.Timezone_Incorrect, locale),
+      ],
     ];
   }
   return [];

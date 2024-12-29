@@ -17,6 +17,8 @@ export const buttonsEn: ButtonNames = {
   [BTN.Ignore_Failed]: "I won't quit",
   [BTN.Ignore_Busy]: "Was Busy",
   [BTN.Ignore_Penalty_10]: "Make 10 penalty",
+  [BTN.Timezone_Correct]: "Correct 👍",
+  [BTN.Timezone_Incorrect]: "Incorrect 👎",
   [BTN.Dev_Delete_User]: "Delete user 🗑️",
   [BTN.Dev_To_Stage_1]: "Reset to Stage 1 🗯️",
   [BTN.Dev_Fill_Stage_1]: "Fill Stage 1 📈",
@@ -28,4 +30,5 @@ export const buttonsEn: ButtonNames = {
   [BTN.Dev_Motivizer_25]: "Motivizer to 25 ⛹️",
   [BTN.Dev_Motivizer_Full]: "Motivizer full ⛹️",
   [BTN.Dev_Ignore]: "To Ignore Mode 🌀",
+  [BTN.Dev_Content]: "Content 📋",
 };

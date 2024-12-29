@@ -73,12 +73,13 @@ export class DevActions {
   public async devFillStage1(msg: TelegramBot.Message) {
     const minDeltaTimesInitial = [...msg.user.minDeltaTimesInitial];
     let stepsAdded = 0;
+    const validInterval = MIN_INTERVAL + 1;
     while (minDeltaTimesInitial.length < STAGE_1_STEPS - 1) {
       stepsAdded += 1;
-      minDeltaTimesInitial.push(MIN_INTERVAL + 1);
+      minDeltaTimesInitial.push(validInterval);
     }
     const update: Partial<User> = {
-      lastTime: dateNow() - (60 * 60 * 1000),
+      lastTime: dateNow() - (validInterval * 60 * 1000),
       nextTime: 0,
       minDeltaTimesInitial: minDeltaTimesInitial,
     };
@@ -184,5 +185,13 @@ export class DevActions {
     };
     await UsersRepo.updateUser(msg, update);
     await this._res(msg.user, Content.DEV_IGNORE);
+  }
+
+  @devModeOnly
+  @transformMsg
+  @onlyForKnownUsers
+  public async devContent(msg: TelegramBot.Message) {
+    await this._res(msg.user, Content.DIFFICULTY_AUTO);
+    // await this._res(msg.user, Content.TIMEZONE);
   }
 }
