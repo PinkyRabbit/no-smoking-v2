@@ -1,0 +1,68 @@
+name: Test and Validate
+
+permissions:
+  contents: read
+  pull-requests: read
+  checks: write
+  statuses: write
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20.x'
+
+    - name: Set pipeline to PENDING status
+      run: |
+        gh api \
+          --method POST \
+          -H "Accept: application/vnd.github+json" \
+          /repos/${{ github.repository }}/statuses/${{ github.event.pull_request.head.sha }} \
+          -f state='pending' \
+          -f description='Running tests' \
+          -f context='Tests'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Lint code
+      run: npm run lint
+
+    - name: Run unit tests
+      run: npm run test:unit
+
+      # Set final status based on outcome
+    - name: Update status
+      if: always()
+
+      run: |
+        if [ "${{ job.status }}" = "success" ]; then
+          state="success"
+          description="All tests passed"
+        else
+          state="failure"
+          description="Tests failed"
+        fi
+        
+        gh api \
+          --method POST \
+          -H "Accept: application/vnd.github+json" \
+          -H "X-GitHub-Api-Version: 2022-11-28" \
+          /repos/${{ github.repository }}/statuses/${{ github.event.pull_request.head.sha }} \
+          -f state="$state" \
+          -f description="$description" \
+          -f context='Tests'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

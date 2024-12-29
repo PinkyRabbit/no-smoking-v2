@@ -106,7 +106,7 @@ describe("Actions", () => {
       expect(_resSpy.calledOnce).to.be.true;
       expect(_resSpy.firstCall.args).to.be.deep.equal([user, Content.FIRST_STEP, { stage_1_left: 20 }, DialogKey.im_smoking]);
       expect(updateUserStub.calledOnce).to.be.true;
-      expect(updateUserStub.firstCall.args[1]).to.be.deep.equal({ lastTime: Date.now() });
+      expect(updateUserStub.firstCall.args[1]).to.be.deep.equal({ lastTime: Date.now(), cigarettesSummary: 1 });
     });
 
     it("Stage 1. Should send a STAGE_1_PROCESSING message on second button click.", async () => {
