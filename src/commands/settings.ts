@@ -68,7 +68,7 @@ export class Settings {
   @onlyForKnownUsers
   public async changeLevelHandler(msg: TelegramBot.Message, difficulty: Difficulty) {
     await UsersRepo.updateUser(msg, { difficulty });
-    const difficultyName = difficultyNameByLevel(msg.user.lang, difficulty);
+    const difficultyName = difficultyNameByLevel(difficulty, msg.user.lang);
     await this._res(msg.user, Content.DIFFICULTY_SELECTED, { difficulty: difficultyName });
     if (!msg.user.timezone) {
       return this.onTimezone(msg);

@@ -42,7 +42,7 @@ export const dialogsRu: MultilineContent = {
     3. Оставить как есть.${NL}
     Ты продолжаешь с момента, как оставил аккаунт.${NL}
     ${B}Не рекомендуется${B}.${NL}
-    Время между перекурами: ${I}{{real_delta}}${I}.${N2}
+    Время между перекурами: ${I}{{delta_time}}${I}.${N2}
   `,
   [Content.START_EXISTING_STAGE_1]: `
     Привет! ✌️${N2}
@@ -317,7 +317,7 @@ export const dialogsRu: MultilineContent = {
     - Всего выкурено сигарет: {{cigarettes}}${NL}
     - К вам было применено {{penalty_all}} штрафных баллов${NL}
     - Начальный интервал {{delta_min}}${NL}
-    - Текущий интервал {{delta}}${NL}
+    - Текущий интервал {{delta_time}}${NL}
   `,
   [Content.HOW]: `
     ${B}Как вы можете помочь автору бота:${B}${N2}

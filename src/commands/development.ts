@@ -1,11 +1,13 @@
 import TelegramBot from "node-telegram-bot-api";
 import logger from "../logger";
 import { Content, DialogKey, Difficulty, Lang, Motivizer } from "../constants";
-import { dateNow } from "../lib_helpers/luxon";
+import { dateNow, getFormattedStartDate } from "../lib_helpers/luxon";
 import { User, UsersRepo } from "../db";
 import { devModeOnly, onlyForKnownUsers, transformMsg } from "./decorators";
-import { STAGE_1_MAX, MIN_INTERVAL, STAGE_1_STEPS, USER_IDLE_TIME } from "./constants";
+import { MIN_INTERVAL, STAGE_1_MAX, STAGE_1_STEPS, USER_IDLE_TIME } from "./constants";
 import { getContent } from "../content";
+import { minsToTimeString } from "../lib_helpers/humanize-duration";
+import { difficultyNameByLevel, penaltyMinutesString } from "../helpers";
 
 /**
  * Class for development actions
@@ -189,14 +191,43 @@ export class DevActions {
     await this._res(msg.user, Content.DEV_IGNORE);
   }
 
+  private getDevContentProps = ({ lang }: User) => ({
+    stepsAdded: "5",
+    time_to_get_smoke: "17:34",
+    admin_email: "usesa@yandex.com",
+    delta_min: minsToTimeString(82, lang),
+    delta_time: minsToTimeString(128, lang),
+    prev_delta: minsToTimeString(91, lang),
+    new_delta: minsToTimeString(93, lang),
+    step: minsToTimeString(Difficulty.EASY, lang),
+    penalty: "3",
+    penalty_all: "141",
+    penalty_mins: penaltyMinutesString({
+      difficulty: Difficulty.HARD,
+      penalty: 3,
+      lang,
+    } as User),
+    cigarettes: "217",
+    days_from_start: "22",
+    start_date: getFormattedStartDate(new Date("2024-02-12"), lang).start_date,
+    local_time: "14:08",
+    timezone: "+2",
+    difficulty: difficultyNameByLevel(Difficulty.HARD, lang),
+    min_interval: minsToTimeString(MIN_INTERVAL, lang),
+    min_stage_1: minsToTimeString(MIN_INTERVAL, lang),
+    max_stage_1: STAGE_1_MAX,
+    stage_1_left: "12"
+  });
+
   @devModeOnly
   @transformMsg
   @onlyForKnownUsers
   public async devContent(msg: TelegramBot.Message) {
-    await this._res(msg.user, Content.PENALTY_3);
-    // await this._res(msg.user, Content.MAXIMUM_REACHED, {}, DialogKey.max_time);
-    // await this._res(msg.user, Content.DIFFICULTY_AUTO);
-    // await this._res(msg.user, Content.TIMEZONE);
+    const contentKey: Content = Content.PENALTY_3;
+    const dialogKey: DialogKey = DialogKey.im_smoking;
+    // const dialogKey = undefined;
+    const fakeProps = this.getDevContentProps(msg.user);
+    await this._res(msg.user, contentKey, fakeProps, dialogKey);
   }
 
   @devModeOnly
@@ -210,7 +241,6 @@ export class DevActions {
   @transformMsg
   @onlyForKnownUsers
   public async devAllContentRecursive(msg: TelegramBot.Message, lang: Lang) {
-    const user = {  ...msg.user, lang };
     const callResRecursive = (promises: Array<() => Promise<void>>) => {
       const oneSec = 1000;
       const promiseToCall = promises.shift();
@@ -222,31 +252,8 @@ export class DevActions {
         callResRecursive(promises);
       }, oneSec);
     };
-    const fakeProps = {
-      stepsAdded: "5",
-      time_to_get_smoke: "17:34",
-      admin_email: "usesa@yandex.com",
-      delta_min: "1 час 24 минуты",
-      delta: "1 час 47 минут",
-      delta_time: "2 часa 8 минут",
-      prev_delta: "1 час 31 минута",
-      new_delta: "1 час 33 минуты",
-      real_delta: "2 часa 20 минут",
-      step: "30 секунд",
-      penalty: "3",
-      penalty_all: "141",
-      penalty_mins: "12 минут",
-      cigarettes: "217",
-      days_from_start: "22",
-      start_date: "12 октября 2024",
-      local_time: "14:08",
-      timezone: "+2",
-      difficulty: "Продвинутый",
-      min_interval: "30 минут",
-      min_stage_1: "20 минут",
-      max_stage_1: "2 часа",
-      stage_1_left: "12"
-    };
+    const user = {  ...msg.user, lang };
+    const fakeProps = this.getDevContentProps(user);
     const allContentCalls =
       Object.values(Content).map((contentKey) =>
         () => this._res(user, contentKey, fakeProps)

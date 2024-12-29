@@ -143,8 +143,8 @@ export class Actions extends Mixin(DevActions, Settings) {
       return;
     }
     const min_delta = minsToTimeString(msg.user.minDeltaTime, msg.user.lang);
-    const real_delta = minsToTimeString(msg.user.deltaTime || msg.user.minDeltaTime, msg.user.lang);
-    await this._res(msg.user, Content.START_EXISTING, { min_delta, real_delta }, DialogKey.start_existing);
+    const delta_time = minsToTimeString(msg.user.deltaTime || msg.user.minDeltaTime, msg.user.lang);
+    await this._res(msg.user, Content.START_EXISTING, { min_delta, delta_time }, DialogKey.start_existing);
   }
 
   /**
@@ -426,7 +426,7 @@ export class Actions extends Mixin(DevActions, Settings) {
       days_from_start,
       penalty_all: minsToTimeString(msg.user.penaltyAll, msg.user.lang),
       delta_min: minsToTimeString(msg.user.minDeltaTime, msg.user.lang),
-      delta: minsToTimeString(msg.user.deltaTime, msg.user.lang),
+      delta_time: minsToTimeString(msg.user.deltaTime, msg.user.lang),
       cigarettes: msg.user.cigarettesSummary,
     };
     await this._res(msg.user, Content.STATS, contentProps);
