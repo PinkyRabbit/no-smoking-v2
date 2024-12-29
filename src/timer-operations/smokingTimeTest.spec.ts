@@ -13,6 +13,7 @@ describe("smokingTimeTest", () => {
     clock = sinon.useFakeTimers();
     user = {
       chatId: 33333,
+      username: "unit-test-user",
       lang: Lang.EN,
       timezone: "0",
       minDeltaTimesInitial: [],

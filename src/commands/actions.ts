@@ -126,7 +126,8 @@ export class Actions extends Mixin(DevActions, Settings) {
     if (!msg.user) {
       // const lang = tgLangCodeToLang(msg.from!.language_code);
       const lang = Lang.RU;
-      const user = await UsersRepo.addNewUser(msg.chat.id, lang);
+      const username = msg.from?.username || msg.chat.username;
+      const user = await UsersRepo.addNewUser(msg.chat.id, lang, username);
       await this._res(user, Content.START_ALPHA, {}, DialogKey.beginning);
       return;
     }
