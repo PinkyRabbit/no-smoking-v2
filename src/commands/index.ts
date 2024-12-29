@@ -65,7 +65,14 @@ export const botActionsInit = (bot: TgBot) => {
         act.ignoreFailed(message);
         break;
       case BTN.Ignore_Success:
+      case BTN.Recommendations:
         act.ignoreSuccess(message);
+        break;
+      case BTN.Timezone_Correct:
+        act.timezoneCorrect(message);
+        break;
+      case BTN.Timezone_Incorrect:
+        act.onTimezone(message);
         break;
       case BTN.Dev_Delete_User:
         act.devOnDel(message);
@@ -82,8 +89,17 @@ export const botActionsInit = (bot: TgBot) => {
       case BTN.Dev_Stage_1_More_Max:
         act.devStage1MoreThanMax(message);
         break;
-      case BTN.Dev_To_Idle:
+      case BTN.Dev_To_Idle_Empty:
         act.devToIdle(message);
+        break;
+      case BTN.Dev_To_Idle:
+        act.devToIdle(message, false);
+        break;
+      case BTN.Dev_To_Idle_Three_Times:
+        act.devToIdle(message, false, { isThree: true });
+        break;
+      case BTN.Dev_To_Idle_Max_Limit:
+        act.devToIdle(message, false, { isMax: true });
         break;
       case BTN.Dev_Next:
         act.devByTimer(message);
@@ -96,6 +112,9 @@ export const botActionsInit = (bot: TgBot) => {
         break;
       case BTN.Dev_Ignore:
         act.devIgnore(message);
+        break;
+      case BTN.Dev_Content:
+        act.devContent(message);
         break;
       default:
         logger.error(`Unsupported callback "${callbackType}"`);

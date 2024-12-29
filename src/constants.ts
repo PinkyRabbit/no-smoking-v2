@@ -14,9 +14,9 @@ export enum Lang {
  */
 export enum Difficulty {
   DOESNT_SET = 0,
-  EASY = 0.5,
-  MEDIUM = 1,
-  HARD = 2,
+  EASY = 1,
+  MEDIUM = 2,
+  HARD = 3,
 }
 
 /**
@@ -45,6 +45,7 @@ export enum Content {
   STAGE_1_END = "Stage_1_End",
   STAGE_2_INITIAL = "Stage_2_Initial",
   STAGE_2 = "Stage_2",
+  STAGE_2_SUCCESS = "Stage_2_Success",
   STAGE_2_IGNORE_MIN = "Stage_2_Ignore_Min",
   STAGE_2_PROPS_MISSING = "Stage_2_Props_Missing",
   PENALTY = "Penalty",
@@ -53,11 +54,13 @@ export enum Content {
   TIME_FOR_A_SMOKE = "Time_For_a_Smoke",
   ON_IDLE_START = "On_Idle_Start",
   ON_IDLE_END = "On_Idle_End",
+  ON_IDLE_EASY_LEVEL = "On_Idle_Easy",
   DIFFICULTY = "difficulty",
   DIFFICULTY_SELECTED = "difficulty_selected",
   DIFFICULTY_EASY = "difficulty_simple",
   DIFFICULTY_MEDIUM = "difficulty_normal",
   DIFFICULTY_HARD = "difficulty_hard",
+  DIFFICULTY_AUTO = "difficulty_auto",
   TIMEZONE = "timezone",
   TIMEZONE_INTRO = "timezone_select",
   TIMEZONE_SELECTED = "timezone_selected",
@@ -72,6 +75,7 @@ export enum Content {
   BOT_IGNORE_SUCCESS = "bot_ignore_success",
   STATS = "get_stats",
   HOW = "how_to_help",
+  MAXIMUM_REACHED = "maximum_reached",
   // TEST
   DEV = "Dev",
   DEV_OFF = "Dev_Off",
@@ -100,6 +104,8 @@ export enum DialogKey {
   dev = "dev",
   difficulty = "difficulty",
   ignore = "ignore",
+  timezone = "timezone",
+  max_time = "max_time",
 }
 /**
  * Constant represents a motivizer keys
@@ -127,14 +133,21 @@ export enum BTN {
   Ignore_Failed = "ignore_failed",
   Ignore_Busy = "ignore_busy",
   Ignore_Penalty_10 = "ignore_penalty_10",
+  Timezone_Correct = "timezone_correct",
+  Timezone_Incorrect = "timezone_incorrect",
   Dev_Delete_User = "dev_delete_user",
   Dev_To_Stage_1 = "dev_to_stage_1",
   Dev_Fill_Stage_1 = "dev_fill_stage_1",
   Dev_Last_Time_1_Hour = "dev_last_time_1_hour",
   Dev_Stage_1_More_Max = "dev_stage_1_more_than_max",
   Dev_To_Idle = "dev_to_idle",
+  Dev_To_Idle_Empty = "dev_to_idle_empty",
+  Dev_To_Idle_Three_Times = "dev_to_idle_3_times",
+  Dev_To_Idle_Max_Limit = "dev_to_idle_max_limit",
   Dev_Next = "dev_next",
   Dev_Motivizer_25 = "dev_motivizer_25",
   Dev_Motivizer_Full = "dev_motivizer_full",
   Dev_Ignore = "dev_Ignore",
+  Dev_Content = "dev_content",
+  Recommendations = "recommendations",
 }

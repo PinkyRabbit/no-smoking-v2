@@ -97,27 +97,34 @@ export class Settings {
     if (!msg.user.minDeltaTime) {
       return Promise.resolve();
     }
-    // not for users with timezone
+    // apply timezone only if timezone is undefined
     if (msg.user.timezone) {
-      return Promise.resolve();
-    }
-    // difficulty level should be set before timezone
-    if (!msg.user.difficulty && !msg.user.timezone) {
       return Promise.resolve();
     }
     try {
       const zone = await UsersRepo.setTimezone(msg, msg.text!.trim());
       const local_time = DateTime.fromMillis(Date.now(), { zone }).toFormat("HH:mm");
-      await this._res(msg.user, Content.TIMEZONE_SELECTED, { timezone: msg.text, local_time });
+      await this._res(msg.user, Content.TIMEZONE_SELECTED, { timezone: msg.text, local_time }, DialogKey.timezone);
     } catch(error) {
       logger.debug("Save timezone error", error);
       await this._res(msg.user, Content.TIMEZONE_INVALID);
       return Promise.resolve();
     }
-    if (!msg.user.difficulty) {
-      return this.onLevel(msg);
+  }
+
+  @transformMsg
+  @onlyForKnownUsers
+  public async timezoneCorrect(msg: TelegramBot.Message) {
+    if (msg.user.difficulty) {
+      await this._res(msg.user, Content.SETTINGS_UPDATED);
+      return;
     }
-    return this.onSettingsDone(msg);
+    await UsersRepo.updateUser(msg, { difficulty: Difficulty.EASY });
+    await this._res(msg.user, Content.DIFFICULTY_AUTO);
+    const oneMinute = 60 * 1000;
+    setTimeout(() => {
+      this.onSettingsDone(msg);
+    }, oneMinute);
   }
 
   /**

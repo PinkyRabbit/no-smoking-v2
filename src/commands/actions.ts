@@ -2,8 +2,8 @@ import TelegramBot from "node-telegram-bot-api";
 import TgBot from "../telegram-bot";
 import { join as pathJoin } from "path";
 import { Mixin } from "ts-mixer";
-import { ContentProps, getContent, getButtons } from "../content";
-import { Content, DialogKey, Lang, Motivizer } from "../constants";
+import { ContentProps, getButtons, getContent } from "../content";
+import { Content, DialogKey, Difficulty, Lang, Motivizer } from "../constants";
 import { DevActions } from "./development";
 import { Settings } from "./settings";
 import { User, UsersRepo } from "../db";
@@ -11,10 +11,11 @@ import { IGNORE_TIME, MIN_INTERVAL, PENALTY_STEP, STAGE_1_MAX, STAGE_1_STEPS, US
 import { minsToTimeString } from "../lib_helpers/humanize-duration";
 import { LogActionCalls, onlyForKnownUsers, transformMsg } from "./decorators";
 import { tgLangCodeToLang } from "../lib_helpers/i18n";
-import { tsToDateTime, mssToTime, getFormattedStartDate } from "../lib_helpers/luxon";
+import { getFormattedStartDate, mssToTime, tsToDateTime } from "../lib_helpers/luxon";
 import logger from "../logger";
 import { stage2 } from "./decorators/stage2";
 import { cigarettesText } from "../helpers/content";
+import { penaltyByDifficulty, stepByDifficulty } from "../helpers";
 
 @LogActionCalls
 export class Actions extends Mixin(DevActions, Settings) {
@@ -86,8 +87,15 @@ export class Actions extends Mixin(DevActions, Settings) {
   /**
    * Helper to calculate new delta time
    */
-  private computeNewDelta = ({ deltaTime, difficulty, penalty, minDeltaTime }: Pick<User, "deltaTime" | "difficulty" | "penalty" | "minDeltaTime">) => {
-    const newDelta = ((deltaTime * 10)  + (difficulty * 10) - (penalty * PENALTY_STEP * 10)) / 10;
+  public _computeNewDelta = ({ deltaTime, difficulty, penalty, minDeltaTime }: Pick<User, "deltaTime" | "difficulty" | "penalty" | "minDeltaTime">, isTenMinPenalty?: boolean) => {
+    if (isTenMinPenalty) {
+      const newDeltaTime = deltaTime - 10;
+      return newDeltaTime >= minDeltaTime ? newDeltaTime : minDeltaTime;
+    }
+    const deltaTimeInt = deltaTime * 10;
+    const stepInt = stepByDifficulty(difficulty) * 10;
+    const penaltyInt = penaltyByDifficulty(difficulty, penalty) * 10;
+    const newDelta = (deltaTimeInt  + stepInt - penaltyInt) / 10;
     return newDelta >= minDeltaTime ? newDelta : minDeltaTime;
   };
 
@@ -214,7 +222,7 @@ export class Actions extends Mixin(DevActions, Settings) {
     await this._res(msg.user, Content.STAGE_1_END, contentProps);
     await this._res(msg.user, Content.SETTINGS);
     await UsersRepo.updateUser(msg, update);
-    return this.onLevel(msg);
+    return this.onTimezone(msg);
   }
 
   /**
@@ -238,7 +246,8 @@ export class Actions extends Mixin(DevActions, Settings) {
       cigarettesSummary: msg.user.cigarettesSummary + 1,
     };
     // penalty
-    if (msg.ts < msg.user.nextTime) {
+    const isPenalty = msg.ts < msg.user.nextTime;
+    if (isPenalty) {
       logger.debug(`U-${msg.user.chatId} [penalty] ${tsToDateTime(msg.ts)} < ${tsToDateTime(msg.user.nextTime)}`);
       const penalty = msg.user.penalty + 1;
       update.penalty = penalty;
@@ -246,28 +255,24 @@ export class Actions extends Mixin(DevActions, Settings) {
       await this._res(msg.user, Content.PENALTY, { penalty });
     }
     // idle
-    if (currentDelta >= USER_IDLE_TIME && !msg.user.cigarettesInDay) {
+    const isIdle = currentDelta >= USER_IDLE_TIME;
+    if (isIdle && !msg.user.cigarettesInDay) {
       const time_to_get_smoke = mssToTime(update.nextTime!, msg.user.timezone!);
       await this._res(msg.user, Content.IDLE_NO_CIGARETTES, { time_to_get_smoke }, DialogKey.im_smoking);
     }
-    if (currentDelta >= USER_IDLE_TIME && msg.user.cigarettesInDay > 0) {
+    const isNonEmptyIdle = isIdle && msg.user.cigarettesInDay > 0;
+    if (isNonEmptyIdle) {
+      // normal idle update
       logger.debug(`U-${msg.user.chatId} [idle] ${currentDelta} >= ${USER_IDLE_TIME}`);
       const { deltaTime, difficulty, penalty, penaltyDays } = msg.user;
-      const newDelta = this.computeNewDelta(msg.user);
+      const isMaxTimeLimitReached = msg.user.deltaTime >= USER_IDLE_TIME - 5;
+      const newDelta = isMaxTimeLimitReached ? msg.user.deltaTime : this._computeNewDelta(msg.user);
       const newNextTime = msg.ts + (newDelta * 60 * 1000);
       update.penalty = 0;
-      update.penaltyDays = 0;
+      update.penaltyDays = penalty ? penaltyDays + 1 : 0;
       update.cigarettesInDay = 0;
       update.deltaTime = newDelta;
       update.nextTime = newNextTime;
-
-      if (penalty) {
-        update.penaltyDays = penaltyDays + 1;
-      }
-      if (update.penaltyDays === 3) {
-        update.penaltyDays = 0;
-        await this._res(msg.user, Content.PENALTY_3, {});
-      }
 
       const content: string[] = [];
       const cigarettes = cigarettesText(msg);
@@ -287,11 +292,29 @@ export class Actions extends Mixin(DevActions, Settings) {
       const { reply_markup } = getButtons(msg.user.lang, DialogKey.im_smoking);
       const ops: TelegramBot.SendMessageOptions = { parse_mode: "MarkdownV2", reply_markup };
       await this.bot.sendMessage(msg.user.chatId, content.join(""), ops);
+
+      // hint three days penalty
+      if (update.penaltyDays === 3) {
+        update.penaltyDays = 0;
+        await this._res(msg.user, Content.PENALTY_3, {});
+      }
+      // display hint for easy level
+      const isEasyDifficulty = msg.user.difficulty === Difficulty.EASY;
+      const hasNoPenalty = !msg.user.penalty;
+      const userHas10MinProgress = msg.user.deltaTime - msg.user.minDeltaTime > 10;
+      if (isEasyDifficulty && hasNoPenalty && userHas10MinProgress) {
+        await this._res(msg.user, Content.ON_IDLE_EASY_LEVEL);
+      }
+      // display hint if limit is reached
+      if (isMaxTimeLimitReached) {
+        await this._res(msg.user, Content.MAXIMUM_REACHED, {}, DialogKey.max_time);
+      }
     }
     // normal stage 2
     if (currentDelta < USER_IDLE_TIME) {
       const time_to_get_smoke = mssToTime(update.nextTime!, msg.user.timezone!);
-      await this._res(msg.user, Content.STAGE_2, { time_to_get_smoke }, DialogKey.im_smoking);
+      const content = !isPenalty && msg.user.cigarettesInDay ? Content.STAGE_2_SUCCESS : Content.STAGE_2;
+      await this._res(msg.user, content, { time_to_get_smoke }, DialogKey.im_smoking);
     }
     // update user
     await UsersRepo.updateUser(msg, update);
@@ -359,6 +382,7 @@ export class Actions extends Mixin(DevActions, Settings) {
   @transformMsg
   @onlyForKnownUsers
   public async ignoreBusy(msg: TelegramBot.Message) {
+    await UsersRepo.updateUser(msg, { ignoreTime: msg.ts + IGNORE_TIME });
     const contentProps = { delta_time: minsToTimeString(msg.user.minDeltaTime, msg.user.lang) };
     await this._res(msg.user, Content.BOT_IGNORE_BUSY, contentProps, DialogKey.im_smoking);
   }
@@ -366,12 +390,13 @@ export class Actions extends Mixin(DevActions, Settings) {
   @transformMsg
   @onlyForKnownUsers
   public async ignorePenalty10(msg: TelegramBot.Message) {
-    const newDelta = this.computeNewDelta({ ...msg.user, penalty: 10 });
+    const newDelta = this._computeNewDelta(msg.user, true);
     await UsersRepo.updateUser(msg, {
       deltaTime: newDelta,
       penaltyAll: msg.user.penaltyAll + 10,
       penaltyDays: 0,
       cigarettesInDay: 0,
+      ignoreTime: msg.ts + IGNORE_TIME,
     });
     const delta_time = minsToTimeString(newDelta, msg.user.lang);
     const delta_min = minsToTimeString(msg.user.minDeltaTime, msg.user.lang);
