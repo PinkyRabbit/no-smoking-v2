@@ -1,13 +1,13 @@
 import TelegramBot from "node-telegram-bot-api";
 import logger from "../logger";
 import { Content, DialogKey, Difficulty, Lang, Motivizer } from "../constants";
-import { dateNow, getFormattedStartDate } from "../lib_helpers/luxon";
+import { dateNow, getFormattedStartDate, mssToTime } from "../lib_helpers/luxon";
 import { User, UsersRepo } from "../db";
 import { devModeOnly, onlyForKnownUsers, transformMsg } from "./decorators";
 import { MIN_INTERVAL, STAGE_1_MAX, STAGE_1_STEPS, USER_IDLE_TIME } from "./constants";
 import { getContent } from "../content";
 import { minsToTimeString } from "../lib_helpers/humanize-duration";
-import { difficultyNameByLevel, penaltyMinutesString } from "../helpers";
+import { difficultyNameByLevel, penaltyMinutesString, stepByDifficulty } from "../helpers";
 
 /**
  * Class for development actions
@@ -149,14 +149,16 @@ export class DevActions {
   @onlyForKnownUsers
   public async devMotivizer(msg: TelegramBot.Message, to?: number) {
     if (!to) {
+      const step = stepByDifficulty(msg.user.difficulty);
       const allContent = getContent(msg.user.lang, Motivizer) as unknown as string[];
-      const messageStart = getContent(msg.user.lang, Content.ON_IDLE_START);
+      const messageStart = getContent(msg.user.lang, Content.ON_IDLE_START, { cigarettes: 7 });
       const messageEnd = getContent(msg.user.lang, Content.ON_IDLE_END, {
-        prev_delta: "1 час 11 минут",
-        new_delta: "1 час 12 минут",
-        time_to_get_smoke: "13:20",
-        penalty: "2",
-        step: "1"
+        prev_delta: minsToTimeString(71, msg.user.lang),
+        new_delta: minsToTimeString(72, msg.user.lang),
+        time_to_get_smoke: mssToTime(1704120600000, msg.user.timezone!),
+        penalty: 2,
+        penalty_mins: penaltyMinutesString(msg.user),
+        step: minsToTimeString(step, msg.user.lang),
       });
       while (allContent.length > 0) {
         const motivation = allContent.shift();
