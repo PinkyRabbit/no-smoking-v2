@@ -143,11 +143,11 @@ export class Settings {
         nextTime,
         ignoreTime: msg.ts + IGNORE_TIME,
       });
-      const time_to_get_smoke = mssToTime(nextTime, msg.user.timezone!);
+      const time_to_get_smoke = mssToTime(nextTime, msg.user);
       await this._res(msg.user, Content.STAGE_2_INITIAL,  { time_to_get_smoke }, DialogKey.im_smoking);
       return;
     }
-    const time_to_get_smoke = mssToTime(msg.user.nextTime, msg.user.timezone!);
+    const time_to_get_smoke = mssToTime(msg.user.nextTime, msg.user);
     await this._res(msg.user, Content.SETTINGS_UPDATED,  { time_to_get_smoke }, DialogKey.im_smoking);
   }
 }

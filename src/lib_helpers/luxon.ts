@@ -1,14 +1,15 @@
 import { DateTime } from "luxon";
 import { Lang } from "../constants";
 import { daysToTimeString } from "./humanize-duration";
+import { User } from "../db";
 
 export const tsToDateTime = (ts: unknown) => {
   const dateTime = typeof ts === "number" ? DateTime.fromMillis(ts) : DateTime.now();
   return dateTime.toFormat("dd.MM.yyyy HH:mm");
 };
 
-export const mssToTime = (mss: number, zone: string) => {
-  return DateTime.fromMillis(mss, { zone }).toFormat("HH:mm");
+export const mssToTime = (mss: number, { timezone: zone, hourFormat }: User) => {
+  return DateTime.fromMillis(mss, { zone }).toFormat(hourFormat);
 };
 
 export const getFormattedStartDate = (jsDate: Date, locale: Lang) => {

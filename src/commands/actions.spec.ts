@@ -5,7 +5,7 @@ import { Chat, Message } from "node-telegram-bot-api";
 import { IObjectID } from "monk";
 import { DateTime, Settings as LuxonSettings } from "luxon";
 import TgBot from "../telegram-bot";
-import { Content, DialogKey, Difficulty, Lang } from "../constants";
+import { Content, DialogKey, Difficulty, HourFormat, Lang } from "../constants";
 import logger from "../logger";
 import { PlainUser } from "../global";
 import { UsersRepo } from "../db";
@@ -33,6 +33,7 @@ describe("Actions", () => {
       _id,
       chatId: 33333,
       username: "unit-test-user",
+      hourFormat: HourFormat.H24,
       lang: Lang.EN,
       timezone: "0",
       minDeltaTimesInitial: [],

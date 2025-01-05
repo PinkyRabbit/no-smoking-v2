@@ -1,10 +1,11 @@
 import monk, { IMonkManager, ICollection } from "monk";
-import { Message } from "node-telegram-bot-api";
+import TelegramBot, { Message } from "node-telegram-bot-api";
 import logger from "../../logger";
 import { RequestOptions } from "../dbOptionsConstructor";
-import { Difficulty, Lang } from "../../constants";
+import { Difficulty, HourFormat, Lang } from "../../constants";
 import { logWithTimestamps } from "../../lib_helpers/logger";
 import { dateNow, gmtToUtc, isValidTimeZoneCheck, tsToDateTime } from "../../lib_helpers/luxon";
+import { tgLangCodeToLang } from "../../lib_helpers/i18n";
 
 export type User = {
   /**
@@ -21,6 +22,12 @@ export type User = {
    * to convert it to our Lang enum
    */
   lang: Lang;
+  /**
+   * @property hourFormat - hour format
+   * @type HourFormat
+   * To display time in format, selected by user
+   */
+  hourFormat: HourFormat;
   /**
    * @property timezone - timezone UTC string
    * @type string | undefined
@@ -168,10 +175,14 @@ export class UsersRepo extends RequestOptions {
     return UsersRepo.call.findOne({ chatId });
   }
 
-  static addNewUser(chatId: number, lang: Lang, username = "Unknown") {
+  static addNewUser(msg: TelegramBot.Message) {
+    const chatId = msg.chat.id;
+    const username = msg.from?.username || msg.chat.username || "Unknown";
+    const { lang, hourFormat } = tgLangCodeToLang(msg.from!.language_code);
     const defaultUser: User = {
       chatId,
       lang,
+      hourFormat,
       username,
       timezone: undefined,
       difficulty: Difficulty.DOESNT_SET,
@@ -200,11 +211,7 @@ export class UsersRepo extends RequestOptions {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-expect-error
       msg.user[key] = value;
-    });
-  }
-
-  static async setTimezone(msg: Message, timezone: string) {
-    const isValidTimezone = isValidTimeZoneCheck(timezone);
+    }); } static async setTimezone(msg: Message, timezone: string) { const isValidTimezone = isValidTimeZoneCheck(timezone);
     if (isValidTimezone) {
       const update: Partial<User> = { timezone };
       await UsersRepo.updateUser(msg, update);

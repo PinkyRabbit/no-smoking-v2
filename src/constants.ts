@@ -20,6 +20,15 @@ export enum Difficulty {
 }
 
 /**
+ * Constant to define all the available hour formats
+ * @enum {string} HourFormat
+ */
+export enum HourFormat {
+  H24 = "HH:mm",
+  H12 = "h:mm a",
+}
+
+/**
  * Constant to define all the available content keys
  * @note Define content keys here before using it in the code
  * @enum {string} Content
