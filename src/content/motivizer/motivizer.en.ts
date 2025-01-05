@@ -11,7 +11,7 @@ const motivations: string[] = [
     the white car ceiling turned yellow. And it’s all because of this silly habit!
   `,
   `
-    Do you know how long people have been smoking "for money"? Since the 16th century!
+    Do you know how long people have been smoking "for money?" Since the 16th century!
     Yes, even back then, people started selling tobacco.
     It’s an insanely profitable business built on people’s health.
   `,
@@ -55,8 +55,8 @@ const motivations: string[] = [
     Over 4,000 chemicals are released when you light a cigarette.
     It’s no wonder smoking is one of the leading causes of premature death.
     Just think about the meaning of "premature death."
-    You have so many plans in life—friends, family, goals. You’re doing everything to make your life interesting.
-    And then, suddenly, "bam"—you’re gone.
+    You have so many plans in life — friends, family, goals. You’re doing everything to make your life interesting.
+    And then, suddenly, "bam" — you’re gone.
     Even though you could have lived a long and happy life.
     And on top of that, you paid for it.
   `,
@@ -66,7 +66,7 @@ const motivations: string[] = [
   `,
   `
     The idea that people who quit smoking gain weight is a myth.
-    Even if you’re prone to weight gain—it’s still a myth.
+    Even if you’re prone to weight gain — it’s still a myth.
     In 99% of cases, people gain weight because they eat while lying down
     or start consuming sweets and pastries in excessive amounts.
     Watch what you eat.
@@ -74,7 +74,7 @@ const motivations: string[] = [
   `,
   `
     All nicotine replacements are a lie.
-    Patches, pills, vapes—they’re just another type of cigarette.
+    Patches, pills, vapes — they’re just another type of cigarette.
     Oh, you’d be amazed at how inventive the tobacco industry can be!
     They’ll sell you cigarettes in bottles, cigarettes as car fresheners, or perfumes with a tobacco scent.
     And they’ll tell you, "This is how you quit smoking."
@@ -86,11 +86,11 @@ const motivations: string[] = [
     Smokers step "outside" to smoke or go to designated "smoking rooms."
     Have you ever thought about how this looks from the outside?
     Like an "aquarium for addicts that smell bad."
-    It’s not even discrimination—it’s just that people without this habit
+    It’s not even discrimination — it’s just that people without this habit
     aren’t always willing to put up with it.
   `,
   `
-    Your family, friends, and loved ones who don’t smoke—they love you for who you are, regardless of your habits.
+    Your family, friends, and loved ones who don’t smoke — they love you for who you are, regardless of your habits.
     Even if your breath smells like smoke after you’ve had a cigarette, they accept it with understanding.
     So why expose them to harm? It’s simply pointless.
     That’s why you’re trying to quit smoking.
@@ -105,7 +105,7 @@ const motivations: string[] = [
     They can’t fully enjoy the taste of food.
     They can’t fully experience the scent of perfume.
     Sometimes even the smell of gasoline on asphalt can spark
-    an incredible wave of memories—but not while you’re still smoking.
+    an incredible wave of memories — but not while you’re still smoking.
     Quit. It’s a pointless habit.
   `,
   `
@@ -130,7 +130,7 @@ const motivations: string[] = [
   `
     If you live or work with people who smoke, it doesn’t have to be a problem.
     You can still go outside with them as usual.
-    But if it’s not your time to smoke—don’t.
+    But if it’s not your time to smoke — don’t.
     Don’t even take a puff. What’s the point?
     Just stick to your schedule, and that’s it. 
   `,
@@ -143,7 +143,6 @@ const motivations: string[] = [
     The entire tobacco industry is designed to make money off other people’s health.
   `,
   `
-    
     Non-smokers have better skin. Why? Because they aren’t constantly poisoned by chemicals.
     And you don’t have to be a young woman to appreciate it.
     The healthy complexion of a mature man looks far more appealing
@@ -165,7 +164,7 @@ const motivations: string[] = [
     This might sound strange, but it’s much easier to quit smoking now than later.
     It’s a scientifically proven psychological fact.
     A person who decides to quit smoking can do it.
-    But if they stray from this path, quitting becomes harder later—psychologically.
+    But if they stray from this path, quitting becomes harder later — psychologically.
     They start thinking, "It’s not that much money," or "I’ve been smoking for years, and I’m fine," and so on.
     You’ve already decided to quit smoking.
     Now is the best time to do it. Don’t stop!
@@ -173,7 +172,7 @@ const motivations: string[] = [
   `
     You’ll be an example for others. If you quit, your spouse or partner might quit too, and so might your friends.
     You’ll still spend the same amount of time together as before, talking just like you always did.
-    Everything will be the same—except there won’t be a cigarette in your hand.
+    Everything will be the same — except there won’t be a cigarette in your hand.
   `,
   `
     A joke about how we link smoking to everyday activities.
@@ -199,18 +198,18 @@ const motivations: string[] = [
   `
     Start reminding yourself that smoking is just a habit.
     The difference between a habit and an addiction is very simple.
-    You’re used to doing it. But if you suddenly don’t—nothing will change.
+    You’re used to doing it. But if you suddenly don’t — nothing will change.
     Absolutely nothing.
   `,
   `
     If you suffer from headaches, especially when the weather changes, smoking could be the cause.
     Yes, cigarettes constrict your blood vessels. Add to that the cholesterol accumulated over the years,
-    plus atmospheric pressure—and it’s almost a guaranteed headache.
+    plus atmospheric pressure — and it’s almost a guaranteed headache.
     Why would you want that?
   `,
   `
     You’ve run out of cigarettes and didn’t smoke. 
-    After a short while, you start feeling nervous and irritable—strange, isn’t it?
+    After a short while, you start feeling nervous and irritable — strange, isn’t it?
     For someone who’s supposed to be in full control of their life, 
     to depend on something sold at every kiosk like chewing gum.
     It’s both strange and frustrating.
@@ -247,7 +246,7 @@ const motivations: string[] = [
   `
     There’s an essential rule called "Smoking Companions".
     If you have a habit of smoking while drinking alcohol — stop drinking entirely.
-    If you smoke when you drink coffee—switch to tea instead.
+    If you smoke when you drink coffee — switch to tea instead.
     Break the associations with smoking that are easy to let go of.
     You can go back to enjoying your favorite coffee as usual once you quit smoking.
     And you’ll look back on it all with a smile.
@@ -307,219 +306,251 @@ const motivations: string[] = [
     If cigarettes were made only of tobacco, everyone would quit smoking easily.
     Tobacco company owners understand this.
     That’s why they make smokers dependent on various additives.
-    There’s all sorts of stuff in there—both in the tobacco and the filters.
+    There’s all sorts of stuff in there — both in the tobacco and the filters.
     By the way, that’s why cigarettes don’t go out, for instance.
   `,
   `
-    У вас бывало такое. Сидите вечером, отдыхаете. Потом подумали - а не покурить ли. 
-    Лезете в карман куртки или в сумку и обнаруживаете что сигареты закончились.
-    Что делать - встаёте, одеваетесь, и идёте в киоск за сигаретами.
-    Представляете, насколько это странно. Вместо своего заслуженного отдыха вы одеваетесь
-    и идёте по маршруту, который находили.
+    Has this ever happened to you? You’re sitting in the evening, relaxing.
+    Then you think, "Maybe I’ll have a smoke".
+    You reach into your jacket pocket or bag and realise you’re out of cigarettes.
+    What do you do? You get up, put on your clothes, and head to the nearest shop for cigarettes.
+    Imagine how strange that is. Instead of enjoying your well-deserved rest,
+    you’re getting dressed and walking a route you know all too well.
   `,
   `
-    А вы когда-то слышали, что бывают подделки сигарет? Наверняка.
-    Но вот про то, что люди травились поддельными сигаретами не на слуху. А они есть.
-    Как это происходит. Человек покурил некачественные сигареты, отравился, кружится голова, плохо.
-    Что он делает? Думает что заболел, ложится на больничный.
-    А можно отравиться очень сильно. Ещё за это и деньги заплатить.
+    Have you ever heard about counterfeit cigarettes? Probably.
+    But cases of people getting poisoned by fake cigarettes aren’t as well-known. Yet they happen.
+    Here’s how it goes: someone smokes low-quality cigarettes, gets poisoned, feels dizzy and unwell.
+    What do they do? They think they’re sick and take time off work.
+    But the poisoning can be much worse. And to top it off, you’re paying for it.
   `,
   `
-    Психологи считают что жвачка очень сильно мотивирует курение. 
-    Курящие люди жующие жвачку привыкают глотать никотин со слюной и потом, как только жвачка оказывается 
-    во рту - сразу же возникает ассоциация с сигаретой. Поэтому, если вы жуёте жвачку и планируете
-    бросить курить, лучше пока прекратить жевать. Временно.
+    Psychologists believe that chewing gum strongly reinforces the habit of smoking.
+    Smokers who chew gum get used to swallowing nicotine with their saliva,
+    and as soon as gum is in their mouth, it immediately triggers an association with cigarettes.
+    So, if you chew gum and plan to quit smoking, it’s better to stop chewing — for now. Temporarily.
   `,
   `
-    - Всё, бросаю курить!
-    - Отлично, с вас 124 $ в месяц налога. Это для компенсации убытка, который вы теперь 
-    будете наносить табачным компаниям. 
-    И 4210 $ компенсации клинике, которой не доведётся теперь вас лечить.
+    Joke. A man lit his cigarette and said, "I really need to quit smoking."
+    His friend asked, "Why don’t you?"
+    He took a deep drag and replied, "Because quitting is the only thing I do worse than smoking."
   `,
   `
-    Вы заметили, что знаменитости почти никогда не курят? И это совершенно не потому что не могут себе позволить.
-    Просто глупо быть рабом бесполезной привычки.
+    Have you noticed that celebrities almost never smoke?
+    And it’s certainly not because they can’t afford it.
+    It’s just foolish to be a slave to a useless habit.
   `,
   `
-    Чтобы меньше курить - ограничьте себя. Уберите ваши дополнительные зажигалки - оставьте одну.
-    Перестаньте покупать сигареты блоками и носите только одну пачку.
-    Сделайте курение для вас мение доступным.
+    To smoke less, set some limits for yourself. Remove your extra lighters — keep just one.
+    Stop buying cigarettes by the carton and carry only one pack at a time.
+    Make smoking less accessible for yourself.
   `,
   `
-    Отказ от курения означает отсутствие ограничений – вы можете свободно находиться в обществе, 
-    не имея необходимости отходить в сторону или выходить на улицу, чтобы покурить.
+    Quitting smoking means freedom from limitations — you can freely stay in social settings
+    without needing to step aside or go outside for a smoke.
   `,
   `
-    Всегда помните - все схемы, которые обещают вам бросить курить - обман. На самом деле вы сейчас
-    выбрали единственную рабочую схему - ограничение курения с напоминаниями. Никакие таблетки, пластыри
-    и тренинги не сработают - это ещё один вариант выкачки денег из человека.
+    Always remember — any methods promising to help you quit smoking are a scam.
+    The truth is, you’ve already chosen the only method that works — limiting your smoking with reminders.
+    No pills, patches, or training sessions will help.
+    They’re just another way to take money from you.
   `,
   `
-    Если честно, когда читаешь о вреде курения - хочется закурить. Поэтому, скажем просто, как факт -
-    курение безумно вредное пагубное занятие, которое ничего хорошего вам не даёт.
+    Honestly, when you read about the harm of smoking, it makes you want to light up.
+    So let’s just state it as a fact — smoking is an incredibly harmful, destructive habit
+    that brings absolutely no benefit to you.
   `,
   `
-    Безопасных сигарет - нет, безопасных парилок - нет, курить кальян полезно - нет. 
-    Смотрите, как бы "самое безопасное" не оказалось "самым смертоносным".
-    Так зачем вообще рисковать своей жизнью?
+    There are no safe cigarettes, no safe vapes, and smoking a hookah isn’t healthy either.
+    Sometimes what’s advertised as "the safest" can turn out to be "the deadliest".
+    So why risk your life at all?
   `,
   `
-    Современные сигаретные фильтры, конечно же, задерживают смолы и делают курение более безопасным.
-    Но, делают более безопасным совершенно не означает, что, встав когда-то утром,
-    вы не обнаружите какое-то страшное заболевание связанное с курением. Поэтому - бросайте курить.
+    Modern cigarette filters do, of course, trap tar and make smoking somewhat safer.
+    But "somewhat safer" doesn’t mean that one morning you won’t wake up
+    to find a serious illness caused by smoking.
+    So, quit smoking.
   `,
   `
-    Юмор. Самый реальный вред от курения — это когда выходишь покурить, а соседи по общаге сожрали твои пельмени.
+    Joke. A man quit smoking after 20 years.
+    The hospitals held a meeting and said, "We just lost our best customer!"
   `,
   `
-    Когда начинаешь думать о курении, как о бесполезном занятии - совладать с этой привычкой гораздо проще.
-    Чем больше человек думает о привычке, как о привычке - тем быстрее он бросает курить.
+    When you start thinking of smoking as a pointless activity, it becomes much easier to overcome the habit.
+    The more a person thinks of smoking as just a habit, the faster they quit.
   `,
   `
-    Нюхательный табак является частой причиной рака слизистой оболочки рта - да, даже такой рак бывает.
-    Часто люди жуют и нюхают табак "чтобы проснуться". Это тоже опасно.
+    Snuff tobacco is a common cause of oral mucosa cancer — yes, even that type of cancer exists.
+    Many people chew or sniff tobacco "to wake up", but this is dangerous too.
   `,
   `
-    По чистой статистике 90% курильщиков бросили бы если бы могли. На самом деле, им нужно было озадачиться,
-    как озадачились вы. Спросите у своих друзей, может они хотят бросить курить. Даже если они откажут,
-    когда вы бросите курить совсем - вы послужите для них примером.
+    According to pure statistics, 90% of smokers would quit if they could.
+    The truth is, they just need to take the initiative, like you did.
+    Ask your friends if they want to quit smoking. Even if they say no,
+    when you quit completely, you’ll serve as an example for them.
   `,
   `
-    Ежегодно огромное число людей бросает курить. Но около половины из них бросают только тогда,
-    когда уже имеют реальные проблемы со здоровьем. А ведь до этого могло бы и не дойти.
+    Every year, a huge number of people quit smoking.
+    But about half of them only quit after they already have serious health problems.
+    And yet, it didn’t have to come to that.
   `,
   `
-    С помощью этого бота люди бросают курить в среднем за три месяца. Если вы вышли на время более двух часов
-    между перекурами - можете начинать задумываться над этим. Вам стоит подобрать какой-то период,
-    когда у вас будет три и более выходных. Вам нужно переборот себя первые пять дней - дальше становится легче.
+    With the help of this bot, people quit smoking in an average of three months.
+    If you’ve reached an interval of more than two hours between smoke breaks,
+    it’s time to start thinking about it.
+    Choose a period when you’ll have three or more days off.
+    You just need to overcome the first five days — it gets easier after that.
   `,
   `
-    В фильмах постоянно идёт скрытая реклама сигарет. Когда главный герой "смачно" затягивается - мммм,
-    как же хочется покурить. Реклама сигарет. Помните об этом.
+    Movies often feature hidden cigarette advertising.
+    When the main character takes a deep, satisfying drag—mmm,
+    it makes you really want to smoke.
+    It’s cigarette advertising. Always remember that!
   `,
   `
-    Юмор. - Какой у Вас красивый желтый кот! - Спасибо, но на самом деле он белый - мы просто курим в квартире.
+    Joke. A smoker looked at his yellowed teeth in the mirror and said,
+    "Well, at least they match my favourite sweater now."
   `,
   `
-    Что значит "я не могу бросить курить"?! Звучит странно, не правда ли.
+    What do you mean, "I can’t quit smoking"?! Sounds strange, doesn’t it?
   `,
   `
-    Часто можно услышать такое - я курю, потому что мне нравится. 
-    Мне нравится "запах" сигарет и затягиваться табачным дымом.
-    Напомним вам, вы бросаете курить потому что это вредно, бессмысленно и раздражает других, а не вас.
-    Да, табачный дым - часто достаточно приятный. Но вы стали его рабом.
-    А если вы уже не властны над этой привычкой - пора с ней заканчивать.
+    You often hear people say, "I smoke because I like it.
+    I like the 'smell' of cigarettes and the feeling of inhaling tobacco smoke."
+    Let us remind you — you’re quitting smoking because it’s harmful, pointless,
+    and irritating to others, not you.
+    Yes, tobacco smoke can be somewhat pleasant,
+    but you’ve become a slave to it.
+    And if you’re no longer in control of this habit, it’s time to end it.
   `,
   `
-    Посреди тяжёлого дня вы садитесь, закуриваете, и сигарета переносит вас в мир "спокойных размышлений" о жизни.
-    Вы отдыхаете. Вроде бы всё ок? А теперь я вам скажу, что для этого вам совершенно не нужна сигарета.
-    Это просто часть вашей привычки которая въелась в вас и от неё теперь будет очень трудно избавиться.
-    Боритесь! Это настоящая битва! Вы сильнее.
+    In the middle of a hard day, you sit down, light a cigarette,
+    and it takes you to a world of "calm reflection" about life.
+    You’re relaxing. Seems fine, right?
+    Now let me tell you — you don’t need a cigarette for that.
+    It’s just part of a habit that’s ingrained in you,
+    and now it’s hard to let go of.
+    Fight it! This is a real battle! You’re stronger.
   `,
   `
-    Наверняка, когда вы только начинали курить, вы говорили "хочу курю - хочу некурю".
-    Ничего не поменялось.
+    Surely, when you first started smoking, you said, "I smoke if I want to — I don’t if I don’t want to."
+    Nothing has changed.
   `,
   `
-    Одним из хороших ходов в отказе от курения является, если вы перестанете считать, сколько сигарет у вас
-    осталось в пачке. Это тяжело, но вы же боретесь с привычкой. И, всякий раз, когда они у вас будут заканчиваться,
-    вы будете идти в магазин или киоск и думать, насколько вами руководит привычка.
+    One effective strategy for quitting smoking is to stop counting how many cigarettes you have left in the pack.
+    It’s hard, but you’re fighting a habit.
+    Every time you run out and head to the shop,
+    you’ll realise just how much this habit controls you.
   `,
   `
-    Есть такая очень популярная фраза "некоторые люди всю жизнь курят и ничего". Так-то оно так.
-    Но, во-первых, они всё равно страдают от этого курения - мозг работает хуже, моторика хуже и тп.
-    А, во-вторых, где гарантия что для вас сработает это правило? Вы просто откройте как-нибудь список
-    заболеваний, риск которых возрастает с курением. Там много достаточно страшного.
+    There’s a very popular phrase: "Some people smoke their whole lives and nothing happens."
+    Well, that’s partly true.
+    But first of all, they still suffer from smoking — reduced brain function, poor motor skills, and so on.
+    And secondly, where’s the guarantee that this rule will apply to you?
+    Just take a look at the list of diseases whose risks increase with smoking.
+    There’s plenty on it that’s truly terrifying.
   `,
   `
-    Бычки на траве, бычки на автобусных остановках, бычки на балконах, бычки в машине друга и гараже.
-    Раздражает, не правда ли?
+    
+    Cigarette butts on the grass, at bus stops, on balconies, in a friend’s car, and in the garage.
+    Annoying, isn’t it?
   `,
   `
-    Сигареты это настолько прибыльный бизнес, что многие страны третьего мира занимаются их контрабандой.
-    Вы даже не можете себе представить объёмы - там десятки миллиардов сигарет.
-    Просто бизнес на смерти всегда был самым прибыльным.
+    Cigarettes are such a profitable business that many third-world countries engage in their smuggling.
+    You can’t even imagine the scale — we’re talking tens of billions of cigarettes.
+    After all, the business of death has always been the most profitable.
   `,
   `
-    Фраза "С этого момента ни одной затяжки" очень сильная. Скажите её, когда примете окончательное решение.
-    Это как договор самому себе.
+    The phrase "Not a single puff from this moment on" is very powerful.
+    Say it when you’ve made your final decision.
+    It’s like a promise to yourself.
   `,
   `
-    Вы долистали все мотивационные сообщения до конца. Сейчас они пойдут по кругу. Однако, хотим вас попросить -
-    не останавливайтесь. Нет никакого смысла в том что вы курите. Покупая сигареты вы просто набиваете чужие карманы.
+    You’ve scrolled through all the motivational messages to the end.
+    Now they’ll start repeating.
+    However, we want to ask you — don’t stop.
+    There’s no point in smoking. By buying cigarettes, you’re just filling someone else’s pockets.
   `,
-].map(v => `> 🏋️ ${B}Мотивация${B}:\\${NL} ${v}`);
+].map(v => `> 🏋️ ${B}Motivation${B}:\\${NL} ${v}`);
 
 const challenges = [
   `
-    Если вы курите сразу как просыпаетесь, попробуйте завтра этого не делать.
-    Для начала сделайте чай или кофе. Или позавтракайте. В общем - не делайте это сразу же. 
-    Это привычка и она не должна руководить вашим днём.
+    If you smoke as soon as you wake up, try not to do it tomorrow.
+    Start by making tea or coffee. Or have breakfast first.
+    The point is — don’t smoke right away.
+    It’s just a habit, and it shouldn’t dictate your day.
   `,
   `
-    Если вы курите сразу как просыпаетесь, попробуйте завтра этого не делать.
-    Для начала сделайте чай или кофе. Или позавтракайте. В общем - не делайте это сразу же. 
-    Это привычка и она не должна руководить вашим днём.
+    If you smoke as soon as you wake up, try not to do it tomorrow.
+    Start by making tea or coffee first. Or have breakfast instead.
+    The point is — don’t make it the first thing you do.
+    It’s just a habit, and it shouldn’t control your day.
   `,
   `
-    Если вы курите на остановках когда ждёте транспорт - не курите перед транспортом.
-    Если курите перед тем как сесть в машину - не курите перед тем, как сесть в машину. Вы сильнее вашей привычки!
+    If you smoke at bus stops while waiting for transport, don’t smoke before it arrives.
+    If you smoke before getting into a car, don’t do it this time.
+    You’re stronger than your habit!
   `,
   `
-    Купив следующую пачку сигарет - не закуривайте сразу. 
-    Попробуйте отложить это на сколько это возможно. Вы удивитесь насколько это просто. 
-    Это просто дурацкая привычка которая уже не властна над вами.
+    When you buy your next pack of cigarettes, don’t light one right away.
+    Try to delay it for as long as possible. You’ll be surprised at how easy it is.
+    It’s just a silly habit that no longer controls you.
   `,
   `
-    Если вы курите на работе или учёбе - пропустите один или два перекура.
-    Вас будут звать коллеги - откажите. Скажите, что вы заняты работой и покурите позже. Ни кто на вас не обидится.
-    А вы - потренируете, насколько вы сильнее привычки.
+    If you smoke at work or school, skip one or two smoke breaks.
+    When your colleagues invite you, decline. Just say you’re busy and will smoke later.
+    No one will be upset with you.
+    And you’ll get a chance to practice just how much stronger you are than your habit.
   `,
   `
-    Если вы курите перед сном - не курите сегодня. 
-    То есть, вам совсем не обязательно это делать. Прикиньте, когда планируете ложиться и за час уже не курите.
-    Вы можете это распланировать - это очень просто - поверьте. 
+    If you smoke before bed, don’t smoke tonight.
+    You don’t need to do it at all.
+    Decide when you plan to go to bed, and stop smoking an hour beforehand.
+    You can plan it out — it’s very simple, trust us.
   `,
   `
-    Если у вас есть подруга или друг, который бросил курить - спросите у него, 
-    как он это сделал. Если, вдруг, нет - спросите некурящего человека, почему он не курит.
+    If you have a friend who has quit smoking, ask them how they did it.
+    If you don’t, ask a non-smoker why they don’t smoke.
   `,
-].map(v => `> 🎯 ${B}Вызов дня${B}:\\${NL} ${v}`);
+].map(v => `> 🎯 ${B}Dare of the Day${B}:\\${NL} ${v}`);
 
 const hints = [
   `
-    Вызов дня - это условие, с которым вы можете соперничать. 
-    Каждый раз выполняя Вызов Дня вы становитесь на шаг ближе к цели.
-    Поэтому, старайтесь выполнять их все.
+    Dare of the Day is a challenge you can compete with.
+    Each time you complete the Dare of the Day, you’re one step closer to your goal.
+    So, try to complete them all.
   `,
   `
-    Вы можете в любой момент изменить часовой пояс, написав в чат /time
+    You can change your time zone at any time by typing /time in the chat.
   `,
   `
-    Бот не хранит никакую информацию о пользователях. Поэтому - даже не спрашивайте.
+    The bot does not store any user information.
+    Don’t even ask about it.
   `,
   `
-    Вы можете оценить свой прогресс, написав /stats
+    You can check your progress by typing /stats in the chat.
   `,
   `
-    Бот полностью некоммерческий. Здесь не предполагается хоть какое-то размещение рекламы или поиск выгоды.
+    The bot is completely non-commercial. There is no intention to include advertisements or seek any profit here.
   `,
   `
-    Вы можете в любой момент изменить язык, написав /lang
+    You can change the language at any time by typing /lang in the chat.
   `,
   `
-    Подумайте, может быть вы можете порекомендовать бота кому-то из друзей. Бросать курить вместе гораздо веселее.
+    Think about it — maybe you can recommend the bot to one of your friends.
+    Quitting smoking together is much more fun.
   `,
   `
-    Можно ли сбросить прогресс? Можно. В 99% это ничего не даст, но если вы хотите рискнуть - напишите /start
+    Can you reset your progress? Yes, you can.
+    In 99% of cases, it won’t help, but if you’re willing to take the risk — type /start in the chat.
   `,
   `
-    Если вы владеете каким-то иностранным языком, кроме тех, на которые бот уже переведён -
-    вы можете нам помочь с переводом.
-    Возможно вы просто хотите поддержать автора бота. 
-    Если да - напшите /how
+    If you know a foreign language other than those the bot is already translated into,
+    you can help us with translation.
+    Or maybe you simply want to support the bot’s creator.
+    If so, type /how in the chat.
   `,
-].map(v => `> 💡 ${B}Полезная информация${B}:\\${NL} ${v}`);
+].map(v => `> 💡 ${B}Helpful Tips${B}:\\${NL} ${v}`);
 
 export const motivizerEn: string[] = (() => {
   const mixHintsAndChallenges: string[] = [];
