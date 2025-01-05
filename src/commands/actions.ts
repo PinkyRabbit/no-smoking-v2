@@ -262,12 +262,11 @@ export class Actions extends Mixin(DevActions, Settings) {
     if (isNonEmptyIdle) {
       // normal idle update
       logger.debug(`U-${msg.user.chatId} [idle] ${currentDelta} >= ${USER_IDLE_TIME}`);
-      const { deltaTime, difficulty, penalty, penaltyDays } = msg.user;
       const isMaxTimeLimitReached = msg.user.deltaTime >= USER_IDLE_TIME - 5;
       const newDelta = isMaxTimeLimitReached ? msg.user.deltaTime : this._computeNewDelta(msg.user);
       const newNextTime = msg.ts + (newDelta * 60 * 1000);
       update.penalty = 0;
-      update.penaltyDays = penalty ? penaltyDays + 1 : 0;
+      update.penaltyDays = msg.user.penalty ? msg.user.penaltyDays + 1 : 0;
       update.cigarettesInDay = 0;
       update.deltaTime = newDelta;
       update.nextTime = newNextTime;
@@ -280,13 +279,14 @@ export class Actions extends Mixin(DevActions, Settings) {
       content.push(motivizer[msg.user.motivizerIndex]);
       const motivizerNext = msg.user.motivizerIndex + 1;
       update.motivizerIndex = motivizerNext !== motivizer.length ? motivizerNext : 0;
+      const step = stepByDifficulty(msg.user.difficulty);
       content.push(getContent(msg.user.lang, Content.ON_IDLE_END, {
-        prev_delta: minsToTimeString(deltaTime, msg.user.lang),
+        prev_delta: minsToTimeString(msg.user.deltaTime, msg.user.lang),
         new_delta: minsToTimeString(newDelta, msg.user.lang),
         time_to_get_smoke: mssToTime(update.nextTime, msg.user.timezone!),
-        penalty,
+        penalty: msg.user.penalty,
         penalty_mins: penaltyMinutesString(msg.user),
-        step: minsToTimeString(difficulty, msg.user.lang),
+        step: minsToTimeString(step, msg.user.lang),
       }));
       const { reply_markup } = getButtons(msg.user.lang, DialogKey.im_smoking);
       const ops: TelegramBot.SendMessageOptions = { parse_mode: "MarkdownV2", reply_markup };
