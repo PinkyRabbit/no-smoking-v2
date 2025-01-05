@@ -1,7 +1,8 @@
 import { expect } from "chai";
 import sinon from "sinon";
-import { getFormattedStartDate, GmtRegex, gmtToUtc, simpleOffsetToUtc } from "./luxon";
-import { Lang } from "../constants";
+import { getFormattedStartDate, GmtRegex, gmtToUtc, mssToTime, simpleOffsetToUtc } from "./luxon";
+import { HourFormat, Lang } from "../constants";
+import { User } from "../db";
 
 describe("lib_helpers.luxon", () => {
   describe("simpleOffsetToUtc", () => {
@@ -148,6 +149,28 @@ describe("lib_helpers.luxon", () => {
 
       expect(result.start_date).to.equal("15 February 2024");
       expect(result.days_from_start).to.equal("0 days");
+    });
+  });
+
+  describe("mssToTime", () => {
+    it ("should correctly work for 24-h", () => {
+      const user = {
+        timezone: "America/New_York",
+        hourFormat: HourFormat.H24
+      } as User;
+      const milliseconds = 1704120600000;
+      const result = mssToTime(milliseconds, user);
+      expect(result).to.equal("09:50");
+    });
+
+    it ("should correctly work for 12-h", () => {
+      const user = {
+        timezone: "America/New_York",
+        hourFormat: HourFormat.H12
+      } as User;
+      const milliseconds = 1704120600000;
+      const result = mssToTime(milliseconds, user);
+      expect(result).to.equal("9:50 AM");
     });
   });
 });
