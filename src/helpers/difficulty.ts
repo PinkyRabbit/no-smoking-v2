@@ -3,7 +3,7 @@ import { Content, Difficulty, Lang } from "../constants";
 import { getContent } from "../content";
 import { minsToTimeString } from "../lib_helpers/humanize-duration";
 
-export const difficultyNameByLevel = (lang: Lang, difficulty: Difficulty): string => {
+export const difficultyNameByLevel = (difficulty: Difficulty, lang: Lang): string => {
   switch (difficulty) {
     case Difficulty.EASY:
       return getContent(lang, Content.DIFFICULTY_EASY);

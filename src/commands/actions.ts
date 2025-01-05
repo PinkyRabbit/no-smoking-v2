@@ -3,7 +3,7 @@ import TgBot from "../telegram-bot";
 import { join as pathJoin } from "path";
 import { Mixin } from "ts-mixer";
 import { ContentProps, getButtons, getContent } from "../content";
-import { Content, DialogKey, Difficulty, Lang, Motivizer } from "../constants";
+import { Content, DialogKey, Difficulty, Motivizer } from "../constants";
 import { DevActions } from "./development";
 import { Settings } from "./settings";
 import { User, UsersRepo } from "../db";
@@ -124,8 +124,7 @@ export class Actions extends Mixin(DevActions, Settings) {
   @transformMsg
   public async onStart(msg: TelegramBot.Message) {
     if (!msg.user) {
-      // const lang = tgLangCodeToLang(msg.from!.language_code);
-      const lang = Lang.RU;
+      const lang = tgLangCodeToLang(msg.from!.language_code);
       const username = msg.from?.username || msg.chat.username;
       const user = await UsersRepo.addNewUser(msg.chat.id, lang, username);
       await this._res(user, Content.START_ALPHA, {}, DialogKey.beginning);
@@ -143,8 +142,8 @@ export class Actions extends Mixin(DevActions, Settings) {
       return;
     }
     const min_delta = minsToTimeString(msg.user.minDeltaTime, msg.user.lang);
-    const real_delta = minsToTimeString(msg.user.deltaTime || msg.user.minDeltaTime, msg.user.lang);
-    await this._res(msg.user, Content.START_EXISTING, { min_delta, real_delta }, DialogKey.start_existing);
+    const delta_time = minsToTimeString(msg.user.deltaTime || msg.user.minDeltaTime, msg.user.lang);
+    await this._res(msg.user, Content.START_EXISTING, { min_delta, delta_time }, DialogKey.start_existing);
   }
 
   /**
@@ -263,12 +262,11 @@ export class Actions extends Mixin(DevActions, Settings) {
     if (isNonEmptyIdle) {
       // normal idle update
       logger.debug(`U-${msg.user.chatId} [idle] ${currentDelta} >= ${USER_IDLE_TIME}`);
-      const { deltaTime, difficulty, penalty, penaltyDays } = msg.user;
       const isMaxTimeLimitReached = msg.user.deltaTime >= USER_IDLE_TIME - 5;
       const newDelta = isMaxTimeLimitReached ? msg.user.deltaTime : this._computeNewDelta(msg.user);
       const newNextTime = msg.ts + (newDelta * 60 * 1000);
       update.penalty = 0;
-      update.penaltyDays = penalty ? penaltyDays + 1 : 0;
+      update.penaltyDays = msg.user.penalty ? msg.user.penaltyDays + 1 : 0;
       update.cigarettesInDay = 0;
       update.deltaTime = newDelta;
       update.nextTime = newNextTime;
@@ -281,13 +279,14 @@ export class Actions extends Mixin(DevActions, Settings) {
       content.push(motivizer[msg.user.motivizerIndex]);
       const motivizerNext = msg.user.motivizerIndex + 1;
       update.motivizerIndex = motivizerNext !== motivizer.length ? motivizerNext : 0;
+      const step = stepByDifficulty(msg.user.difficulty);
       content.push(getContent(msg.user.lang, Content.ON_IDLE_END, {
-        prev_delta: minsToTimeString(deltaTime, msg.user.lang),
+        prev_delta: minsToTimeString(msg.user.deltaTime, msg.user.lang),
         new_delta: minsToTimeString(newDelta, msg.user.lang),
         time_to_get_smoke: mssToTime(update.nextTime, msg.user.timezone!),
-        penalty,
+        penalty: msg.user.penalty,
         penalty_mins: penaltyMinutesString(msg.user),
-        step: minsToTimeString(difficulty, msg.user.lang),
+        step: minsToTimeString(step, msg.user.lang),
       }));
       const { reply_markup } = getButtons(msg.user.lang, DialogKey.im_smoking);
       const ops: TelegramBot.SendMessageOptions = { parse_mode: "MarkdownV2", reply_markup };
@@ -424,9 +423,9 @@ export class Actions extends Mixin(DevActions, Settings) {
     const contentProps = {
       start_date,
       days_from_start,
-      penalty: minsToTimeString(msg.user.penaltyAll, msg.user.lang),
+      penalty_all: minsToTimeString(msg.user.penaltyAll, msg.user.lang),
       delta_min: minsToTimeString(msg.user.minDeltaTime, msg.user.lang),
-      delta: minsToTimeString(msg.user.deltaTime, msg.user.lang),
+      delta_time: minsToTimeString(msg.user.deltaTime, msg.user.lang),
       cigarettes: msg.user.cigarettesSummary,
     };
     await this._res(msg.user, Content.STATS, contentProps);
@@ -436,7 +435,7 @@ export class Actions extends Mixin(DevActions, Settings) {
   @onlyForKnownUsers
   public async onHow(msg: TelegramBot.Message) {
     const donate_link = process.env.DONATE_LINK;
-    const email = process.env.ADMIN_EMAIL;
-    await this._res(msg.user, Content.HOW, { donate_link, email });
+    const admin_email = process.env.ADMIN_EMAIL;
+    await this._res(msg.user, Content.HOW, { donate_link, admin_email });
   }
 }

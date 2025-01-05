@@ -1,5 +1,6 @@
 import { expect } from "chai";
 import { minsToTimeString } from "./humanize-duration";
+import { Lang } from "../constants";
 
 describe("humanize-duration", () => {
   describe("-minsToTimeString", () => {
@@ -19,7 +20,7 @@ describe("humanize-duration", () => {
     });
 
     it ("should convert the value for RU locale", () => {
-      const result = minsToTimeString(75, "ru");
+      const result = minsToTimeString(75, Lang.RU);
       expect(result).to.equal("1 час 15 минут");
     });
   });

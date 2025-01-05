@@ -88,6 +88,7 @@ export enum Content {
   DEV_NEXT = "Dev_Next",
   DEV_MOTIVIZER = "Dev_Motivizer",
   DEV_IGNORE = "Dev_Ignore",
+  DEV_LANG = "Dev_Lang",
 }
 
 /**
@@ -99,6 +100,7 @@ export enum DialogKey {
   to_start = "to_start",
   beginning = "new_user_beginning",
   lang = "lang",
+  dev_lang = "dev_lang",
   im_smoking = "im_smoking",
   start_existing = "start_existing",
   dev = "dev",
@@ -149,5 +151,8 @@ export enum BTN {
   Dev_Motivizer_Full = "dev_motivizer_full",
   Dev_Ignore = "dev_Ignore",
   Dev_Content = "dev_content",
+  Dev_Content_All = "dev_content_all",
+  Dev_Content_RU = "dev_content_ru",
+  Dev_Content_EN = "dev_content_en",
   Recommendations = "recommendations",
 }

@@ -1,11 +1,13 @@
 import TelegramBot from "node-telegram-bot-api";
 import logger from "../logger";
-import { Content, DialogKey, Difficulty, Motivizer } from "../constants";
-import { dateNow } from "../lib_helpers/luxon";
+import { Content, DialogKey, Difficulty, Lang, Motivizer } from "../constants";
+import { dateNow, getFormattedStartDate, mssToTime } from "../lib_helpers/luxon";
 import { User, UsersRepo } from "../db";
 import { devModeOnly, onlyForKnownUsers, transformMsg } from "./decorators";
-import { STAGE_1_MAX, MIN_INTERVAL, STAGE_1_STEPS, USER_IDLE_TIME } from "./constants";
+import { MIN_INTERVAL, STAGE_1_MAX, STAGE_1_STEPS, USER_IDLE_TIME } from "./constants";
 import { getContent } from "../content";
+import { minsToTimeString } from "../lib_helpers/humanize-duration";
+import { difficultyNameByLevel, penaltyMinutesString, stepByDifficulty } from "../helpers";
 
 /**
  * Class for development actions
@@ -147,14 +149,16 @@ export class DevActions {
   @onlyForKnownUsers
   public async devMotivizer(msg: TelegramBot.Message, to?: number) {
     if (!to) {
+      const step = stepByDifficulty(msg.user.difficulty);
       const allContent = getContent(msg.user.lang, Motivizer) as unknown as string[];
-      const messageStart = getContent(msg.user.lang, Content.ON_IDLE_START);
+      const messageStart = getContent(msg.user.lang, Content.ON_IDLE_START, { cigarettes: 7 });
       const messageEnd = getContent(msg.user.lang, Content.ON_IDLE_END, {
-        prev_delta: "1 час 11 минут",
-        new_delta: "1 час 12 минут",
-        time_to_get_smoke: "13:20",
-        penalty: "2",
-        step: "1"
+        prev_delta: minsToTimeString(71, msg.user.lang),
+        new_delta: minsToTimeString(72, msg.user.lang),
+        time_to_get_smoke: mssToTime(1704120600000, msg.user.timezone!),
+        penalty: 2,
+        penalty_mins: penaltyMinutesString(msg.user),
+        step: minsToTimeString(step, msg.user.lang),
       });
       while (allContent.length > 0) {
         const motivation = allContent.shift();
@@ -189,13 +193,73 @@ export class DevActions {
     await this._res(msg.user, Content.DEV_IGNORE);
   }
 
+  private getDevContentProps = ({ lang }: User) => ({
+    stepsAdded: "5",
+    time_to_get_smoke: "17:34",
+    admin_email: "usesa@yandex.com",
+    delta_min: minsToTimeString(82, lang),
+    delta_time: minsToTimeString(128, lang),
+    prev_delta: minsToTimeString(91, lang),
+    new_delta: minsToTimeString(93, lang),
+    step: minsToTimeString(Difficulty.EASY, lang),
+    penalty: "3",
+    penalty_all: "141",
+    penalty_mins: penaltyMinutesString({
+      difficulty: Difficulty.HARD,
+      penalty: 3,
+      lang,
+    } as User),
+    cigarettes: "217",
+    days_from_start: "22",
+    start_date: getFormattedStartDate(new Date("2024-02-12"), lang).start_date,
+    local_time: "14:08",
+    timezone: "+2",
+    difficulty: difficultyNameByLevel(Difficulty.HARD, lang),
+    min_interval: minsToTimeString(MIN_INTERVAL, lang),
+    min_stage_1: minsToTimeString(MIN_INTERVAL, lang),
+    max_stage_1: STAGE_1_MAX,
+    stage_1_left: "12"
+  });
+
   @devModeOnly
   @transformMsg
   @onlyForKnownUsers
   public async devContent(msg: TelegramBot.Message) {
-    await this._res(msg.user, Content.PENALTY_3);
-    // await this._res(msg.user, Content.MAXIMUM_REACHED, {}, DialogKey.max_time);
-    // await this._res(msg.user, Content.DIFFICULTY_AUTO);
-    // await this._res(msg.user, Content.TIMEZONE);
+    const contentKey: Content = Content.PENALTY_3;
+    const dialogKey: DialogKey = DialogKey.im_smoking;
+    // const dialogKey = undefined;
+    const fakeProps = this.getDevContentProps(msg.user);
+    await this._res(msg.user, contentKey, fakeProps, dialogKey);
+  }
+
+  @devModeOnly
+  @transformMsg
+  @onlyForKnownUsers
+  public async devAllContent(msg: TelegramBot.Message) {
+    await this._res(msg.user, Content.DEV_LANG, {}, DialogKey.dev_lang);
+  }
+
+  @devModeOnly
+  @transformMsg
+  @onlyForKnownUsers
+  public async devAllContentRecursive(msg: TelegramBot.Message, lang: Lang) {
+    const callResRecursive = (promises: Array<() => Promise<void>>) => {
+      const oneSec = 1000;
+      const promiseToCall = promises.shift();
+      if (!promiseToCall) {
+        return;
+      }
+      setTimeout(async () => {
+        await promiseToCall();
+        callResRecursive(promises);
+      }, oneSec);
+    };
+    const user = {  ...msg.user, lang };
+    const fakeProps = this.getDevContentProps(user);
+    const allContentCalls =
+      Object.values(Content).map((contentKey) =>
+        () => this._res(user, contentKey, fakeProps)
+      );
+    return callResRecursive(allContentCalls);
   }
 }
