@@ -170,7 +170,6 @@ export class Actions extends Mixin(DevActions, Settings) {
     }
     const timeDifferenceMs = msg.ts - msg.user.lastTime;
     const deltaTime = Math.round(timeDifferenceMs / 60 / 1000); // in minutes
-    logger.debug(`timeDifferenceMs = ${msg.ts} - ${msg.user.lastTime} = ${timeDifferenceMs} (${deltaTime} min)`);
     let isValidDeltaTime = true;
     let deltaTimesLeft = STAGE_1_STEPS - msg.user.minDeltaTimesInitial.length;
     // to ignore if user clicking too often
