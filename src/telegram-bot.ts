@@ -3,6 +3,7 @@ import logger from "./logger";
 import { User, UsersRepo } from "./db";
 import { ContentProps, getContent, getButtons } from "./content";
 import { Content, DialogKey } from "./constants";
+import { InlineKeyboard } from "./content/types";
 
 /**
  * Custom telegram bot class extend normal send message logic
@@ -41,12 +42,20 @@ class TgBot extends TelegramBot {
     process.exit(0);
   }
 
-  public sendToUser(user: User, contentKey: Content, contentProps: ContentProps = {}, dialogKey?: DialogKey) {
+  public sendToUser(
+    user: User,
+    contentKey: Content,
+    contentProps: ContentProps = {},
+    dialogKey?: DialogKey | InlineKeyboard
+  ) {
     const content = getContent(user.lang, contentKey, contentProps);
     const options: TelegramBot.SendMessageOptions = { parse_mode: "Markdown" };
-    if (dialogKey) {
+    if (dialogKey && !Array.isArray(dialogKey)) {
       const buttons = getButtons(user.lang, dialogKey);
       options.reply_markup = buttons.reply_markup;
+    }
+    if (dialogKey && Array.isArray(dialogKey)) {
+      options.reply_markup = { inline_keyboard: dialogKey };
     }
     return this.sendMessage(user.chatId, content, options);
   };

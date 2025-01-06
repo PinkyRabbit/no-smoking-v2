@@ -16,6 +16,7 @@ import logger from "../logger";
 import { stage2 } from "./decorators/stage2";
 import { cigarettesText } from "../helpers/content";
 import { penaltyByDifficulty, penaltyMinutesString, stepByDifficulty } from "../helpers";
+import { InlineKeyboard } from "../content/types";
 
 @LogActionCalls
 export class Actions extends Mixin(DevActions, Settings) {
@@ -39,7 +40,7 @@ export class Actions extends Mixin(DevActions, Settings) {
     user: User,
     contentKey: Content,
     contentProps: ContentProps = {},
-    dialogKey?: DialogKey,
+    dialogKey?: DialogKey | InlineKeyboard,
   ): Promise<void> {
     return new Promise((resolve, reject) => {
       setTimeout(() => {

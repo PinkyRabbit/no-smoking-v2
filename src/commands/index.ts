@@ -3,7 +3,7 @@ import TgBot from "../telegram-bot";
 import logger from "../logger";
 import { BotEvent } from "./keys";
 import { Actions } from "./actions";
-import { Difficulty, Lang, BTN } from "../constants";
+import { Difficulty, Lang, BTN, HourFormat } from "../constants";
 
 export const botActionsInit = (bot: TgBot) => {
   const act = new Actions(bot);
@@ -68,8 +68,11 @@ export const botActionsInit = (bot: TgBot) => {
       case BTN.Recommendations:
         act.ignoreSuccess(message);
         break;
-      case BTN.Timezone_Correct:
-        act.timezoneCorrect(message);
+      case BTN.Timezone_Correct_H12:
+        act.timezoneCorrect(message, HourFormat.H12);
+        break;
+      case BTN.Timezone_Correct_H24:
+        act.timezoneCorrect(message, HourFormat.H24);
         break;
       case BTN.Timezone_Incorrect:
         act.onTimezone(message);

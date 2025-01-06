@@ -115,7 +115,6 @@ export enum DialogKey {
   dev = "dev",
   difficulty = "difficulty",
   ignore = "ignore",
-  timezone = "timezone",
   max_time = "max_time",
 }
 /**
@@ -144,8 +143,9 @@ export enum BTN {
   Ignore_Failed = "ignore_failed",
   Ignore_Busy = "ignore_busy",
   Ignore_Penalty_10 = "ignore_penalty_10",
-  Timezone_Correct = "timezone_correct",
   Timezone_Incorrect = "timezone_incorrect",
+  Timezone_Correct_H12 = "timezone_correct_h12",
+  Timezone_Correct_H24 = "timezone_correct_h24",
   Dev_Delete_User = "dev_delete_user",
   Dev_To_Stage_1 = "dev_to_stage_1",
   Dev_Fill_Stage_1 = "dev_fill_stage_1",

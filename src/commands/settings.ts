@@ -1,12 +1,14 @@
 import TelegramBot from "node-telegram-bot-api";
 import { DateTime } from "luxon";
 import { onlyForKnownUsers, transformMsg } from "./decorators";
-import { Content, DialogKey, Difficulty, Lang } from "../constants";
+import { BTN, Content, DialogKey, Difficulty, HourFormat, Lang } from "../constants";
 import { mssToTime } from "../lib_helpers/luxon";
 import { difficultyNameByLevel } from "../helpers";
 import { UsersRepo } from "../db";
 import logger from "../logger";
 import { IGNORE_TIME } from "./constants";
+import { buttonFor } from "../content";
+import { InlineKeyboard } from "../content/types";
 
 export class Settings {
   /**
@@ -103,8 +105,17 @@ export class Settings {
     }
     try {
       const zone = await UsersRepo.setTimezone(msg, msg.text!.trim());
-      const local_time = DateTime.fromMillis(Date.now(), { zone }).toFormat("HH:mm");
-      await this._res(msg.user, Content.TIMEZONE_SELECTED, { timezone: msg.text, local_time }, DialogKey.timezone);
+      const dateTime = DateTime.fromMillis(Date.now(), { zone });
+      const time_h12 = dateTime.toFormat(HourFormat.H12);
+      const time_h24 = dateTime.toFormat(HourFormat.H24);
+      const dialogKeys: InlineKeyboard = [
+        [buttonFor(BTN.Timezone_Incorrect, msg.user.lang)],
+        [
+          { text: time_h12, callback_data: BTN.Timezone_Correct_H12 },
+          { text: time_h24, callback_data: BTN.Timezone_Correct_H24 },
+        ]
+      ];
+      await this._res(msg.user, Content.TIMEZONE_SELECTED, { timezone: msg.text, local_time: time_h24 }, dialogKeys);
     } catch(error) {
       logger.debug("Save timezone error", error);
       await this._res(msg.user, Content.TIMEZONE_INVALID);
@@ -114,12 +125,13 @@ export class Settings {
 
   @transformMsg
   @onlyForKnownUsers
-  public async timezoneCorrect(msg: TelegramBot.Message) {
+  public async timezoneCorrect(msg: TelegramBot.Message, hourFormat: HourFormat) {
     if (msg.user.difficulty) {
+      await UsersRepo.updateUser(msg, { hourFormat });
       await this._res(msg.user, Content.SETTINGS_UPDATED);
       return;
     }
-    await UsersRepo.updateUser(msg, { difficulty: Difficulty.EASY });
+    await UsersRepo.updateUser(msg, { hourFormat, difficulty: Difficulty.EASY });
     await this._res(msg.user, Content.DIFFICULTY_AUTO);
     const oneMinute = 60 * 1000;
     setTimeout(() => {
