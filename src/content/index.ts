@@ -14,7 +14,7 @@ const i18n = new I18n({
   syncFiles: false,
 });
 
-const transformSingleLineContent = (content: string): string =>
+export const transformSingleLineContent = (content: string): string =>
   content
     .replace(/\n/g, " ")
     .replace(/\s+/g, " ")

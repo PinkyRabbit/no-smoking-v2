@@ -247,7 +247,7 @@ export const dialogsEn: MultilineContent = {
   `,
   [Content.TIMEZONE_SELECTED]: `
     🕰️ Time Zone Selected: ${B}{{timezone}}${B}${N2}
-    ${B}This is important${B}❗${NL}️
+    ${B}This is important${B}❗${NL}
     Please check your current time.${NL}
     Our system detects that it’s currently ${B}{{local_time}}${B} for you.${N2}
     Of course, a few minutes don’t matter,${NL}
