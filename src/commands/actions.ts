@@ -130,7 +130,7 @@ export class Actions extends Mixin(DevActions, Settings) {
   public async onStart(msg: TelegramBot.Message) {
     if (!msg.user) {
       const user = await UsersRepo.addNewUser(msg);
-      await this._res(user, Content.START_ALPHA, {}, DialogKey.beginning);
+      await this._res(user, Content.START_NEW, {}, DialogKey.beginning);
       return;
     }
     await UsersRepo.updateUser(msg, { startDate: new Date(), penaltyAll: 0 });

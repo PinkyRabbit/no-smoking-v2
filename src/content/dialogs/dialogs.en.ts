@@ -4,18 +4,12 @@ import { B, I, N2, ND, NDv2, NL } from "./constants";
 
 const donate_link = process.env.DONATE_LINK;
 
-const DEFAULT = `
-The text of the message has not yet been translated.${N2}
-All questions to @PinkyaRabbit
-`;
-
 export const dialogsEn: MultilineContent = {
   [Content.MESSAGE]: "Received your message",
   [Content.USER_UNKNOWN]: `
     🤖 ${B}Functionality is available only for authorized users${B}${ND}
     Please log in by clicking the button below.
   `,
-  [Content.START_ALPHA]: DEFAULT,
   [Content.START_NEW]: `
     Hi mate! 🙂${N2}
     Are tobacco corporations profiting off your health?${NL}
