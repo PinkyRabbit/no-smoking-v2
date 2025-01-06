@@ -155,7 +155,7 @@ export class DevActions {
       const messageEnd = getContent(msg.user.lang, Content.ON_IDLE_END, {
         prev_delta: minsToTimeString(71, msg.user.lang),
         new_delta: minsToTimeString(72, msg.user.lang),
-        time_to_get_smoke: mssToTime(1704120600000, msg.user.timezone!),
+        time_to_get_smoke: mssToTime(1704120600000, msg.user),
         penalty: 2,
         penalty_mins: penaltyMinutesString(msg.user),
         step: minsToTimeString(step, msg.user.lang),
