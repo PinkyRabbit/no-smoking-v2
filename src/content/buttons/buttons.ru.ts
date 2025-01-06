@@ -15,8 +15,9 @@ export const buttonsRu: ButtonNames  = {
   [BTN.Ignore_Failed]: "Не буду бросать 👎",
   [BTN.Ignore_Busy]: "Просто продолжим ▶️",
   [BTN.Ignore_Penalty_10]: "Штраф 10 минут 🚀",
-  [BTN.Timezone_Correct]: "Верно 👍",
-  [BTN.Timezone_Incorrect]: "Неверно 👎",
+  [BTN.Timezone_Correct_H12]: "PLACEHOLDER", // @see {import('@/commands/settings').Settings#onMessage}
+  [BTN.Timezone_Correct_H24]: "PLACEHOLDER", // @see {import('@/commands/settings').Settings#onMessage}
+  [BTN.Timezone_Incorrect]: "Неверно 🔄",
   [BTN.Recommendations]: "Советы, как бросить курить",
   [BTN.Lang_RU]: "RU 🇷🇺",
   [BTN.Lang_EN]: "EN 🇬🇧",

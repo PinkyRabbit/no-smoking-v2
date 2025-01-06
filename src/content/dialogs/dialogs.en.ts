@@ -4,18 +4,12 @@ import { B, I, N2, ND, NDv2, NL } from "./constants";
 
 const donate_link = process.env.DONATE_LINK;
 
-const DEFAULT = `
-The text of the message has not yet been translated.${N2}
-All questions to @PinkyaRabbit
-`;
-
 export const dialogsEn: MultilineContent = {
   [Content.MESSAGE]: "Received your message",
   [Content.USER_UNKNOWN]: `
     🤖 ${B}Functionality is available only for authorized users${B}${ND}
     Please log in by clicking the button below.
   `,
-  [Content.START_ALPHA]: DEFAULT,
   [Content.START_NEW]: `
     Hi mate! 🙂${N2}
     Are tobacco corporations profiting off your health?${NL}
@@ -247,7 +241,7 @@ export const dialogsEn: MultilineContent = {
   `,
   [Content.TIMEZONE_SELECTED]: `
     🕰️ Time Zone Selected: ${B}{{timezone}}${B}${N2}
-    ${B}This is important${B}❗${NL}️
+    ${B}This is important${B}❗${NL}
     Please check your current time.${NL}
     Our system detects that it’s currently ${B}{{local_time}}${B} for you.${N2}
     Of course, a few minutes don’t matter,${NL}
@@ -269,7 +263,12 @@ export const dialogsEn: MultilineContent = {
     Start using the bot ⤵️ 
   `,
   [Content.SETTINGS_UPDATED]: `
-    ${B}Your settings have been updated${B} ✔️
+    ${B}Your settings have been updated${B} ✔${ND}️
+    Your next recommended smoke break will be after {{time_to_get_smoke}} ⏰️ 
+  `,
+  [Content.SETTINGS_UPDATED_ON_IDLE]: `
+    ${B}Your settings have been updated${B} ✔${ND}️
+    Activate the bot by pressing the button
   `,
   [Content.BOT_IGNORE]: `
     🕵️ ${B}We lost you!${B}${N2}

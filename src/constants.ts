@@ -20,6 +20,15 @@ export enum Difficulty {
 }
 
 /**
+ * Constant to define all the available hour formats
+ * @enum {string} HourFormat
+ */
+export enum HourFormat {
+  H24 = "HH:mm",
+  H12 = "h:mm a",
+}
+
+/**
  * Constant to define all the available content keys
  * @note Define content keys here before using it in the code
  * @enum {string} Content
@@ -28,7 +37,6 @@ export enum Content {
   MESSAGE = "MESSAGE",
   USER_UNKNOWN = "User_Unknown",
   START_NEW = "Start_New_User",
-  START_ALPHA = "Start_Alpha",
   START_EXISTING = "Start_Existing_User",
   START_EXISTING_STAGE_1 = "Start_Existing_Stage_1",
   START_RESET_IGNORE = "Start_Reset_Ignore",
@@ -68,6 +76,7 @@ export enum Content {
   SETTINGS = "setting",
   SETTINGS_DONE = "setting_done",
   SETTINGS_UPDATED = "settings_updated",
+  SETTINGS_UPDATED_ON_IDLE = "settings_updated_on_idle",
   BOT_IGNORE = "bot_ignore",
   BOT_IGNORE_BUSY = "bot_ignore_busy",
   BOT_IGNORE_PENALTY_10 = "bot_ignore_penalty_10",
@@ -106,7 +115,6 @@ export enum DialogKey {
   dev = "dev",
   difficulty = "difficulty",
   ignore = "ignore",
-  timezone = "timezone",
   max_time = "max_time",
 }
 /**
@@ -135,8 +143,9 @@ export enum BTN {
   Ignore_Failed = "ignore_failed",
   Ignore_Busy = "ignore_busy",
   Ignore_Penalty_10 = "ignore_penalty_10",
-  Timezone_Correct = "timezone_correct",
   Timezone_Incorrect = "timezone_incorrect",
+  Timezone_Correct_H12 = "timezone_correct_h12",
+  Timezone_Correct_H24 = "timezone_correct_h24",
   Dev_Delete_User = "dev_delete_user",
   Dev_To_Stage_1 = "dev_to_stage_1",
   Dev_Fill_Stage_1 = "dev_fill_stage_1",

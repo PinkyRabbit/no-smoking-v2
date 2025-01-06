@@ -2,8 +2,8 @@ import { expect } from "chai";
 import sinon from "sinon";
 import TgBot from "../telegram-bot";
 import { User } from "../db";
-import { Content, DialogKey, Lang } from "../constants";
-import { _sendDelayedToSmokers, _sendDelayedToIgnore  } from "./smokingTimeTest";
+import { Content, DialogKey, HourFormat, Lang } from "../constants";
+import { _sendDelayedToIgnore, _sendDelayedToSmokers } from "./smokingTimeTest";
 
 describe("smokingTimeTest", () => {
   let clock: sinon.SinonFakeTimers;
@@ -15,6 +15,7 @@ describe("smokingTimeTest", () => {
       chatId: 33333,
       username: "unit-test-user",
       lang: Lang.EN,
+      hourFormat: HourFormat.H24,
       timezone: "0",
       minDeltaTimesInitial: [],
       minDeltaTime: 20,

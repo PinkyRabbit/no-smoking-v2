@@ -14,7 +14,7 @@ const i18n = new I18n({
   syncFiles: false,
 });
 
-const transformSingleLineContent = (content: string): string =>
+export const transformSingleLineContent = (content: string): string =>
   content
     .replace(/\n/g, " ")
     .replace(/\s+/g, " ")
@@ -74,7 +74,7 @@ export { ContentProps };
  * Buttons
  */
 
-const buttonFor = (key: BTN, locale: Lang): ButtonOption => {
+export const buttonFor = (key: BTN, locale: Lang): ButtonOption => {
   const text = i18n.__({ phrase: key, locale });
   return { text, callback_data: key };
 };
@@ -156,14 +156,6 @@ const selectButtonsByKey = (key: DialogKey, locale: Lang): InlineKeyboard => {
       [buttonFor(BTN.Ignore_Failed, locale)],
       [buttonFor(BTN.Ignore_Busy, locale)],
       [buttonFor(BTN.Ignore_Penalty_10, locale)],
-    ];
-  }
-  if (key === DialogKey.timezone) {
-    return [
-      [
-        buttonFor(BTN.Timezone_Correct, locale),
-        buttonFor(BTN.Timezone_Incorrect, locale),
-      ],
     ];
   }
   if (key === DialogKey.max_time) {

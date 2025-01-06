@@ -3,7 +3,7 @@ import TgBot from "../telegram-bot";
 import { join as pathJoin } from "path";
 import { Mixin } from "ts-mixer";
 import { ContentProps, getButtons, getContent } from "../content";
-import { Content, DialogKey, Difficulty, Motivizer } from "../constants";
+import { Content, DialogKey, Difficulty, HourFormat, Motivizer } from "../constants";
 import { DevActions } from "./development";
 import { Settings } from "./settings";
 import { User, UsersRepo } from "../db";
@@ -16,6 +16,7 @@ import logger from "../logger";
 import { stage2 } from "./decorators/stage2";
 import { cigarettesText } from "../helpers/content";
 import { penaltyByDifficulty, penaltyMinutesString, stepByDifficulty } from "../helpers";
+import { InlineKeyboard } from "../content/types";
 
 @LogActionCalls
 export class Actions extends Mixin(DevActions, Settings) {
@@ -39,7 +40,7 @@ export class Actions extends Mixin(DevActions, Settings) {
     user: User,
     contentKey: Content,
     contentProps: ContentProps = {},
-    dialogKey?: DialogKey,
+    dialogKey?: DialogKey | InlineKeyboard,
   ): Promise<void> {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
@@ -105,7 +106,11 @@ export class Actions extends Mixin(DevActions, Settings) {
    * @see {onlyForKnownUsers} - decorator
    */
   public async onUserUnknown(msg: TelegramBot.Message) {
-    const fakeUser = { chatId: msg.chat.id, lang: tgLangCodeToLang(msg.from!.language_code) } as User;
+    const fakeUser = {
+      chatId: msg.chat.id,
+      lang: tgLangCodeToLang(msg.from!.language_code),
+      hourFormat: HourFormat.H24,
+    } as unknown as User;
     await this._res(fakeUser, Content.USER_UNKNOWN, {}, DialogKey.to_start);
   }
 
@@ -124,10 +129,8 @@ export class Actions extends Mixin(DevActions, Settings) {
   @transformMsg
   public async onStart(msg: TelegramBot.Message) {
     if (!msg.user) {
-      const lang = tgLangCodeToLang(msg.from!.language_code);
-      const username = msg.from?.username || msg.chat.username;
-      const user = await UsersRepo.addNewUser(msg.chat.id, lang, username);
-      await this._res(user, Content.START_ALPHA, {}, DialogKey.beginning);
+      const user = await UsersRepo.addNewUser(msg);
+      await this._res(user, Content.START_NEW, {}, DialogKey.beginning);
       return;
     }
     await UsersRepo.updateUser(msg, { startDate: new Date(), penaltyAll: 0 });
@@ -135,6 +138,7 @@ export class Actions extends Mixin(DevActions, Settings) {
       await UsersRepo.updateUser(msg, {
         lastTime: 0,
         nextTime: 0,
+        ignoreTime: 0,
         minDeltaTimesInitial: [],
       });
       await this._res(msg.user, Content.START_EXISTING_STAGE_1);
@@ -170,7 +174,6 @@ export class Actions extends Mixin(DevActions, Settings) {
     }
     const timeDifferenceMs = msg.ts - msg.user.lastTime;
     const deltaTime = Math.round(timeDifferenceMs / 60 / 1000); // in minutes
-    logger.debug(`timeDifferenceMs = ${msg.ts} - ${msg.user.lastTime} = ${timeDifferenceMs} (${deltaTime} min)`);
     let isValidDeltaTime = true;
     let deltaTimesLeft = STAGE_1_STEPS - msg.user.minDeltaTimesInitial.length;
     // to ignore if user clicking too often
@@ -255,7 +258,7 @@ export class Actions extends Mixin(DevActions, Settings) {
     // idle
     const isIdle = currentDelta >= USER_IDLE_TIME;
     if (isIdle && !msg.user.cigarettesInDay) {
-      const time_to_get_smoke = mssToTime(update.nextTime!, msg.user.timezone!);
+      const time_to_get_smoke = mssToTime(update.nextTime!, msg.user);
       await this._res(msg.user, Content.IDLE_NO_CIGARETTES, { time_to_get_smoke }, DialogKey.im_smoking);
     }
     const isNonEmptyIdle = isIdle && msg.user.cigarettesInDay > 0;
@@ -283,7 +286,7 @@ export class Actions extends Mixin(DevActions, Settings) {
       content.push(getContent(msg.user.lang, Content.ON_IDLE_END, {
         prev_delta: minsToTimeString(msg.user.deltaTime, msg.user.lang),
         new_delta: minsToTimeString(newDelta, msg.user.lang),
-        time_to_get_smoke: mssToTime(update.nextTime, msg.user.timezone!),
+        time_to_get_smoke: mssToTime(update.nextTime, msg.user),
         penalty: msg.user.penalty,
         penalty_mins: penaltyMinutesString(msg.user),
         step: minsToTimeString(step, msg.user.lang),
@@ -311,7 +314,7 @@ export class Actions extends Mixin(DevActions, Settings) {
     }
     // normal stage 2
     if (currentDelta < USER_IDLE_TIME) {
-      const time_to_get_smoke = mssToTime(update.nextTime!, msg.user.timezone!);
+      const time_to_get_smoke = mssToTime(update.nextTime!, msg.user);
       const content = !isPenalty && msg.user.cigarettesInDay ? Content.STAGE_2_SUCCESS : Content.STAGE_2;
       await this._res(msg.user, content, { time_to_get_smoke }, DialogKey.im_smoking);
     }
@@ -351,6 +354,7 @@ export class Actions extends Mixin(DevActions, Settings) {
     await UsersRepo.updateUser(msg, {
       lastTime: 0,
       nextTime: 0,
+      ignoreTime: 0,
       deltaTime: 0,
       minDeltaTime: 0,
       minDeltaTimesInitial: [],
