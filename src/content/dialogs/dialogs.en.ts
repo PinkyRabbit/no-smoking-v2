@@ -269,7 +269,12 @@ export const dialogsEn: MultilineContent = {
     Start using the bot ⤵️ 
   `,
   [Content.SETTINGS_UPDATED]: `
-    ${B}Your settings have been updated${B} ✔️
+    ${B}Your settings have been updated${B} ✔${ND}️
+    Your next recommended smoke break will be after {{time_to_get_smoke}} ⏰️ 
+  `,
+  [Content.SETTINGS_UPDATED_ON_IDLE]: `
+    ${B}Your settings have been updated${B} ✔${ND}️
+    Activate the bot by pressing the button
   `,
   [Content.BOT_IGNORE]: `
     🕵️ ${B}We lost you!${B}${N2}

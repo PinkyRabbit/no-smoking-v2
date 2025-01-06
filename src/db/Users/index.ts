@@ -78,7 +78,7 @@ export type User = {
   /**
    * @property ignoreTime - marker to identify a user who has stopped using the bot
    * @type number - timestamp Server
-   * 0 - default value
+   * 0 - default value. Not set (Sage 1)
    */
   ignoreTime: number;
   /**

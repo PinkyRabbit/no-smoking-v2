@@ -138,6 +138,7 @@ export class Actions extends Mixin(DevActions, Settings) {
       await UsersRepo.updateUser(msg, {
         lastTime: 0,
         nextTime: 0,
+        ignoreTime: 0,
         minDeltaTimesInitial: [],
       });
       await this._res(msg.user, Content.START_EXISTING_STAGE_1);
@@ -353,6 +354,7 @@ export class Actions extends Mixin(DevActions, Settings) {
     await UsersRepo.updateUser(msg, {
       lastTime: 0,
       nextTime: 0,
+      ignoreTime: 0,
       deltaTime: 0,
       minDeltaTime: 0,
       minDeltaTimesInitial: [],

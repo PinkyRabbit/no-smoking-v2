@@ -77,6 +77,7 @@ export enum Content {
   SETTINGS = "setting",
   SETTINGS_DONE = "setting_done",
   SETTINGS_UPDATED = "settings_updated",
+  SETTINGS_UPDATED_ON_IDLE = "settings_updated_on_idle",
   BOT_IGNORE = "bot_ignore",
   BOT_IGNORE_BUSY = "bot_ignore_busy",
   BOT_IGNORE_PENALTY_10 = "bot_ignore_penalty_10",

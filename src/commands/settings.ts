@@ -128,8 +128,7 @@ export class Settings {
   public async timezoneCorrect(msg: TelegramBot.Message, hourFormat: HourFormat) {
     if (msg.user.difficulty) {
       await UsersRepo.updateUser(msg, { hourFormat });
-      await this._res(msg.user, Content.SETTINGS_UPDATED);
-      return;
+      return this.onSettingsDone(msg);
     }
     await UsersRepo.updateUser(msg, { hourFormat, difficulty: Difficulty.EASY });
     await this._res(msg.user, Content.DIFFICULTY_AUTO);
@@ -148,7 +147,8 @@ export class Settings {
       logger.error("Incorrect call of onSettingsDone");
       return;
     }
-    if (!msg.user.nextTime) {
+    // stage 1 user
+    if (!msg.user.nextTime && !msg.user.ignoreTime) {
       await this._res(msg.user, Content.SETTINGS_DONE);
       const nextTime = msg.ts + (msg.user.deltaTime * 60 * 1000);
       await UsersRepo.updateUser(msg, {
@@ -159,6 +159,12 @@ export class Settings {
       await this._res(msg.user, Content.STAGE_2_INITIAL,  { time_to_get_smoke }, DialogKey.im_smoking);
       return;
     }
+    // stage 2 user without next time
+    if (!msg.user.nextTime) {
+      await this._res(msg.user, Content.SETTINGS_UPDATED_ON_IDLE,  {}, DialogKey.im_smoking);
+      return;
+    }
+    // stage 2 normal
     const time_to_get_smoke = mssToTime(msg.user.nextTime, msg.user);
     await this._res(msg.user, Content.SETTINGS_UPDATED,  { time_to_get_smoke }, DialogKey.im_smoking);
   }
