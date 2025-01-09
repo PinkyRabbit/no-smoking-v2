@@ -117,12 +117,20 @@ export enum DialogKey {
   ignore = "ignore",
   max_time = "max_time",
 }
+
 /**
  * Constant represents a motivizer keys
  * @note Define motivizer keys here before using it in the code
  * @enum {string} Motivizer
  */
 export const Motivizer = "Motivizer";
+
+/**
+ * Constant represents a YouCan section keys
+ * @note Define youcan keys here before using it in the code
+ * @enum {string} YouCan
+ */
+export const YouCan = "YouCan";
 
 /**
  * Button names

@@ -111,6 +111,11 @@ export type User = {
    */
   motivizerIndex: number;
   /**
+   * @property youCanIndex - index of youCan section
+   * @type number
+   */
+  youCanIndex: number;
+  /**
    * @property cigarettesInDay - number of cigarettes smoked last day
    * @type number
    */
@@ -196,6 +201,7 @@ export class UsersRepo extends RequestOptions {
       penaltyAll: 0,
       penaltyDays: 0,
       motivizerIndex: 0,
+      youCanIndex: 0,
       cigarettesInDay: 0,
       cigarettesSummary: 0,
       startDate: new Date(),

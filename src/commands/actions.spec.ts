@@ -46,6 +46,7 @@ describe("Actions", () => {
       penaltyAll: 7,
       penaltyDays: 1,
       motivizerIndex: 0,
+      youCanIndex: 0,
       cigarettesInDay: 2,
       cigarettesSummary: 3,
       startDate: currentDate,

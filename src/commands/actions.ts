@@ -3,7 +3,7 @@ import TgBot from "../telegram-bot";
 import { join as pathJoin } from "path";
 import { Mixin } from "ts-mixer";
 import { ContentProps, getButtons, getContent } from "../content";
-import { Content, DialogKey, Difficulty, HourFormat, Motivizer } from "../constants";
+import { Content, DialogKey, Difficulty, HourFormat, Motivizer, YouCan } from "../constants";
 import { DevActions } from "./development";
 import { Settings } from "./settings";
 import { User, UsersRepo } from "../db";
@@ -313,6 +313,13 @@ export class Actions extends Mixin(DevActions, Settings) {
       }
     }
     // normal stage 2
+    if (currentDelta < USER_IDLE_TIME && msg.user.cigarettesInDay === 1) {
+      const youCanIndex = msg.user.youCanIndex || 0;
+      const youCanContent = getContent(msg.user.lang, YouCan);
+      const message = youCanContent[youCanIndex];
+      await this.bot.sendMessage(msg.user.chatId, message, { parse_mode: "Markdown" });
+      update.youCanIndex = youCanIndex + 2 < youCanContent.length ? youCanIndex + 1 : 0;
+    }
     if (currentDelta < USER_IDLE_TIME) {
       const time_to_get_smoke = mssToTime(update.nextTime!, msg.user);
       const content = !isPenalty && msg.user.cigarettesInDay ? Content.STAGE_2_SUCCESS : Content.STAGE_2;
