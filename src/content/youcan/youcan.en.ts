@@ -59,4 +59,4 @@ export const youcanEn = [
   "The desire to smoke is a weakness.",
   "Why should a habit dictate your schedule? Quit!",
   "Smoking is something that should be left behind.",
-].map(content => `📌 ${content}`);
+].map(content => `🌟 ${content}`);
