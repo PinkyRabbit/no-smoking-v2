@@ -28,6 +28,7 @@ describe("smokingTimeTest", () => {
       penaltyAll: 0,
       penaltyDays: 0,
       motivizerIndex: 0,
+      youCanIndex: 0,
       cigarettesInDay: 0,
       cigarettesSummary: 0,
       startDate: new Date(),

@@ -1,11 +1,12 @@
 import { SendMessageOptions } from "node-telegram-bot-api";
 import { I18n, LocaleCatalog, Replacements } from "i18n";
-import { Lang, Content, Motivizer, DialogKey, BTN } from "../constants";
+import { BTN, Content, DialogKey, Lang, Motivizer, YouCan } from "../constants";
 import { newLineRegexp } from "./dialogs/constants";
-import { TMotivizer, MultilineContent, ContentProps, InlineKeyboard, ButtonOption } from "./types";
-import { dialogsRu, dialogsEn  } from "./dialogs";
-import { buttonsRu, buttonsEn } from "./buttons";
-import { motivizerRu, motivizerEn  } from "./motivizer";
+import { ButtonOption, ContentProps, InlineKeyboard, MultilineContent, TMotivizer, TYouCan } from "./types";
+import { dialogsEn, dialogsRu } from "./dialogs";
+import { buttonsEn, buttonsRu } from "./buttons";
+import { motivizerEn, motivizerRu } from "./motivizer";
+import { youcanEn, youcanRu } from "./youcan";
 
 const i18n = new I18n({
   locales: [Lang.RU, Lang.EN],
@@ -49,19 +50,24 @@ catalog[Lang.RU] = {
   ...transformMultilineContent(dialogsRu),
   ...buttonsRu,
   [Motivizer]: transformMotivizerContent(motivizerRu),
+  [YouCan]: youcanRu,
 } as unknown as LocaleCatalog;
 catalog[Lang.EN] = {
   ...transformMultilineContent(dialogsEn),
   ...buttonsEn,
   [Motivizer]: transformMotivizerContent(motivizerEn),
+  [YouCan]: youcanEn,
 } as unknown as LocaleCatalog;
 
 /**
  * Content
  */
-export const getContent = (lang: Lang, contentKey: Content | TMotivizer, values: ContentProps = {}) => {
+export const getContent = (lang: Lang, contentKey: Content | TMotivizer | TYouCan, values: ContentProps = {}) => {
   if (contentKey === Motivizer) {
     return i18n.__({ phrase: Motivizer, locale: lang });
+  }
+  if (contentKey === YouCan) {
+    return i18n.__({ phrase: YouCan, locale: lang });
   }
   const replacements: Replacements = {};
   Object.entries(values).forEach(([key, value]) => (replacements[key] = `${value}`));
