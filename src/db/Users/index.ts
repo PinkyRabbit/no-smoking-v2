@@ -106,6 +106,11 @@ export type User = {
    */
   penaltyDays: number;
   /**
+   * @property winstrike - days, number of days without penalty
+   * @type number
+   */
+  winstrike: number;
+  /**
    * @property motivizerIndex - index of motivizer
    * @type number
    */
@@ -200,6 +205,7 @@ export class UsersRepo extends RequestOptions {
       penalty: 0,
       penaltyAll: 0,
       penaltyDays: 0,
+      winstrike: 0,
       motivizerIndex: 0,
       youCanIndex: 0,
       cigarettesInDay: 0,
