@@ -45,6 +45,7 @@ describe("Actions", () => {
       penalty: 0,
       penaltyAll: 7,
       penaltyDays: 1,
+      winstrike: 0,
       motivizerIndex: 0,
       youCanIndex: 0,
       cigarettesInDay: 2,
@@ -308,6 +309,7 @@ describe("Actions", () => {
         ignoreTime: msg.ts + IGNORE_TIME,
         cigarettesInDay: user.cigarettesInDay + 1,
         cigarettesSummary: user.cigarettesSummary + 1,
+        winstrike: 0,
       });
     });
 
@@ -359,6 +361,7 @@ describe("Actions", () => {
         penaltyAll: user.penaltyAll + 1,
         cigarettesInDay: user.cigarettesInDay + 1,
         cigarettesSummary: user.cigarettesSummary + 1,
+        winstrike: 0,
       });
     });
 
@@ -401,6 +404,7 @@ describe("Actions", () => {
         nextTime: 1686852780000,
         cigarettesInDay: 0,
         cigarettesSummary: user.cigarettesSummary + 1,
+        winstrike: 0,
       });
     });
   });

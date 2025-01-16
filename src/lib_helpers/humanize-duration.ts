@@ -15,3 +15,7 @@ export const daysToTimeString = (days: number = 0, language: string = "en") => {
     round: true
   });
 };
+export const daysToString = (days: number, language = Lang.EN) => {
+  const ms = days * 24 * 60 * 60 * 1000;
+  return humanizeDuration (ms, { language, delimiter: " ", units: ["d"], round: true });
+};

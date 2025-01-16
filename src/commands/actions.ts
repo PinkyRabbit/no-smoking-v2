@@ -8,7 +8,7 @@ import { DevActions } from "./development";
 import { Settings } from "./settings";
 import { User, UsersRepo } from "../db";
 import { IGNORE_TIME, MIN_INTERVAL, STAGE_1_MAX, STAGE_1_STEPS, USER_IDLE_TIME } from "./constants";
-import { minsToTimeString } from "../lib_helpers/humanize-duration";
+import { daysToString, minsToTimeString } from "../lib_helpers/humanize-duration";
 import { LogActionCalls, onlyForKnownUsers, transformMsg } from "./decorators";
 import { tgLangCodeToLang } from "../lib_helpers/i18n";
 import { getFormattedStartDate, mssToTime, tsToDateTime } from "../lib_helpers/luxon";
@@ -246,6 +246,7 @@ export class Actions extends Mixin(DevActions, Settings) {
       ignoreTime: msg.ts + IGNORE_TIME,
       cigarettesInDay: msg.user.cigarettesInDay + 1,
       cigarettesSummary: msg.user.cigarettesSummary + 1,
+      winstrike: 0,
     };
     // penalty
     const isPenalty = msg.ts < msg.user.nextTime;
@@ -273,6 +274,8 @@ export class Actions extends Mixin(DevActions, Settings) {
       update.cigarettesInDay = 0;
       update.deltaTime = newDelta;
       update.nextTime = newNextTime;
+      // remove undefined test after beta
+      update.winstrike = msg.user.penalty || msg.user.winstrike === undefined ? 0 : msg.user.winstrike + 1;
 
       const content: string[] = [];
       const cigarettes = cigarettesText(msg);
@@ -300,12 +303,21 @@ export class Actions extends Mixin(DevActions, Settings) {
         update.penaltyDays = 0;
         await this._res(msg.user, Content.PENALTY_3, {});
       }
-      // display hint for easy level
+      // winstrike messages
       const isEasyDifficulty = msg.user.difficulty === Difficulty.EASY;
-      const hasNoPenalty = !msg.user.penalty;
-      const userHas10MinProgress = msg.user.deltaTime - msg.user.minDeltaTime > 10;
-      if (isEasyDifficulty && hasNoPenalty && userHas10MinProgress) {
-        await this._res(msg.user, Content.ON_IDLE_EASY_LEVEL);
+      const isWinstrike = update.winstrike > 2;
+      if (isWinstrike) {
+        const winstrikeDays = daysToString(update.winstrike, msg.user.lang);
+        await this._res(msg.user, Content.WINSTRIKE, { winstrike: winstrikeDays });
+      }
+      if (isEasyDifficulty && isWinstrike) {
+        await this._res(msg.user, Content.WINSTRIKE_BASE_SUCCESS);
+      }
+      if (isEasyDifficulty && !isWinstrike && update.winstrike) {
+        await this._res(msg.user, Content.WINSTRIKE_BASE);
+      }
+      if (isEasyDifficulty && !update.winstrike) {
+        await this._res(msg.user, Content.WINSTRIKE_BASE_FAILED);
       }
       // display hint if limit is reached
       if (isMaxTimeLimitReached) {
@@ -349,6 +361,7 @@ export class Actions extends Mixin(DevActions, Settings) {
       lastTime: 0,
       nextTime: 0,
       penaltyDays: 0,
+      winstrike: 0,
     });
     const contentProps = { delta_time: minsToTimeString(msg.user.deltaTime, msg.user.lang) };
     await this._res(msg.user, Content.START_RESET_IGNORE,contentProps, DialogKey.im_smoking);
@@ -370,6 +383,7 @@ export class Actions extends Mixin(DevActions, Settings) {
       penalty: 0,
       penaltyDays: 0,
       penaltyAll: 0,
+      winstrike: 0,
     });
     await this._res(msg.user, Content.START_RESET_TO_STAGE_1);
     await this.toStage1(msg);
@@ -384,6 +398,7 @@ export class Actions extends Mixin(DevActions, Settings) {
       nextTime: 0,
       cigarettesInDay: 0,
       deltaTime: msg.user.minDeltaTime,
+      winstrike: 0,
     });
     const contentProps = { delta_time: minsToTimeString(msg.user.minDeltaTime, msg.user.lang) };
     await this._res(msg.user, Content.START_RESET_TO_STAGE_2, contentProps, DialogKey.im_smoking);
@@ -392,7 +407,7 @@ export class Actions extends Mixin(DevActions, Settings) {
   @transformMsg
   @onlyForKnownUsers
   public async ignoreBusy(msg: TelegramBot.Message) {
-    await UsersRepo.updateUser(msg, { ignoreTime: msg.ts + IGNORE_TIME });
+    await UsersRepo.updateUser(msg, { ignoreTime: msg.ts + IGNORE_TIME, winstrike: 0 });
     const contentProps = { delta_time: minsToTimeString(msg.user.minDeltaTime, msg.user.lang) };
     await this._res(msg.user, Content.BOT_IGNORE_BUSY, contentProps, DialogKey.im_smoking);
   }
@@ -407,6 +422,7 @@ export class Actions extends Mixin(DevActions, Settings) {
       penaltyDays: 0,
       cigarettesInDay: 0,
       ignoreTime: msg.ts + IGNORE_TIME,
+      winstrike: 0,
     });
     const delta_time = minsToTimeString(newDelta, msg.user.lang);
     const delta_min = minsToTimeString(msg.user.minDeltaTime, msg.user.lang);

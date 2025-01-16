@@ -179,10 +179,20 @@ export const dialogsEn: MultilineContent = {
     \\= Adjusted interval ${I}{{new_delta}}${I}${NDv2}
     The next recommended smoke break will be after {{time_to_get_smoke}} ⏰️
   `,
-  [Content.ON_IDLE_EASY_LEVEL]: `
-    📌 You are currently using the ${B}Basic Difficulty Level.${B}${N2} 
-    At this level, ${B}penalty points are not applied${B}, making it easier for you to understand how the bot works.${N2}
-    If you feel ready, try enabling them by pressing /level.
+  [Content.WINSTRIKE]: `
+    ⚡️ You've been going strong for {{winstrike}}! Well done!
+  `,
+  [Content.WINSTRIKE_BASE]: `
+    📚 To exit training mode, complete several consecutive days without a penalty.
+  `,
+  [Content.WINSTRIKE_BASE_FAILED]: `
+    📌 You are on the ${B}training${B} difficulty level. 
+    It’s designed to help you understand how the bot works.${NL} 
+    ${I}Penalty points are not applied.${I}
+  `,
+  [Content.WINSTRIKE_BASE_SUCCESS]: `
+    🥁 We can see that you’ve gotten the hang of it and are ready to change the difficulty.
+    To do so, press /level.
   `,
   [Content.DIFFICULTY]: `
     📈 ${B}Choose Your Difficulty Level${B}${N2}

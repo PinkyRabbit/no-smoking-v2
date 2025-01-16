@@ -6,7 +6,7 @@ import { User, UsersRepo } from "../db";
 import { devModeOnly, onlyForKnownUsers, transformMsg } from "./decorators";
 import { MIN_INTERVAL, STAGE_1_MAX, STAGE_1_STEPS, USER_IDLE_TIME } from "./constants";
 import { getContent } from "../content";
-import { minsToTimeString } from "../lib_helpers/humanize-duration";
+import { daysToString, minsToTimeString } from "../lib_helpers/humanize-duration";
 import { difficultyNameByLevel, penaltyMinutesString, stepByDifficulty } from "../helpers";
 
 /**
@@ -123,7 +123,6 @@ export class DevActions {
       lastTime,
       nextTime: lastTime + msg.user.deltaTime * 60 * 1000,
       cigarettesInDay: isEmpty ? 0 : 2,
-      penalty: isEmpty ? 0 : 2,
       penaltyDays: isThree ? 2 : 0,
       deltaTime: isMax ? USER_IDLE_TIME : msg.user.deltaTime,
     };
@@ -218,7 +217,8 @@ export class DevActions {
     min_interval: minsToTimeString(MIN_INTERVAL, lang),
     min_stage_1: minsToTimeString(MIN_INTERVAL, lang),
     max_stage_1: STAGE_1_MAX,
-    stage_1_left: "12"
+    stage_1_left: "12",
+    winstrike: daysToString(5, lang),
   });
 
   @devModeOnly
