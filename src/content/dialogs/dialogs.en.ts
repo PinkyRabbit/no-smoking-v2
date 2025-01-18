@@ -143,21 +143,11 @@ export const dialogsEn: MultilineContent = {
     🚭 Current penalty points: ${B}{{penalty}}${B}
   `,
   [Content.PENALTY_3]: `
-    ${B}How to Avoid Penalties‼️${B}${N2}
-    Please take this message seriously!${N2}
-    We’ve noticed that you’ve received penalties for 3 consecutive days.${N2}
-    For the bot to truly help you, the most important thing is ${B}self-discipline${B}.
-    The bot can calculate your smoking intervals, but it can’t stop you from smoking.${N2}
-    ${B}You need to limit yourself:${B}${N2}
-    - Don’t smoke before the recommended time${NL}
-    - Never smoke twice in a row${NL}
-    - Work on breaking habits like ${I}smoking in the morning, before bed, with coffee, during work breaks,
-     while waiting for transport, and so on${I} 💪${NL}
-    - Don’t smoke with colleagues. If it’s not time yet, just stand with them${NL}
-    - Plan your smoke breaks. You know the times and intervals${NL}
-    - If you know you won’t be able to smoke at the next scheduled time, ${I}don’t smoke early${I}!
-    Missing one break won’t hurt you!${N2}
-    ${B}Remember, a habit is not an addiction.${NL} You are stronger than this!${B}
+    📚 Most people easily stick to the smoking schedule.${NL}
+    However, we’ve noticed that your penalty points are adding up.${NL}
+    You need to stabilise.${NL}
+    That’s exactly why ${B}the training mode${B} was created!${N2}
+    We strongly recommend ${I}switching to it and regaining your stability.${I}
   `,
   [Content.TIME_FOR_A_SMOKE]: "🔥 It's time for a smoke break! 🔥",
   [Content.IDLE_NO_CIGARETTES]: `
@@ -197,16 +187,16 @@ export const dialogsEn: MultilineContent = {
   [Content.DIFFICULTY]: `
     📈 ${B}Choose Your Difficulty Level${B}${N2}
     The app offers three difficulty levels:${N2}
-    - ${B}Basic${B} (Training Mode): +0.5 minute per day${NL}
+    - ${B}Training Mode${B}: +0.5 minute per day${NL}
     - ${B}Normal${B}: +1 minute per day${NL}
     - ${B}Advanced${B}: +2 minutes per day${NL}
-    The ${B}Basic level${B} is ideal for beginners, helping you get used to following intervals
+    The ${B}Training Mode${B} is ideal for beginners, helping you get used to following intervals
     even if you occasionally miss the schedule. It’s a training mode designed to help you ease into the process.${N2}
     If you’re ready to make serious progress with your habit, choose ${B}Normal${B} or ${B}Advanced${B}. 
     Normal provides a moderate pace, while Advanced is more intense, with the interval step increasing by 2 minutes.${N2}
     You can change the difficulty level anytime in the settings.
   `,
-  [Content.DIFFICULTY_EASY]: "Basic",
+  [Content.DIFFICULTY_EASY]: "Training",
   [Content.DIFFICULTY_MEDIUM]: "Normal",
   [Content.DIFFICULTY_HARD]: "Advanced",
   [Content.DIFFICULTY_SELECTED]: `
@@ -215,15 +205,15 @@ export const dialogsEn: MultilineContent = {
   `,
   [Content.DIFFICULTY_AUTO]: `
     📌 Please Read This Message${N2}
-    You have been assigned the BASIC difficulty level.${ND}
-    ${B}Why is it important to start with the "Basic" level?${B}${N2}
+    You have been assigned the Training difficulty level.${ND}
+    ${B}Why is it important to start with the "Training" level?${B}${N2}
     At this stage, ${B}the main goal is to break habitual smoking patterns${B}. 
     For example, when you smoke with coffee, while waiting for a bus at the stop,
     during a break with coworkers, and so on.${N2}
     This is the hardest part. Our statistics show:${NL}
     In ${B}the first 3 days${B} , 95% of users break the schedule.${NL}
     Within ${B}the first 5 days${B}, 100% of users do.${N2}
-    ${I}The Basic level was designed specifically to address this challenge.${I}${ND}
+    ${I}The Training level was designed specifically to address this challenge.${I}${ND}
     📃 ${B}How does it work?${B}${N2}
     ${B}1. Press the "I SMOKE" button, even if you break the schedule.${B}${NL}
     This helps you become aware of your habits and analyze when and where you’re most likely to slip.${N2}

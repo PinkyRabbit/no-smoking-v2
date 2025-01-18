@@ -225,8 +225,8 @@ export class DevActions {
   @transformMsg
   @onlyForKnownUsers
   public async devContent(msg: TelegramBot.Message) {
-    const contentKey: Content = Content.PENALTY_3;
-    const dialogKey: DialogKey = DialogKey.im_smoking;
+    const contentKey: Content = Content.DIFFICULTY;
+    const dialogKey: DialogKey = DialogKey.difficulty;
     // const dialogKey = undefined;
     const fakeProps = this.getDevContentProps(msg.user);
     await this._res(msg.user, contentKey, fakeProps, dialogKey);

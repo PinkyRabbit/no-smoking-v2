@@ -167,6 +167,9 @@ const selectButtonsByKey = (key: DialogKey, locale: Lang): InlineKeyboard => {
   if (key === DialogKey.max_time) {
     return [[buttonFor(BTN.Recommendations, locale)]];
   }
+  if (key === DialogKey.difficulty_easy) {
+    return [[buttonFor(BTN.Level_Easy, locale)]];
+  }
   return [];
 };
 

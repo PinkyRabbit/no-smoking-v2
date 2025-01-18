@@ -301,7 +301,7 @@ export class Actions extends Mixin(DevActions, Settings) {
       // hint three days penalty
       if (update.penaltyDays === 3) {
         update.penaltyDays = 0;
-        await this._res(msg.user, Content.PENALTY_3, {});
+        await this._res(msg.user, Content.PENALTY_3, {}, DialogKey.difficulty_easy);
       }
       // winstrike messages
       const isEasyDifficulty = msg.user.difficulty === Difficulty.EASY;
