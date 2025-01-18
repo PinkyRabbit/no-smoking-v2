@@ -8,7 +8,7 @@ export const buttonsEn: ButtonNames = {
   [BTN.Reset_Stage_1]: "Full Reset 👍",
   [BTN.Reset_Stage_2]: "Stage 1 Progress Reset 🐯",
   [BTN.Reset_Ignore]: "Keep it as it is ❌️",
-  [BTN.Level_Easy]: "Basic 🧸",
+  [BTN.Level_Easy]: "Training Mode 📚",
   [BTN.Level_Medium]: "Normal 👍",
   [BTN.Level_Hard]: "Advanced 👑",
   [BTN.Ignore_Success]: "I quit smoking!",

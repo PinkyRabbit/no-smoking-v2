@@ -117,6 +117,7 @@ export enum DialogKey {
   start_existing = "start_existing",
   dev = "dev",
   difficulty = "difficulty",
+  difficulty_easy = "difficulty_easy",
   ignore = "ignore",
   max_time = "max_time",
 }
