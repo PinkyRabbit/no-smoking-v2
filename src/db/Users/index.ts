@@ -223,7 +223,10 @@ export class UsersRepo extends RequestOptions {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-expect-error
       msg.user[key] = value;
-    }); } static async setTimezone(msg: Message, timezone: string) { const isValidTimezone = isValidTimeZoneCheck(timezone);
+    });
+  }
+
+  static async setTimezone(msg: Message, timezone: string) { const isValidTimezone = isValidTimeZoneCheck(timezone);
     if (isValidTimezone) {
       const update: Partial<User> = { timezone };
       await UsersRepo.updateUser(msg, update);

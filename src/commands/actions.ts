@@ -246,7 +246,6 @@ export class Actions extends Mixin(DevActions, Settings) {
       ignoreTime: msg.ts + IGNORE_TIME,
       cigarettesInDay: msg.user.cigarettesInDay + 1,
       cigarettesSummary: msg.user.cigarettesSummary + 1,
-      winstrike: 0,
     };
     // penalty
     const isPenalty = msg.ts < msg.user.nextTime;
@@ -254,6 +253,7 @@ export class Actions extends Mixin(DevActions, Settings) {
       logger.debug(`U-${msg.user.chatId} [penalty] ${tsToDateTime(msg.ts)} < ${tsToDateTime(msg.user.nextTime)}`);
       update.penalty = msg.user.penalty + 1;
       update.penaltyAll = msg.user.penaltyAll + 1;
+      update.winstrike = 0;
       await this._res(msg.user, Content.PENALTY, { penalty: update.penalty });
     }
     // idle
@@ -274,8 +274,7 @@ export class Actions extends Mixin(DevActions, Settings) {
       update.cigarettesInDay = 0;
       update.deltaTime = newDelta;
       update.nextTime = newNextTime;
-      // remove undefined test after beta
-      update.winstrike = msg.user.penalty || msg.user.winstrike === undefined ? 0 : msg.user.winstrike + 1;
+      update.winstrike = msg.user.penalty ? 0 : msg.user.winstrike + 1;
 
       const content: string[] = [];
       const cigarettes = cigarettesText(msg);
@@ -304,8 +303,9 @@ export class Actions extends Mixin(DevActions, Settings) {
         await this._res(msg.user, Content.PENALTY_3, {}, DialogKey.difficulty_easy);
       }
       // winstrike messages
+      const WINSTRIKE_MIN_DAYS = 3;
       const isEasyDifficulty = msg.user.difficulty === Difficulty.EASY;
-      const isWinstrike = update.winstrike > 2;
+      const isWinstrike = update.winstrike > WINSTRIKE_MIN_DAYS - 1;
       if (isWinstrike) {
         const winstrikeDays = daysToString(update.winstrike, msg.user.lang);
         await this._res(msg.user, Content.WINSTRIKE, { winstrike: winstrikeDays });
@@ -314,7 +314,8 @@ export class Actions extends Mixin(DevActions, Settings) {
         await this._res(msg.user, Content.WINSTRIKE_BASE_SUCCESS);
       }
       if (isEasyDifficulty && !isWinstrike && update.winstrike) {
-        await this._res(msg.user, Content.WINSTRIKE_BASE);
+        const props = { day: update.winstrike, of_days: WINSTRIKE_MIN_DAYS };
+        await this._res(msg.user, Content.WINSTRIKE_BASE, props);
       }
       if (isEasyDifficulty && !update.winstrike) {
         await this._res(msg.user, Content.WINSTRIKE_BASE_FAILED);
