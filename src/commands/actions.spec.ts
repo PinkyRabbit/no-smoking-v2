@@ -309,7 +309,6 @@ describe("Actions", () => {
         ignoreTime: msg.ts + IGNORE_TIME,
         cigarettesInDay: user.cigarettesInDay + 1,
         cigarettesSummary: user.cigarettesSummary + 1,
-        winstrike: 0,
       });
     });
 
