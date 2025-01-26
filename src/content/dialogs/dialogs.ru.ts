@@ -203,7 +203,8 @@ export const dialogsRu: MultilineContent = {
   [Content.DIFFICULTY_MEDIUM]: "Обычный",
   [Content.DIFFICULTY_HARD]: "Продвинутый",
   [Content.DIFFICULTY_SELECTED]: `
-    Сложность всегда можно изменить написав /level${ND}
+    Сложность всегда можно изменить${NL}
+    ${B}написав${B} /level${ND}
     Вы выбрали уровень сложности ${B}"{{difficulty}}"${B}
   `,
   [Content.DIFFICULTY_AUTO]: `
