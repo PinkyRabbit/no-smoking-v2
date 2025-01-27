@@ -10,3 +10,4 @@ jspm_packages/
 dist
 *.log
 npm-debug.log*
+google.json
