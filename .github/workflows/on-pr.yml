@@ -22,6 +22,14 @@ jobs:
       with:
         node-version: '20.x'
 
+    - name: Dependency Review
+      uses: actions/dependency-review-action@v3
+      with:
+        fail-on-severity: high
+        vulnerability-check: true
+        license-check: true
+        fail-on-scopes: runtime,development
+
     - name: Set pipeline to PENDING status
       run: |
         gh api \
