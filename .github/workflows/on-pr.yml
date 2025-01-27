@@ -23,7 +23,7 @@ jobs:
         node-version: '20.x'
 
     - name: Dependency Review
-      uses: actions/dependency-review-action@v3
+      uses: actions/dependency-review-action@v4
       with:
         fail-on-severity: high
         vulnerability-check: true
