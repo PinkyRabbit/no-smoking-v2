@@ -17,12 +17,16 @@ import { stage2 } from "./decorators/stage2";
 import { cigarettesText } from "../helpers/content";
 import { penaltyByDifficulty, penaltyMinutesString, stepByDifficulty } from "../helpers";
 import { InlineKeyboard } from "../content/types";
+import { Analytics } from "../analytics";
 
 @LogActionCalls
 export class Actions extends Mixin(DevActions, Settings) {
+  private readonly analytics: Analytics;
+
   constructor(private bot: TgBot) {
     super();
     this.bot = bot;
+    this.analytics = new Analytics();
     // all "on" methods should be bound with "this"
     this.onStart = this.onStart.bind(this);
     this.onLevel = this.onLevel.bind(this);
@@ -130,6 +134,7 @@ export class Actions extends Mixin(DevActions, Settings) {
   public async onStart(msg: TelegramBot.Message) {
     if (!msg.user) {
       const user = await UsersRepo.addNewUser(msg);
+      await this.analytics.trackTgLang(msg.from?.language_code || "Unknown");
       await this._res(user, Content.START_NEW, {}, DialogKey.beginning);
       return;
     }

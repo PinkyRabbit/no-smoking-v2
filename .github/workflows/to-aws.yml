@@ -28,6 +28,10 @@ jobs:
           mkdir dist/logs
           touch dist/logs/error.log
           touch dist/logs/combined.log
+      - name: Create google.json file
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_JSON }}
+        run: echo $GOOGLE_SERVICES_JSON | base64 -d > dist/google.json
       - name: Deploy to my EC2 instance
         uses: easingthemes/ssh-deploy@main
         env:

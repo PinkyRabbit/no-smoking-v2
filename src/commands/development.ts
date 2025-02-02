@@ -225,7 +225,7 @@ export class DevActions {
   @transformMsg
   @onlyForKnownUsers
   public async devContent(msg: TelegramBot.Message) {
-    const contentKey: Content = Content.DIFFICULTY;
+    const contentKey: Content = Content.DIFFICULTY_SELECTED;
     const dialogKey: DialogKey = DialogKey.difficulty;
     // const dialogKey = undefined;
     const fakeProps = this.getDevContentProps(msg.user);
