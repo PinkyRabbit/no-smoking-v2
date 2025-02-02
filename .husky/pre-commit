@@ -1,1 +1,6 @@
 npm run lint:fix
+
+if [ -f "yarn.lock" ]; then
+  echo "❌ ERROR: yarn.lock found! Please use package-lock."
+  exit 1
+fi
