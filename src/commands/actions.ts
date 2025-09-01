@@ -31,7 +31,7 @@ export class Actions extends Mixin(DevActions, Settings) {
     this.onStart = this.onStart.bind(this);
     this.onLevel = this.onLevel.bind(this);
     this.onLang = this.onLang.bind(this);
-    this.onTimezone = this.onTimezone.bind(this);
+    this.onLocalTime = this.onLocalTime.bind(this);
     this.onStats = this.onStats.bind(this);
     this.onMessage = this.onMessage.bind(this);
     this.onUserUnknown = this.onUserUnknown.bind(this);

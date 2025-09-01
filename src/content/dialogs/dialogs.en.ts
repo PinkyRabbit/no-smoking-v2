@@ -254,6 +254,10 @@ export const dialogsEn: MultilineContent = {
     A correct example of a time zone is: GMT+2${NL}
     Please try again.
   `,
+  [Content.LOCAL_TIME]: `
+    👉 Your current time should be ${B}{{local_time}}${B} ⏳${N2}  
+    Please confirm or adjust it using the buttons.
+  `,
   [Content.SETTINGS]: `
     ${B}Stage 2. Configuration.${B}${NL}
     It’s time to adjust your settings, such as time zone, language, and difficulty level.

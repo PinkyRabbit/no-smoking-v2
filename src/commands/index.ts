@@ -12,7 +12,7 @@ export const botActionsInit = (bot: TgBot) => {
   bot.onText(BotEvent.Stats, act.onStats);
   bot.onText(BotEvent.SelectLanguage, act.onLang);
   bot.onText(BotEvent.SelectLevel, act.onLevel);
-  bot.onText(BotEvent.SelectTimezone, act.onTimezone);
+  bot.onText(BotEvent.SelectLocalTime, act.onLocalTime);
   bot.onText(BotEvent.Dev, act.onDev);
   bot.onText(BotEvent.How, act.onHow);
   bot.on(BotEvent.Callback, (callbackQuery: CallbackQuery) => {

@@ -79,7 +79,7 @@ export class Settings {
   }
 
   /**
-   * Timezone
+   * Method to set a timezone
    */
   @transformMsg
   @onlyForKnownUsers
@@ -87,6 +87,16 @@ export class Settings {
     await UsersRepo.updateUser(msg, { timezone: undefined });
     await this._res(msg.user, Content.TIMEZONE);
     await this._image(msg.user, "timezone.jpg", "Timezone with Google");
+  }
+
+  /**
+   * Method to set local time
+   * @param msg
+   */
+  @transformMsg
+  @onlyForKnownUsers
+  public async onLocalTime(msg: TelegramBot.Message) {
+    await this._res(msg.user, Content.LOCAL_TIME, { local_time: "13:21" });
   }
 
   @transformMsg
