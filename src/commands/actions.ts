@@ -283,14 +283,14 @@ export class Actions extends Mixin(DevActions, Settings) {
 
       const content: string[] = [];
       const cigarettes = cigarettesText(msg);
-      content.push(getContent(msg.user.lang, Content.ON_IDLE_START, { cigarettes }));
+      content.push(getContent(msg.user.lang, Content.ON_IDLE_STATS_1, { cigarettes }));
 
       const motivizer = getContent(msg.user.lang, Motivizer);
       content.push(motivizer[msg.user.motivizerIndex]);
       const motivizerNext = msg.user.motivizerIndex + 1;
       update.motivizerIndex = motivizerNext !== motivizer.length ? motivizerNext : 0;
       const step = stepByDifficulty(msg.user.difficulty);
-      content.push(getContent(msg.user.lang, Content.ON_IDLE_END, {
+      content.push(getContent(msg.user.lang, Content.ON_IDLE_STATS_2, {
         prev_delta: minsToTimeString(msg.user.deltaTime, msg.user.lang),
         new_delta: minsToTimeString(newDelta, msg.user.lang),
         time_to_get_smoke: mssToTime(update.nextTime, msg.user),

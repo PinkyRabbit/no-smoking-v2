@@ -157,11 +157,10 @@ export const dialogsEn: MultilineContent = {
     Please, keep going!${ND}
     Your next recommended smoke break will be after {{time_to_get_smoke}} ⏰️ 
   `,
-  [Content.ON_IDLE_START]: `
-    💤💤💤 ${B}Long Break${B}${N2}
-    Yesterday, you smoked ${B}{{cigarettes}}${B} times${NL}
-  `,
-  [Content.ON_IDLE_END]: `
+  [Content.ON_IDLE_START]: `💤💤💤 ${B}Long Break${B}${N2}`,
+  [Content.ON_IDLE_TIME_CONFIRMATION]: `Let's sync our watches. Is it ${B}{{local_time}}${B} for you?`,
+  [Content.ON_IDLE_STATS_1]: `Yesterday, you smoked ${B}{{cigarettes}}${B} times${NL}`,
+  [Content.ON_IDLE_STATS_2]: `
     The interval between your smoke smoke breaks has been recalculated:${NL}
     Previous interval: {{prev_delta}}${NL}
     \\- Penalty points: {{penalty}} \\[{{penalty_mins}}\\]${NL} 

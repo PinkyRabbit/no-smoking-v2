@@ -160,11 +160,12 @@ export const dialogsRu: MultilineContent = {
     Следующий перекур будет после {{time_to_get_smoke}} ⏰️ 
   `,
   [Content.TIME_FOR_A_SMOKE]: "🔥 Время для перекура! 🔥",
-  [Content.ON_IDLE_START]: `
-    💤💤💤 ${B}Большой Интервал${B}${N2}
+  [Content.ON_IDLE_START]: `💤💤💤 ${B}Большой Интервал${B}${N2}`,
+  [Content.ON_IDLE_TIME_CONFIRMATION]: `Сверим часы. У вас ${B}{{local_time}}${B}?`,
+  [Content.ON_IDLE_STATS_1]: `
     За вчера вы выкурили ${B}{{cigarettes}}${B}${NL}
   `,
-  [Content.ON_IDLE_END]: `
+  [Content.ON_IDLE_STATS_2]: `
     Время следующего перекура пересчитано:${NL}
     прошлое время {{prev_delta}}${NL}
     \\- штрафные баллы {{penalty}} \\[{{penalty_mins}}\\]${NL}
