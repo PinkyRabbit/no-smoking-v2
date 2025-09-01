@@ -27,11 +27,6 @@ export const getFormattedStartDate = (jsDate: Date, locale: Lang) => {
   return { start_date, days_from_start };
 };
 
-export const isValidTimeZoneCheck = (zone: string) => {
-  const ms = dateNow();
-  return DateTime.fromMillis(ms, { zone }).isValid;
-};
-
 export const simpleOffsetToUtc = (offset: string): string => {
   const cleanOffset = offset.replace(/^\+/, "");
   const hasAHalf = offset.includes(":30") || offset.includes(".5") ;
@@ -59,4 +54,25 @@ export const computeTimeOffsetBasedOnInput = (msg: TelegramBot.Message) => {
   const absMinutes = Math.abs(diffMinutes);
   const hours = Math.floor(absMinutes / 60);
   return `UTC${isNegative ? "-" : "+"}${hours < 10 ? "0" + hours : hours}:${isHalfShift ? "30" : "00"}`;
+};
+
+export const computeTimezoneShift = (msg: TelegramBot.Message, shift: 5 | 10 | -5 | -10)  => {
+  if (!msg.user.timezone) {
+    return "UTC+00:00";
+  }
+  const offset = msg.user.timezone.replace("UTC", "");
+  const isNegative = offset.trim().startsWith("-");
+  const [baseHoursStr, baseMinutesStr = "00"] = offset.replace("+", "").replace("-", "").split(":");
+  const baseHours = parseInt(baseHoursStr, 10) || 0;
+  const half = baseMinutesStr === "30" ? 5 : 0;
+  const hoursValue = (isNegative ? -baseHours : baseHours) * 10;
+  const minutesValue = isNegative ? -half : half;
+  let summary = hoursValue + minutesValue + shift;
+  if (summary > 140) summary -= 240;
+  if (summary < -120) summary += 240;
+  const sign = summary < 0 ? "-" : "+";
+  const absTenths = Math.abs(summary);
+  const hours = Math.trunc(absTenths / 10).toString().padStart(2, "0");
+  const minutes = absTenths % 10 === 0 ? "00" : "30";
+  return `UTC${sign}${hours}:${minutes}`;
 };
