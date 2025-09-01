@@ -252,7 +252,7 @@ describe("Actions", () => {
       const EXPECTED_MINUTES = 76;
       const EXPECTED_STRING = "1 hour 16 minutes";
 
-      const onLevelStub = sinon.stub(actions, "onTimezone").resolves();
+      const onLevelStub = sinon.stub(actions, "newLocalTime").resolves();
 
       await actions.imSmokingHandler(msg);
 

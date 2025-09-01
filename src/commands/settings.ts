@@ -73,26 +73,23 @@ export class Settings {
     const difficultyName = difficultyNameByLevel(difficulty, msg.user.lang);
     await this._res(msg.user, Content.DIFFICULTY_SELECTED, { difficulty: difficultyName });
     if (!msg.user.timezone) {
-      return this.onTimezone(msg);
+      return this.newLocalTime(msg);
     }
     return this.onSettingsDone(msg);
-  }
-
-  /**
-   * Method to set a timezone
-   */
-  @transformMsg
-  @onlyForKnownUsers
-  public async onTimezone(msg: TelegramBot.Message) {
-    await UsersRepo.updateUser(msg, { timezone: undefined });
-    await this._res(msg.user, Content.TIMEZONE);
-    await this._image(msg.user, "timezone.jpg", "Timezone with Google");
   }
 
   /**
    * Methods to set local time
    * @param msg
    */
+  @transformMsg
+  @onlyForKnownUsers
+  public async newLocalTime(msg: TelegramBot.Message) {
+    await UsersRepo.updateUser(msg, { timezone: undefined });
+    const time_sample = DateTime.fromMillis(Date.now()).toFormat(HourFormat.H24);
+    await this._res(msg.user, Content.LOCAL_TIME_NEW, { time_sample });
+  }
+
   private async localTimeDialog(msg: TelegramBot.Message) {
     const local_time = mssToTime(msg.ts, msg.user);
     await this._res(msg.user, Content.LOCAL_TIME, { local_time }, DialogKey.local_time);

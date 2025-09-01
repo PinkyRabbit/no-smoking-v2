@@ -75,7 +75,7 @@ export const botActionsInit = (bot: TgBot) => {
         act.timezoneCorrect(message, HourFormat.H24);
         break;
       case BTN.Timezone_Incorrect:
-        act.onTimezone(message);
+        act.newLocalTime(message);
         break;
       case BTN.Local_Time_Minus_1:
         act.makeATimeShift(message, TimeShifting.Minus_1H);

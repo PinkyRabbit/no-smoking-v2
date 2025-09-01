@@ -86,6 +86,7 @@ export enum Content {
   TIMEZONE_INTRO = "timezone_select",
   TIMEZONE_SELECTED = "timezone_selected",
   TIMEZONE_INVALID = "timezone_invalid",
+  LOCAL_TIME_NEW = "local_time_new",
   LOCAL_TIME = "local_time",
   SETTINGS = "setting",
   SETTINGS_DONE = "setting_done",

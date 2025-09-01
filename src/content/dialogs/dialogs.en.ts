@@ -254,6 +254,13 @@ export const dialogsEn: MultilineContent = {
     A correct example of a time zone is: GMT+2${NL}
     Please try again.
   `,
+  [Content.LOCAL_TIME_NEW]: `
+    🌐 ${B}Timezone Setup${B}${N2}
+    Please check the time on your phone or computer
+    and enter it in 24h format.${N2}
+    Examples:${NL}
+    {{time_sample}}, 19:00, 01:14
+  `,
   [Content.LOCAL_TIME]: `
     👉 Your current time should be ${B}{{local_time}}${B} ⏳${N2}  
     Please confirm or adjust it using the buttons.
