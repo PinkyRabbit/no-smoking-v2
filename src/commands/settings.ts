@@ -94,7 +94,8 @@ export class Settings {
    * @param msg
    */
   private async localTimeDialog(msg: TelegramBot.Message) {
-    await this._res(msg.user, Content.LOCAL_TIME, { local_time: "13:21" }, DialogKey.local_time);
+    const local_time = mssToTime(msg.ts, msg.user);
+    await this._res(msg.user, Content.LOCAL_TIME, { local_time }, DialogKey.local_time);
   }
 
   @transformMsg
@@ -110,6 +111,14 @@ export class Settings {
       // TODO: confirm dialog
       return;
     }
+    /*
+    const deltaMinutes = {
+      [TimeShifting.Plus_1H]: 60,
+      [TimeShifting.Minus_1H]: -60,
+      [TimeShifting.Plus_30Min]: 30,
+      [TimeShifting.Minus_30Min]: -30,
+    }[timeShift];
+     */
     await this.localTimeDialog(msg);
   }
 
