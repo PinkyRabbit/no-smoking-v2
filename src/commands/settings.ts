@@ -1,14 +1,12 @@
 import TelegramBot from "node-telegram-bot-api";
 import { DateTime } from "luxon";
 import { onlyForKnownUsers, transformMsg } from "./decorators";
-import { BTN, Content, DialogKey, Difficulty, HourFormat, Lang, TimeShifting } from "../constants";
-import { mssToTime } from "../lib_helpers/luxon";
+import { Content, DialogKey, Difficulty, HourFormat, Lang, TimeShifting } from "../constants";
+import { computeTimeOffsetBasedOnInput, mssToTime } from "../lib_helpers/luxon";
 import { difficultyNameByLevel } from "../helpers";
 import { UsersRepo } from "../db";
 import logger from "../logger";
 import { IGNORE_TIME } from "./constants";
-import { buttonFor } from "../content";
-import { InlineKeyboard } from "../content/types";
 
 export class Settings {
   /**
@@ -133,19 +131,26 @@ export class Settings {
     if (msg.user.timezone) {
       return Promise.resolve();
     }
+    if (!/^([0-1]\d|2[0-3]):[0-5]\d$/.test(msg.text!.trim())) {
+      return;
+    }
     try {
-      const zone = await UsersRepo.setTimezone(msg, msg.text!.trim());
-      const dateTime = DateTime.fromMillis(Date.now(), { zone });
-      const time_h12 = dateTime.toFormat(HourFormat.H12);
-      const time_h24 = dateTime.toFormat(HourFormat.H24);
-      const dialogKeys: InlineKeyboard = [
-        [buttonFor(BTN.Timezone_Incorrect, msg.user.lang)],
-        [
-          { text: time_h12, callback_data: BTN.Timezone_Correct_H12 },
-          { text: time_h24, callback_data: BTN.Timezone_Correct_H24 },
-        ],
-      ];
-      await this._res(msg.user, Content.TIMEZONE_SELECTED, { timezone: msg.text, local_time: time_h24 }, dialogKeys);
+      const timezone= computeTimeOffsetBasedOnInput(msg);
+      await UsersRepo.updateUser(msg, { timezone });
+      const local_time = DateTime.utc().setZone(timezone).toFormat(HourFormat.H24);
+      await this._res(msg.user, Content.LOCAL_TIME, { local_time }, DialogKey.local_time);
+
+      // const dateTime = DateTime.fromMillis(Date.now(), { zone });
+      // const time_h12 = dateTime.toFormat(HourFormat.H12);
+      // const time_h24 = dateTime.toFormat(HourFormat.H24);
+      // const dialogKeys: InlineKeyboard = [
+      //   [buttonFor(BTN.Timezone_Incorrect, msg.user.lang)],
+      //   [
+      //     { text: time_h12, callback_data: BTN.Timezone_Correct_H12 },
+      //     { text: time_h24, callback_data: BTN.Timezone_Correct_H24 },
+      //   ],
+      // ];
+      // await this._res(msg.user, Content.TIMEZONE_SELECTED, { timezone: msg.text, local_time: time_h24 }, dialogKeys);
     } catch (error) {
       logger.debug("Save timezone error", error);
       await this._res(msg.user, Content.TIMEZONE_INVALID);
