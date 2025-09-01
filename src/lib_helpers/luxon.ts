@@ -2,6 +2,7 @@ import { DateTime } from "luxon";
 import { Lang } from "../constants";
 import { daysToTimeString } from "./humanize-duration";
 import { User } from "../db";
+import TelegramBot from "node-telegram-bot-api";
 
 export const tsToDateTime = (ts: unknown) => {
   const dateTime = typeof ts === "number" ? DateTime.fromMillis(ts) : DateTime.now();
@@ -59,4 +60,20 @@ export const gmtToUtc = (gmtOffset: string): string => {
   const paddedHours = hours.padStart(2, "0");
   const paddedMinutes = minutes.padStart(2, "0");
   return `UTC${sign}${paddedHours}:${paddedMinutes}`;
+};
+
+export const computeTimeOffsetBasedOnInput = (msg: TelegramBot.Message) => {
+  const userInput = msg.text!.trim();
+  const nowUtc = DateTime.utc();
+  const [hh, mm] = userInput.split(":").map(Number);
+  let userTime = nowUtc.set({ hour: hh, minute: mm, second: 0, millisecond: 0 });
+  let diffMinutes = userTime.diff(nowUtc, "minutes").toObject().minutes ?? 0;
+  if (diffMinutes > 720) diffMinutes -= 1440;
+  if (diffMinutes < -720) diffMinutes += 1440;
+  diffMinutes = Math.round(diffMinutes / 30) * 30;
+  const isNegative = diffMinutes < 0;
+  const isHalfShift = diffMinutes % 60;
+  const absMinutes = Math.abs(diffMinutes);
+  const hours = Math.floor(absMinutes / 60);
+  return `UTC${isNegative ? "-" : "+"}${hours < 10 ? "0" + hours : hours}:${isHalfShift ? "30" : "00"}`;
 };

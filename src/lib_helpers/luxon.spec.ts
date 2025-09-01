@@ -1,6 +1,14 @@
 import { expect } from "chai";
 import sinon from "sinon";
-import { getFormattedStartDate, GmtRegex, gmtToUtc, mssToTime, simpleOffsetToUtc } from "./luxon";
+import TelegramBot from "node-telegram-bot-api";
+import {
+  computeTimeOffsetBasedOnInput,
+  getFormattedStartDate,
+  GmtRegex,
+  gmtToUtc,
+  mssToTime,
+  simpleOffsetToUtc,
+} from "./luxon";
 import { HourFormat, Lang } from "../constants";
 import { User } from "../db";
 
@@ -171,6 +179,94 @@ describe("lib_helpers.luxon", () => {
       const milliseconds = 1704120600000;
       const result = mssToTime(milliseconds, user);
       expect(result).to.equal("9:50 AM");
+    });
+  });
+
+  describe("computeTimeOffsetBasedOnInput", () => {
+    let clock: sinon.SinonFakeTimers;
+
+    const makeMsg = (text: string) => ({ text } as TelegramBot.Message);
+
+    afterEach(() => {
+      if (clock) clock.restore();
+    });
+
+    it("returns UTC+00:00 when times match (now=2025-01-01T12:00Z, input=12:00)", () => {
+      clock = sinon.useFakeTimers(new Date("2025-01-01T12:00:00Z").getTime());
+      const res = computeTimeOffsetBasedOnInput(makeMsg("12:00"));
+      expect(res).to.equal("UTC+00:00");
+    });
+
+    it("calculates positive hour shift (now=12:00Z, input=15:00 -> UTC+03:00)", () => {
+      clock = sinon.useFakeTimers(new Date("2025-01-01T12:00:00Z").getTime());
+      const res = computeTimeOffsetBasedOnInput(makeMsg("15:00"));
+      expect(res).to.equal("UTC+03:00");
+    });
+
+    it("rounds up to the nearest 30 minutes (now=12:00Z, input=12:15 -> UTC+00:30)", () => {
+      clock = sinon.useFakeTimers(new Date("2025-01-01T12:00:00Z").getTime());
+      const res = computeTimeOffsetBasedOnInput(makeMsg("12:15"));
+      expect(res).to.equal("UTC+00:30");
+    });
+
+    it("handles half-hour positive shift (now=12:00Z, input=15:29 -> rounded to 03:30)", () => {
+      clock = sinon.useFakeTimers(new Date("2025-01-01T12:00:00Z").getTime());
+      const res = computeTimeOffsetBasedOnInput(makeMsg("15:29"));
+      expect(res).to.equal("UTC+03:30");
+    });
+
+    it("handles half-hour negative shift (now=12:00Z, input=08:31 -> rounded to -03:30)", () => {
+      clock = sinon.useFakeTimers(new Date("2025-01-01T12:00:00Z").getTime());
+      const res = computeTimeOffsetBasedOnInput(makeMsg("08:31"));
+      expect(res).to.equal("UTC-03:30");
+    });
+
+    it("handles pure negative hour shift (now=12:00Z, input=03:00 -> UTC-09:00)", () => {
+      clock = sinon.useFakeTimers(new Date("2025-01-01T12:00:00Z").getTime());
+      const res = computeTimeOffsetBasedOnInput(makeMsg("03:00"));
+      expect(res).to.equal("UTC-09:00");
+    });
+
+    it("adjusts >12h forward to nearest backward (now=01:00Z, input=16:00 -> diff +900 -> -540 -> UTC-09:00)", () => {
+      clock = sinon.useFakeTimers(new Date("2025-01-01T01:00:00Z").getTime());
+      const res = computeTimeOffsetBasedOnInput(makeMsg("16:00"));
+      expect(res).to.equal("UTC-09:00");
+    });
+
+    it("adjusts <-12h backward to nearest forward (now=23:00Z, input=10:00 -> -780 -> +660 -> UTC+11:00)", () => {
+      clock = sinon.useFakeTimers(new Date("2025-01-01T23:00:00Z").getTime());
+      const res = computeTimeOffsetBasedOnInput(makeMsg("10:00"));
+      expect(res).to.equal("UTC+11:00");
+    });
+
+    it("pads hours with zero (UTC+09:00)", () => {
+      clock = sinon.useFakeTimers(new Date("2025-01-01T00:00:00Z").getTime());
+      const res = computeTimeOffsetBasedOnInput(makeMsg("09:00"));
+      expect(res).to.equal("UTC+09:00");
+    });
+
+    it("does not wrap at exactly 12h difference (now=12:00Z, input=00:00 -> -720 => UTC-12:00)", () => {
+      clock = sinon.useFakeTimers(new Date("2025-01-01T12:00:00Z").getTime());
+      const res = computeTimeOffsetBasedOnInput(makeMsg("00:00"));
+      expect(res).to.equal("UTC-12:00");
+    });
+
+    it("rounds 14 minutes down to 0 (now=12:00Z, input=12:14 -> UTC+00:00)", () => {
+      clock = sinon.useFakeTimers(new Date("2025-01-01T12:00:00Z").getTime());
+      const res = computeTimeOffsetBasedOnInput(makeMsg("12:14"));
+      expect(res).to.equal("UTC+00:00");
+    });
+
+    it("rounds 15 minutes up to +30 (now=12:00Z, input=12:15 -> UTC+00:30)", () => {
+      clock = sinon.useFakeTimers(new Date("2025-01-01T12:00:00Z").getTime());
+      const res = computeTimeOffsetBasedOnInput(makeMsg("12:15"));
+      expect(res).to.equal("UTC+00:30");
+    });
+
+    it("works correctly around midnight (now=23:50Z, input=00:05 -> +15 -> UTC+00:30)", () => {
+      clock = sinon.useFakeTimers(new Date("2025-01-01T23:50:00Z").getTime());
+      const res = computeTimeOffsetBasedOnInput(makeMsg("00:05"));
+      expect(res).to.equal("UTC+00:30");
     });
   });
 });
