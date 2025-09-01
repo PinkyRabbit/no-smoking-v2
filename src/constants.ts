@@ -28,6 +28,14 @@ export enum HourFormat {
   H12 = "h:mm a",
 }
 
+export enum TimeShifting {
+  Plus_1H = "1_h_plus",
+  Minus_1H = "1_h_minus",
+  Plus_30Min = "30_min_plus",
+  Minus_30Min = "30_min_minus",
+  Confirmed = "confirmed",
+}
+
 /**
  * Constant to define all the available content keys
  * @note Define content keys here before using it in the code

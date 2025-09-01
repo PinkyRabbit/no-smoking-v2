@@ -3,7 +3,7 @@ import TgBot from "../telegram-bot";
 import logger from "../logger";
 import { BotEvent } from "./keys";
 import { Actions } from "./actions";
-import { Difficulty, Lang, BTN, HourFormat } from "../constants";
+import { Difficulty, Lang, BTN, HourFormat, TimeShifting } from "../constants";
 
 export const botActionsInit = (bot: TgBot) => {
   const act = new Actions(bot);
@@ -12,7 +12,7 @@ export const botActionsInit = (bot: TgBot) => {
   bot.onText(BotEvent.Stats, act.onStats);
   bot.onText(BotEvent.SelectLanguage, act.onLang);
   bot.onText(BotEvent.SelectLevel, act.onLevel);
-  bot.onText(BotEvent.SelectLocalTime, act.onLocalTime);
+  bot.onText(BotEvent.SelectLocalTime, act.localTimeDialogCall);
   bot.onText(BotEvent.Dev, act.onDev);
   bot.onText(BotEvent.How, act.onHow);
   bot.on(BotEvent.Callback, (callbackQuery: CallbackQuery) => {
@@ -76,6 +76,21 @@ export const botActionsInit = (bot: TgBot) => {
         break;
       case BTN.Timezone_Incorrect:
         act.onTimezone(message);
+        break;
+      case BTN.Local_Time_Minus_1:
+        act.makeATimeShift(message, TimeShifting.Minus_1H);
+        break;
+      case BTN.Local_Time_Plus_1:
+        act.makeATimeShift(message, TimeShifting.Plus_1H);
+        break;
+      case BTN.Local_Time_Minus_30:
+        act.makeATimeShift(message, TimeShifting.Minus_30Min);
+        break;
+      case BTN.Local_Time_Plus_30:
+        act.makeATimeShift(message, TimeShifting.Plus_30Min);
+        break;
+      case BTN.Local_Time_Confirmed:
+        act.makeATimeShift(message, TimeShifting.Confirmed);
         break;
       case BTN.Dev_Delete_User:
         act.devOnDel(message);
