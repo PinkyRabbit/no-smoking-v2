@@ -18,6 +18,11 @@ export const buttonsRu: ButtonNames  = {
   [BTN.Timezone_Correct_H12]: "PLACEHOLDER", // @see {import('@/commands/settings').Settings#onMessage}
   [BTN.Timezone_Correct_H24]: "PLACEHOLDER", // @see {import('@/commands/settings').Settings#onMessage}
   [BTN.Timezone_Incorrect]: "Неверно 🔄",
+  [BTN.Local_Time_Plus_1]: "+ 1 час",
+  [BTN.Local_Time_Minus_1]: "- 1 час",
+  [BTN.Local_Time_Plus_30]: "+ 30 минут",
+  [BTN.Local_Time_Minus_30]: "- 30 минут",
+  [BTN.Local_Time_Confirmed]: "Время установлено верно 👍",
   [BTN.Recommendations]: "Советы, как бросить курить",
   [BTN.Lang_RU]: "RU 🇷🇺",
   [BTN.Lang_EN]: "EN 🇬🇧",

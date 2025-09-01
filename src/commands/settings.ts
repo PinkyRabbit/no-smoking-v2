@@ -96,7 +96,7 @@ export class Settings {
   @transformMsg
   @onlyForKnownUsers
   public async onLocalTime(msg: TelegramBot.Message) {
-    await this._res(msg.user, Content.LOCAL_TIME, { local_time: "13:21" });
+    await this._res(msg.user, Content.LOCAL_TIME, { local_time: "13:21" }, DialogKey.local_time);
   }
 
   @transformMsg

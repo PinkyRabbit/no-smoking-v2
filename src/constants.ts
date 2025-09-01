@@ -123,6 +123,7 @@ export enum DialogKey {
   difficulty_easy = "difficulty_easy",
   ignore = "ignore",
   max_time = "max_time",
+  local_time = "local_time",
 }
 
 /**
@@ -161,6 +162,11 @@ export enum BTN {
   Timezone_Incorrect = "timezone_incorrect",
   Timezone_Correct_H12 = "timezone_correct_h12",
   Timezone_Correct_H24 = "timezone_correct_h24",
+  Local_Time_Plus_1 = "local_time_plus_1",
+  Local_Time_Plus_30 = "local_time_plus_30",
+  Local_Time_Minus_1 = "local_time_minus_1",
+  Local_Time_Minus_30 = "local_time_minus_30",
+  Local_Time_Confirmed = "local_time_confirmed",
   Dev_Delete_User = "dev_delete_user",
   Dev_To_Stage_1 = "dev_to_stage_1",
   Dev_Fill_Stage_1 = "dev_fill_stage_1",
