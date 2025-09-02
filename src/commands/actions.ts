@@ -2,7 +2,7 @@ import TelegramBot from "node-telegram-bot-api";
 import TgBot from "../telegram-bot";
 import { join as pathJoin } from "path";
 import { Mixin } from "ts-mixer";
-import { ContentProps, getButtons, getContent } from "../content";
+import { ContentProps, getContent } from "../content";
 import { Content, DialogKey, Difficulty, HourFormat, Motivizer, YouCan } from "../constants";
 import { DevActions } from "./development";
 import { Settings } from "./settings";
@@ -298,13 +298,11 @@ export class Actions extends Mixin(DevActions, Settings) {
       content.push(getContent(msg.user.lang, Content.ON_IDLE_STATS_2, {
         prev_delta: minsToTimeString(msg.user.deltaTime, msg.user.lang),
         new_delta: minsToTimeString(newDelta, msg.user.lang),
-        time_to_get_smoke: mssToTime(update.nextTime, msg.user),
         penalty: msg.user.penalty,
         penalty_mins: penaltyMinutesString(msg.user),
         step: minsToTimeString(step, msg.user.lang),
       }));
-      const { reply_markup } = getButtons(msg.user.lang, DialogKey.im_smoking);
-      const ops: TelegramBot.SendMessageOptions = { parse_mode: "MarkdownV2", reply_markup };
+      const ops: TelegramBot.SendMessageOptions = { parse_mode: "MarkdownV2" };
       await this.bot.sendMessage(msg.user.chatId, content.join(""), ops);
 
       // hint three days penalty
@@ -333,6 +331,9 @@ export class Actions extends Mixin(DevActions, Settings) {
       // display hint if limit is reached
       if (isMaxTimeLimitReached) {
         await this._res(msg.user, Content.MAXIMUM_REACHED, {}, DialogKey.max_time);
+      } else {
+        const local_time = mssToTime(msg.ts, msg.user);
+        await this._res(msg.user, Content.ON_IDLE_TIME_CONFIRMATION, { local_time }, DialogKey.confirm_local_time);
       }
     }
     // normal stage 2

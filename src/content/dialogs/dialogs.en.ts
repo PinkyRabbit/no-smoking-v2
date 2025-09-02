@@ -1,6 +1,6 @@
 import { Content } from "../../constants";
 import { MultilineContent } from "../types";
-import { B, I, N2, ND, NDv2, NL } from "./constants";
+import { B, I, N2, ND, NL } from "./constants";
 
 const donate_link = process.env.DONATE_LINK;
 
@@ -169,8 +169,7 @@ export const dialogsEn: MultilineContent = {
     Previous interval: {{prev_delta}}${NL}
     \\- Penalty points: {{penalty}} \\[{{penalty_mins}}\\]${NL} 
     \\+ Step {{step}}${NL}
-    \\= Adjusted interval ${I}{{new_delta}}${I}${NDv2}
-    The next recommended smoke break will be after {{time_to_get_smoke}} ⏰️
+    \\= Adjusted interval ${I}{{new_delta}}${I}
   `,
   [Content.WINSTRIKE]: `
     ⚡️ You've been going strong for {{winstrike}}! Well done!

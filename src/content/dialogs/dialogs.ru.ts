@@ -1,6 +1,6 @@
 import { Content } from "../../constants";
 import { MultilineContent } from "../types";
-import { NL, N2, ND, B, I, NDv2 } from "./constants";
+import { NL, N2, ND, B, I } from "./constants";
 
 const donate_link = process.env.DONATE_LINK;
 
@@ -174,8 +174,7 @@ export const dialogsRu: MultilineContent = {
     прошлое время {{prev_delta}}${NL}
     \\- штрафные баллы {{penalty}} \\[{{penalty_mins}}\\]${NL}
     \\+ шаг {{step}}${NL}
-    \\= в итоге ${I}{{new_delta}}${I}${NDv2}
-    Следующий перекур будет после {{time_to_get_smoke}} ⏰️ 
+    \\= в итоге ${I}{{new_delta}}${I}
   `,
   [Content.WINSTRIKE]: `
     ⚡️ Вы держитесь уже {{winstrike}}! Отлично! 
