@@ -15,9 +15,6 @@ export const buttonsEn: ButtonNames = {
   [BTN.Ignore_Failed]: "I’ll keep smoking 👎",
   [BTN.Ignore_Busy]: "Let’s continue ▶️",
   [BTN.Ignore_Penalty_10]: "Make 10 penalty 🚀",
-  [BTN.Timezone_Correct_H12]: "PLACEHOLDER", // @see {import('@/commands/settings').Settings#onMessage}
-  [BTN.Timezone_Correct_H24]: "PLACEHOLDER", // @see {import('@/commands/settings').Settings#onMessage}
-  [BTN.Timezone_Incorrect]: "Incorrect 🔄",
   [BTN.Local_Time_Plus_1]: "+ 1 hour",
   [BTN.Local_Time_Minus_1]: "- 1 hour",
   [BTN.Local_Time_Plus_30]: "+ 30 minutes",

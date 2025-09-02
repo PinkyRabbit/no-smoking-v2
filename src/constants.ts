@@ -33,7 +33,6 @@ export enum TimeShifting {
   Minus_1H = "1_h_minus",
   Plus_30Min = "30_min_plus",
   Minus_30Min = "30_min_minus",
-  Confirmed = "confirmed",
 }
 
 /**
@@ -169,9 +168,6 @@ export enum BTN {
   Ignore_Failed = "ignore_failed",
   Ignore_Busy = "ignore_busy",
   Ignore_Penalty_10 = "ignore_penalty_10",
-  Timezone_Incorrect = "timezone_incorrect",
-  Timezone_Correct_H12 = "timezone_correct_h12",
-  Timezone_Correct_H24 = "timezone_correct_h24",
   Local_Time_Plus_1 = "local_time_plus_1",
   Local_Time_Plus_30 = "local_time_plus_30",
   Local_Time_Minus_1 = "local_time_minus_1",

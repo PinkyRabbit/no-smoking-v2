@@ -104,11 +104,6 @@ export class Settings {
   @onlyForKnownUsers
   public async makeATimeShift(msg: TelegramBot.Message, timeShift: TimeShifting) {
     try {
-
-      if (timeShift === TimeShifting.Confirmed) {
-      // TODO: confirm dialog
-        return;
-      }
       const shift = {
         [TimeShifting.Plus_1H]: 10,
         [TimeShifting.Minus_1H]: -10,
@@ -135,6 +130,20 @@ export class Settings {
   }
 
   @transformMsg
+  @onlyForKnownUsers
+  public async localTimeConfirmation(msg: TelegramBot.Message) {
+    if (msg.user.difficulty) {
+      return this.onSettingsDone(msg);
+    }
+    await UsersRepo.updateUser(msg, { difficulty: Difficulty.EASY });
+    await this._res(msg.user, Content.DIFFICULTY_AUTO);
+    const oneMinute = 60 * 1000;
+    setTimeout(() => {
+      this.onSettingsDone(msg);
+    }, oneMinute);
+  }
+
+  @transformMsg
   public async onMessage(msg: TelegramBot.Message) {
     // not for new users
     if (!msg.user) {
@@ -156,38 +165,11 @@ export class Settings {
       await UsersRepo.updateUser(msg, { timezone });
       const local_time = DateTime.utc().setZone(timezone).toFormat(HourFormat.H24);
       await this._res(msg.user, Content.LOCAL_TIME, { local_time }, DialogKey.local_time);
-
-      // const dateTime = DateTime.fromMillis(Date.now(), { zone });
-      // const time_h12 = dateTime.toFormat(HourFormat.H12);
-      // const time_h24 = dateTime.toFormat(HourFormat.H24);
-      // const dialogKeys: InlineKeyboard = [
-      //   [buttonFor(BTN.Timezone_Incorrect, msg.user.lang)],
-      //   [
-      //     { text: time_h12, callback_data: BTN.Timezone_Correct_H12 },
-      //     { text: time_h24, callback_data: BTN.Timezone_Correct_H24 },
-      //   ],
-      // ];
-      // await this._res(msg.user, Content.TIMEZONE_SELECTED, { timezone: msg.text, local_time: time_h24 }, dialogKeys);
     } catch (error) {
       logger.debug("Save timezone error", error);
       await this._res(msg.user, Content.TIMEZONE_INVALID);
       return Promise.resolve();
     }
-  }
-
-  @transformMsg
-  @onlyForKnownUsers
-  public async timezoneCorrect(msg: TelegramBot.Message, hourFormat: HourFormat) {
-    if (msg.user.difficulty) {
-      await UsersRepo.updateUser(msg, { hourFormat });
-      return this.onSettingsDone(msg);
-    }
-    await UsersRepo.updateUser(msg, { hourFormat, difficulty: Difficulty.EASY });
-    await this._res(msg.user, Content.DIFFICULTY_AUTO);
-    const oneMinute = 60 * 1000;
-    setTimeout(() => {
-      this.onSettingsDone(msg);
-    }, oneMinute);
   }
 
   /**
