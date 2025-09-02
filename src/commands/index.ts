@@ -3,7 +3,7 @@ import TgBot from "../telegram-bot";
 import logger from "../logger";
 import { BotEvent } from "./keys";
 import { Actions } from "./actions";
-import { Difficulty, Lang, BTN, HourFormat, TimeShifting } from "../constants";
+import { BTN, Difficulty, HourFormat, Lang, TimeShifting } from "../constants";
 
 export const botActionsInit = (bot: TgBot) => {
   const act = new Actions(bot);
@@ -88,6 +88,12 @@ export const botActionsInit = (bot: TgBot) => {
         break;
       case BTN.Local_Time_Plus_30:
         act.makeATimeShift(message, TimeShifting.Plus_30Min);
+        break;
+      case BTN.Local_Time_24h:
+        act.editATimeFormat(message, HourFormat.H24);
+        break;
+      case BTN.Local_Time_AmPm:
+        act.editATimeFormat(message, HourFormat.H12);
         break;
       case BTN.Local_Time_Confirmed:
         act.makeATimeShift(message, TimeShifting.Confirmed);

@@ -174,6 +174,7 @@ const selectButtonsByKey = (key: DialogKey, locale: Lang): InlineKeyboard => {
     return [
       [buttonFor(BTN.Local_Time_Minus_1, locale), buttonFor(BTN.Local_Time_Plus_1, locale)],
       [buttonFor(BTN.Local_Time_Minus_30, locale), buttonFor(BTN.Local_Time_Plus_30, locale)],
+      [buttonFor(BTN.Local_Time_AmPm, locale), buttonFor(BTN.Local_Time_24h, locale)],
       [buttonFor(BTN.Local_Time_Confirmed, locale)],
     ];
   }

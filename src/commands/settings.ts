@@ -128,6 +128,13 @@ export class Settings {
   }
 
   @transformMsg
+  @onlyForKnownUsers
+  public async editATimeFormat(msg: TelegramBot.Message, hourFormat: HourFormat) {
+    await UsersRepo.updateUser(msg, { hourFormat });
+    await this.localTimeDialog(msg.ts, { ...msg.user, hourFormat });
+  }
+
+  @transformMsg
   public async onMessage(msg: TelegramBot.Message) {
     // not for new users
     if (!msg.user) {

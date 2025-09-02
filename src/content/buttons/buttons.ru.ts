@@ -22,6 +22,8 @@ export const buttonsRu: ButtonNames  = {
   [BTN.Local_Time_Minus_1]: "- 1 час",
   [BTN.Local_Time_Plus_30]: "+ 30 минут",
   [BTN.Local_Time_Minus_30]: "- 30 минут",
+  [BTN.Local_Time_AmPm]: "AM/PM формат",
+  [BTN.Local_Time_24h]: "24h формат",
   [BTN.Local_Time_Confirmed]: "Время установлено верно 👍",
   [BTN.Recommendations]: "Советы, как бросить курить",
   [BTN.Lang_RU]: "RU 🇷🇺",
