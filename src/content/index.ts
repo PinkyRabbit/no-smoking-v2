@@ -170,6 +170,19 @@ const selectButtonsByKey = (key: DialogKey, locale: Lang): InlineKeyboard => {
   if (key === DialogKey.difficulty_easy) {
     return [[buttonFor(BTN.Level_Easy, locale)]];
   }
+  if (key === DialogKey.local_time) {
+    return [
+      [buttonFor(BTN.Local_Time_Minus_1, locale), buttonFor(BTN.Local_Time_Plus_1, locale)],
+      [buttonFor(BTN.Local_Time_Minus_30, locale), buttonFor(BTN.Local_Time_Plus_30, locale)],
+      [buttonFor(BTN.Local_Time_AmPm, locale), buttonFor(BTN.Local_Time_24h, locale)],
+      [buttonFor(BTN.Local_Time_Confirmed, locale)],
+    ];
+  }
+  if (key === DialogKey.confirm_local_time) {
+    return [
+      [buttonFor(BTN.Local_Time_Wrong, locale), buttonFor(BTN.Local_Time_Correct, locale)],
+    ];
+  }
   return [];
 };
 

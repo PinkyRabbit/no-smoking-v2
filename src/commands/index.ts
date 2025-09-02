@@ -3,7 +3,7 @@ import TgBot from "../telegram-bot";
 import logger from "../logger";
 import { BotEvent } from "./keys";
 import { Actions } from "./actions";
-import { Difficulty, Lang, BTN, HourFormat } from "../constants";
+import { BTN, Difficulty, HourFormat, Lang, TimeShifting } from "../constants";
 
 export const botActionsInit = (bot: TgBot) => {
   const act = new Actions(bot);
@@ -12,7 +12,7 @@ export const botActionsInit = (bot: TgBot) => {
   bot.onText(BotEvent.Stats, act.onStats);
   bot.onText(BotEvent.SelectLanguage, act.onLang);
   bot.onText(BotEvent.SelectLevel, act.onLevel);
-  bot.onText(BotEvent.SelectTimezone, act.onTimezone);
+  bot.onText(BotEvent.SelectLocalTime, act.localTimeDialogCall);
   bot.onText(BotEvent.Dev, act.onDev);
   bot.onText(BotEvent.How, act.onHow);
   bot.on(BotEvent.Callback, (callbackQuery: CallbackQuery) => {
@@ -68,14 +68,32 @@ export const botActionsInit = (bot: TgBot) => {
       case BTN.Recommendations:
         act.ignoreSuccess(message);
         break;
-      case BTN.Timezone_Correct_H12:
-        act.timezoneCorrect(message, HourFormat.H12);
+      case BTN.Local_Time_Wrong:
+        act.localTimeDialogCall(message);
         break;
-      case BTN.Timezone_Correct_H24:
-        act.timezoneCorrect(message, HourFormat.H24);
+      case BTN.Local_Time_Minus_1:
+        act.makeATimeShift(message, TimeShifting.Minus_1H);
         break;
-      case BTN.Timezone_Incorrect:
-        act.onTimezone(message);
+      case BTN.Local_Time_Plus_1:
+        act.makeATimeShift(message, TimeShifting.Plus_1H);
+        break;
+      case BTN.Local_Time_Minus_30:
+        act.makeATimeShift(message, TimeShifting.Minus_30Min);
+        break;
+      case BTN.Local_Time_Plus_30:
+        act.makeATimeShift(message, TimeShifting.Plus_30Min);
+        break;
+      case BTN.Local_Time_24h:
+        act.editATimeFormat(message, HourFormat.H24);
+        break;
+      case BTN.Local_Time_AmPm:
+        act.editATimeFormat(message, HourFormat.H12);
+        break;
+      case BTN.Local_Time_Confirmed:
+        act.localTimeConfirmation(message);
+        break;
+      case BTN.Local_Time_Correct:
+        act.localTimeConfirmation(message, true);
         break;
       case BTN.Dev_Delete_User:
         act.devOnDel(message);

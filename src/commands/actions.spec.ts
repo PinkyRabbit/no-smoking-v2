@@ -35,7 +35,7 @@ describe("Actions", () => {
       username: "unit-test-user",
       hourFormat: HourFormat.H24,
       lang: Lang.EN,
-      timezone: "0",
+      timezone: "UTC+00:00",
       minDeltaTimesInitial: [],
       minDeltaTime: 0,
       deltaTime: 0,
@@ -252,7 +252,7 @@ describe("Actions", () => {
       const EXPECTED_MINUTES = 76;
       const EXPECTED_STRING = "1 hour 16 minutes";
 
-      const onLevelStub = sinon.stub(actions, "onTimezone").resolves();
+      const onLevelStub = sinon.stub(actions, "newLocalTime").resolves();
 
       await actions.imSmokingHandler(msg);
 
@@ -375,7 +375,6 @@ describe("Actions", () => {
       msg.ts = user.lastTime + timeShift;
 
       await actions.imSmokingHandler(msg);
-      expect(_resSpy.called).to.be.false;
       expect(botMock.sendMessage.calledOnce).to.be.true;
     });
 

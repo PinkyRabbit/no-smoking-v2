@@ -1,11 +1,12 @@
 import { Content } from "../../constants";
 import { MultilineContent } from "../types";
-import { B, I, N2, ND, NDv2, NL } from "./constants";
+import { B, I, N2, ND, NL } from "./constants";
 
 const donate_link = process.env.DONATE_LINK;
 
 export const dialogsEn: MultilineContent = {
   [Content.MESSAGE]: "Received your message",
+  [Content.ERROR]: "🍄 Something goes wrong. {{error}}",
   [Content.USER_UNKNOWN]: `
     🤖 ${B}Functionality is available only for authorized users${B}${ND}
     Please log in by clicking the button below.
@@ -123,6 +124,9 @@ export const dialogsEn: MultilineContent = {
     Time logged ✅️${ND}
     The next recommended time to smoke is after {{time_to_get_smoke}} ⏰️
   `,
+  [Content.STAGE_2_ON_CONFIRM]: `
+    The next recommended time to smoke is after {{time_to_get_smoke}} ⏰️
+  `,
   [Content.STAGE_2_SUCCESS]: `
     Time logged. Well done 👍${ND}
     The next recommended time to smoke is after {{time_to_get_smoke}} ⏰️
@@ -157,17 +161,15 @@ export const dialogsEn: MultilineContent = {
     Please, keep going!${ND}
     Your next recommended smoke break will be after {{time_to_get_smoke}} ⏰️ 
   `,
-  [Content.ON_IDLE_START]: `
-    💤💤💤 ${B}Long Break${B}${N2}
-    Yesterday, you smoked ${B}{{cigarettes}}${B} times${NL}
-  `,
-  [Content.ON_IDLE_END]: `
+  [Content.ON_IDLE_START]: `💤💤💤 ${B}Long Break${B}${N2}`,
+  [Content.ON_IDLE_TIME_CONFIRMATION]: `⏰️ Let's sync our watches. Is it ${B}{{local_time}}${B} for you?`,
+  [Content.ON_IDLE_STATS_1]: `Yesterday, you smoked ${B}{{cigarettes}}${B} times${NL}`,
+  [Content.ON_IDLE_STATS_2]: `
     The interval between your smoke smoke breaks has been recalculated:${NL}
     Previous interval: {{prev_delta}}${NL}
     \\- Penalty points: {{penalty}} \\[{{penalty_mins}}\\]${NL} 
     \\+ Step {{step}}${NL}
-    \\= Adjusted interval ${I}{{new_delta}}${I}${NDv2}
-    The next recommended smoke break will be after {{time_to_get_smoke}} ⏰️
+    \\= Adjusted interval ${I}{{new_delta}}${I}
   `,
   [Content.WINSTRIKE]: `
     ⚡️ You've been going strong for {{winstrike}}! Well done!
@@ -254,6 +256,17 @@ export const dialogsEn: MultilineContent = {
     💢 ${B}Error: Invalid Time Zone${B}${N2}
     A correct example of a time zone is: GMT+2${NL}
     Please try again.
+  `,
+  [Content.LOCAL_TIME_NEW]: `
+    🌐 ${B}Timezone Setup${B}${N2}
+    Please check the time on your phone or computer
+    and enter it in 24h format.${N2}
+    Examples:${NL}
+    {{time_sample}}, 19:00, 01:14
+  `,
+  [Content.LOCAL_TIME]: `
+    👉 Your current time should be ${B}{{local_time}}${B} ⏳${N2}  
+    Please confirm or adjust it using the buttons.
   `,
   [Content.SETTINGS]: `
     ${B}Stage 2. Configuration.${B}${NL}

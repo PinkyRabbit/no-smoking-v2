@@ -28,6 +28,13 @@ export enum HourFormat {
   H12 = "h:mm a",
 }
 
+export enum TimeShifting {
+  Plus_1H = "1_h_plus",
+  Minus_1H = "1_h_minus",
+  Plus_30Min = "30_min_plus",
+  Minus_30Min = "30_min_minus",
+}
+
 /**
  * Constant to define all the available content keys
  * @note Define content keys here before using it in the code
@@ -35,6 +42,7 @@ export enum HourFormat {
  */
 export enum Content {
   MESSAGE = "MESSAGE",
+  ERROR = "ERROR",
   USER_UNKNOWN = "User_Unknown",
   START_NEW = "Start_New_User",
   START_EXISTING = "Start_Existing_User",
@@ -53,6 +61,7 @@ export enum Content {
   STAGE_1_END = "Stage_1_End",
   STAGE_2_INITIAL = "Stage_2_Initial",
   STAGE_2 = "Stage_2",
+  STAGE_2_ON_CONFIRM = "Stage_2_On_Confirm",
   STAGE_2_SUCCESS = "Stage_2_Success",
   STAGE_2_IGNORE_MIN = "Stage_2_Ignore_Min",
   STAGE_2_PROPS_MISSING = "Stage_2_Props_Missing",
@@ -61,7 +70,9 @@ export enum Content {
   IDLE_NO_CIGARETTES = "Idle_No_Cigarettes",
   TIME_FOR_A_SMOKE = "Time_For_a_Smoke",
   ON_IDLE_START = "On_Idle_Start",
-  ON_IDLE_END = "On_Idle_End",
+  ON_IDLE_TIME_CONFIRMATION = "On_Idle_Time_Confirmation",
+  ON_IDLE_STATS_1 = "On_Idle_Stats_1",
+  ON_IDLE_STATS_2 = "On_Idle_Stats_2",
   WINSTRIKE = "winstrike",
   WINSTRIKE_BASE = "winstrike_base",
   WINSTRIKE_BASE_FAILED = "winstrike_base_failed",
@@ -76,6 +87,8 @@ export enum Content {
   TIMEZONE_INTRO = "timezone_select",
   TIMEZONE_SELECTED = "timezone_selected",
   TIMEZONE_INVALID = "timezone_invalid",
+  LOCAL_TIME_NEW = "local_time_new",
+  LOCAL_TIME = "local_time",
   SETTINGS = "setting",
   SETTINGS_DONE = "setting_done",
   SETTINGS_UPDATED = "settings_updated",
@@ -120,6 +133,8 @@ export enum DialogKey {
   difficulty_easy = "difficulty_easy",
   ignore = "ignore",
   max_time = "max_time",
+  local_time = "local_time",
+  confirm_local_time = "local_time_confirmation",
 }
 
 /**
@@ -155,9 +170,15 @@ export enum BTN {
   Ignore_Failed = "ignore_failed",
   Ignore_Busy = "ignore_busy",
   Ignore_Penalty_10 = "ignore_penalty_10",
-  Timezone_Incorrect = "timezone_incorrect",
-  Timezone_Correct_H12 = "timezone_correct_h12",
-  Timezone_Correct_H24 = "timezone_correct_h24",
+  Local_Time_Correct = "local_time_correct",
+  Local_Time_Wrong = "local_time_wrong",
+  Local_Time_Plus_1 = "local_time_plus_1",
+  Local_Time_Plus_30 = "local_time_plus_30",
+  Local_Time_Minus_1 = "local_time_minus_1",
+  Local_Time_Minus_30 = "local_time_minus_30",
+  Local_Time_24h = "local_time_24h",
+  Local_Time_AmPm = "local_time_ampm",
+  Local_Time_Confirmed = "local_time_confirmed",
   Dev_Delete_User = "dev_delete_user",
   Dev_To_Stage_1 = "dev_to_stage_1",
   Dev_Fill_Stage_1 = "dev_fill_stage_1",

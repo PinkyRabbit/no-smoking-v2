@@ -4,7 +4,7 @@ import logger from "../../logger";
 import { RequestOptions } from "../dbOptionsConstructor";
 import { Difficulty, HourFormat, Lang } from "../../constants";
 import { logWithTimestamps } from "../../lib_helpers/logger";
-import { dateNow, gmtToUtc, isValidTimeZoneCheck, tsToDateTime } from "../../lib_helpers/luxon";
+import { dateNow, tsToDateTime } from "../../lib_helpers/luxon";
 import { tgLangCodeToLang } from "../../lib_helpers/i18n";
 
 export type User = {
@@ -224,18 +224,6 @@ export class UsersRepo extends RequestOptions {
       // @ts-expect-error
       msg.user[key] = value;
     });
-  }
-
-  static async setTimezone(msg: Message, timezone: string) { const isValidTimezone = isValidTimeZoneCheck(timezone);
-    if (isValidTimezone) {
-      const update: Partial<User> = { timezone };
-      await UsersRepo.updateUser(msg, update);
-      return timezone;
-    }
-    const gmtFormatValue = gmtToUtc(timezone);
-    const update: Partial<User> = { timezone: gmtFormatValue };
-    await UsersRepo.updateUser(msg, update);
-    return gmtFormatValue;
   }
 
   static removeUser(chatId: number) {

@@ -150,8 +150,8 @@ export class DevActions {
     if (!to) {
       const step = stepByDifficulty(msg.user.difficulty);
       const allContent = getContent(msg.user.lang, Motivizer) as unknown as string[];
-      const messageStart = getContent(msg.user.lang, Content.ON_IDLE_START, { cigarettes: 7 });
-      const messageEnd = getContent(msg.user.lang, Content.ON_IDLE_END, {
+      const messageStart = getContent(msg.user.lang, Content.ON_IDLE_STATS_1, { cigarettes: 7 });
+      const messageEnd = getContent(msg.user.lang, Content.ON_IDLE_STATS_2, {
         prev_delta: minsToTimeString(71, msg.user.lang),
         new_delta: minsToTimeString(72, msg.user.lang),
         time_to_get_smoke: mssToTime(1704120600000, msg.user),

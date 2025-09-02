@@ -2,7 +2,7 @@ import TelegramBot from "node-telegram-bot-api";
 import TgBot from "../telegram-bot";
 import { join as pathJoin } from "path";
 import { Mixin } from "ts-mixer";
-import { ContentProps, getButtons, getContent } from "../content";
+import { ContentProps, getContent } from "../content";
 import { Content, DialogKey, Difficulty, HourFormat, Motivizer, YouCan } from "../constants";
 import { DevActions } from "./development";
 import { Settings } from "./settings";
@@ -31,7 +31,7 @@ export class Actions extends Mixin(DevActions, Settings) {
     this.onStart = this.onStart.bind(this);
     this.onLevel = this.onLevel.bind(this);
     this.onLang = this.onLang.bind(this);
-    this.onTimezone = this.onTimezone.bind(this);
+    this.localTimeDialogCall = this.localTimeDialogCall.bind(this);
     this.onStats = this.onStats.bind(this);
     this.onMessage = this.onMessage.bind(this);
     this.onUserUnknown = this.onUserUnknown.bind(this);
@@ -58,7 +58,7 @@ export class Actions extends Mixin(DevActions, Settings) {
     });
   }
 
-  protected override _resV2( chatId: number, content: string  ): Promise<void> {
+  protected override _resV2(chatId: number, content: string): Promise<void> {
     return new Promise((resolve) => {
       setTimeout(async () => {
         const ops: TelegramBot.SendMessageOptions = { parse_mode: "MarkdownV2" };
@@ -72,15 +72,12 @@ export class Actions extends Mixin(DevActions, Settings) {
    * Method to send an image
    * @protected
    */
-  protected override _image(
-    user: User,
-    fileName: string,
-    caption: string
-  ): Promise<void> {
+  protected override _image(user: User, fileName: string, caption: string): Promise<void> {
     const path = pathJoin(__dirname, `../../images/${fileName}`);
     return new Promise((resolve) => {
       setTimeout(() => {
-        this.bot.sendPhoto(user.chatId, path, { caption })
+        this.bot
+          .sendPhoto(user.chatId, path, { caption })
           .catch((error) => {
             logger.error(`U-${user.chatId} -> Can't send an image ${path}`, { error });
           })
@@ -92,7 +89,15 @@ export class Actions extends Mixin(DevActions, Settings) {
   /**
    * Helper to calculate new delta time
    */
-  public _computeNewDelta = ({ deltaTime, difficulty, penalty, minDeltaTime }: Pick<User, "deltaTime" | "difficulty" | "penalty" | "minDeltaTime">, isTenMinPenalty?: boolean) => {
+  public _computeNewDelta = (
+    {
+      deltaTime,
+      difficulty,
+      penalty,
+      minDeltaTime,
+    }: Pick<User, "deltaTime" | "difficulty" | "penalty" | "minDeltaTime">,
+    isTenMinPenalty?: boolean,
+  ) => {
     if (isTenMinPenalty) {
       const newDeltaTime = deltaTime - 10;
       return newDeltaTime >= minDeltaTime ? newDeltaTime : minDeltaTime;
@@ -100,7 +105,7 @@ export class Actions extends Mixin(DevActions, Settings) {
     const deltaTimeInt = deltaTime * 10;
     const stepInt = stepByDifficulty(difficulty) * 10;
     const penaltyInt = penaltyByDifficulty(difficulty, penalty) * 10;
-    const newDelta = (deltaTimeInt  + stepInt - penaltyInt) / 10;
+    const newDelta = (deltaTimeInt + stepInt - penaltyInt) / 10;
     return newDelta >= minDeltaTime ? newDelta : minDeltaTime;
   };
 
@@ -162,7 +167,7 @@ export class Actions extends Mixin(DevActions, Settings) {
   @onlyForKnownUsers
   public async toStage1(msg: TelegramBot.Message) {
     await this._res(msg.user, Content.STAGE_1, {}, DialogKey.im_smoking);
-  };
+  }
 
   /**
    * Stage 1
@@ -195,7 +200,7 @@ export class Actions extends Mixin(DevActions, Settings) {
     if (deltaTime > STAGE_1_MAX) {
       logger.debug(`deltaTime > STAGE_1_MAX ${deltaTime} > ${STAGE_1_MAX}`);
       isValidDeltaTime = false;
-      const contentProps = { max_stage_1: STAGE_1_MAX, stage_1_left: deltaTimesLeft  };
+      const contentProps = { max_stage_1: STAGE_1_MAX, stage_1_left: deltaTimesLeft };
       await this._res(msg.user, Content.STAGE_1_IGNORE_MAX, contentProps, DialogKey.im_smoking);
     }
     // add time if timestamp is valid
@@ -229,7 +234,7 @@ export class Actions extends Mixin(DevActions, Settings) {
     await this._res(msg.user, Content.STAGE_1_END, contentProps);
     await this._res(msg.user, Content.SETTINGS);
     await UsersRepo.updateUser(msg, update);
-    return this.onTimezone(msg);
+    return this.newLocalTime(msg);
   }
 
   /**
@@ -283,23 +288,21 @@ export class Actions extends Mixin(DevActions, Settings) {
 
       const content: string[] = [];
       const cigarettes = cigarettesText(msg);
-      content.push(getContent(msg.user.lang, Content.ON_IDLE_START, { cigarettes }));
+      content.push(getContent(msg.user.lang, Content.ON_IDLE_STATS_1, { cigarettes }));
 
       const motivizer = getContent(msg.user.lang, Motivizer);
       content.push(motivizer[msg.user.motivizerIndex]);
       const motivizerNext = msg.user.motivizerIndex + 1;
       update.motivizerIndex = motivizerNext !== motivizer.length ? motivizerNext : 0;
       const step = stepByDifficulty(msg.user.difficulty);
-      content.push(getContent(msg.user.lang, Content.ON_IDLE_END, {
+      content.push(getContent(msg.user.lang, Content.ON_IDLE_STATS_2, {
         prev_delta: minsToTimeString(msg.user.deltaTime, msg.user.lang),
         new_delta: minsToTimeString(newDelta, msg.user.lang),
-        time_to_get_smoke: mssToTime(update.nextTime, msg.user),
         penalty: msg.user.penalty,
         penalty_mins: penaltyMinutesString(msg.user),
         step: minsToTimeString(step, msg.user.lang),
       }));
-      const { reply_markup } = getButtons(msg.user.lang, DialogKey.im_smoking);
-      const ops: TelegramBot.SendMessageOptions = { parse_mode: "MarkdownV2", reply_markup };
+      const ops: TelegramBot.SendMessageOptions = { parse_mode: "MarkdownV2" };
       await this.bot.sendMessage(msg.user.chatId, content.join(""), ops);
 
       // hint three days penalty
@@ -328,6 +331,9 @@ export class Actions extends Mixin(DevActions, Settings) {
       // display hint if limit is reached
       if (isMaxTimeLimitReached) {
         await this._res(msg.user, Content.MAXIMUM_REACHED, {}, DialogKey.max_time);
+      } else {
+        const local_time = mssToTime(msg.ts, msg.user);
+        await this._res(msg.user, Content.ON_IDLE_TIME_CONFIRMATION, { local_time }, DialogKey.confirm_local_time);
       }
     }
     // normal stage 2
@@ -370,7 +376,7 @@ export class Actions extends Mixin(DevActions, Settings) {
       winstrike: 0,
     });
     const contentProps = { delta_time: minsToTimeString(msg.user.deltaTime, msg.user.lang) };
-    await this._res(msg.user, Content.START_RESET_IGNORE,contentProps, DialogKey.im_smoking);
+    await this._res(msg.user, Content.START_RESET_IGNORE, contentProps, DialogKey.im_smoking);
   }
 
   @transformMsg

@@ -1,12 +1,13 @@
 import { Content } from "../../constants";
 import { MultilineContent } from "../types";
-import { NL, N2, ND, B, I, NDv2 } from "./constants";
+import { NL, N2, ND, B, I } from "./constants";
 
 const donate_link = process.env.DONATE_LINK;
 
 // https://en.wikipedia.org/wiki/List_of_emojis
 export const dialogsRu: MultilineContent = {
   [Content.MESSAGE]: "Received your message",
+  [Content.ERROR]: "🍄 Something goes wrong. {{error}}",
   [Content.USER_UNKNOWN]: `
     🤖 Функционал доступен только для авторизированных пользователей.${ND}
     Пожалуйста, авторизируйтесь, нажав на кнопку ниже.
@@ -126,6 +127,9 @@ export const dialogsRu: MultilineContent = {
     Записали время ✅️${ND}
     Следующий перекур будет после {{time_to_get_smoke}} ⏰️ 
   `,
+  [Content.STAGE_2_ON_CONFIRM]: `
+    Следующий перекур будет после {{time_to_get_smoke}} ⏰️ 
+  `,
   [Content.STAGE_2_SUCCESS]: `
     Время учтено. Вы выдержали 👍${ND}
     Следующий перекур будет после {{time_to_get_smoke}} ⏰️ 
@@ -160,17 +164,17 @@ export const dialogsRu: MultilineContent = {
     Следующий перекур будет после {{time_to_get_smoke}} ⏰️ 
   `,
   [Content.TIME_FOR_A_SMOKE]: "🔥 Время для перекура! 🔥",
-  [Content.ON_IDLE_START]: `
-    💤💤💤 ${B}Большой Интервал${B}${N2}
+  [Content.ON_IDLE_START]: `💤💤💤 ${B}Большой Интервал${B}${N2}`,
+  [Content.ON_IDLE_TIME_CONFIRMATION]: `⏰️ Сверим часы. У вас ${B}{{local_time}}${B}?`,
+  [Content.ON_IDLE_STATS_1]: `
     За вчера вы выкурили ${B}{{cigarettes}}${B}${NL}
   `,
-  [Content.ON_IDLE_END]: `
+  [Content.ON_IDLE_STATS_2]: `
     Время следующего перекура пересчитано:${NL}
     прошлое время {{prev_delta}}${NL}
     \\- штрафные баллы {{penalty}} \\[{{penalty_mins}}\\]${NL}
     \\+ шаг {{step}}${NL}
-    \\= в итоге ${I}{{new_delta}}${I}${NDv2}
-    Следующий перекур будет после {{time_to_get_smoke}} ⏰️ 
+    \\= в итоге ${I}{{new_delta}}${I}
   `,
   [Content.WINSTRIKE]: `
     ⚡️ Вы держитесь уже {{winstrike}}! Отлично! 
@@ -257,6 +261,17 @@ export const dialogsRu: MultilineContent = {
     💢 Ошибка. Не верная таймзона.${NL}
     Пример верной таймзоны: GMT+2${NL}
     Попробуйте ещё раз
+  `,
+  [Content.LOCAL_TIME_NEW]: `
+    🌐 ${B}Установка часового пояса${B}${N2}
+    Пожалуйста, посмотрите на ваши часы на телефоне или компьютере,
+    и введите время в 24h формате.${N2}
+    Примеры:${NL}
+    {{time_sample}}, 19:00, 01:14 
+  `,
+  [Content.LOCAL_TIME]: `
+    👉 Сейчас у вас должно быть ${B}{{local_time}}${B} ⏳${N2}
+    Подтвердите или измените время кнопками.
   `,
   [Content.SETTINGS]: `
     ${B}Этап 2. Донастройка.${B}${NL}

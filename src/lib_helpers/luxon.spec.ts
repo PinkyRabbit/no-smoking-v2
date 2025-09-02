@@ -1,6 +1,13 @@
 import { expect } from "chai";
 import sinon from "sinon";
-import { getFormattedStartDate, GmtRegex, gmtToUtc, mssToTime, simpleOffsetToUtc } from "./luxon";
+import TelegramBot from "node-telegram-bot-api";
+import {
+  computeTimeOffsetBasedOnInput,
+  computeTimezoneShift,
+  getFormattedStartDate,
+  mssToTime,
+  simpleOffsetToUtc,
+} from "./luxon";
 import { HourFormat, Lang } from "../constants";
 import { User } from "../db";
 
@@ -41,78 +48,6 @@ describe("lib_helpers.luxon", () => {
     it("should handle offsets greater than 12", () => {
       expect(simpleOffsetToUtc("14")).to.equal("UTC+14:00");
       expect(simpleOffsetToUtc("-13")).to.equal("UTC-13:00");
-    });
-  });
-
-  describe("GmtRegex", () => {
-    const isValidGtmCheck = (val: string) => GmtRegex.test(val);
-
-    it("should match valid GMT offset formats", () => {
-      expect(isValidGtmCheck("GMT+2")).to.eq(true);
-      expect(isValidGtmCheck("GMT+02")).to.eq(true);
-      expect(isValidGtmCheck("GMT-05")).to.eq(true);
-      expect(isValidGtmCheck("GMT+00:00")).to.eq(true);
-      expect(isValidGtmCheck("GMT +00:00")).to.eq(true);
-      expect(isValidGtmCheck("GMT+02:30")).to.eq(true);
-      expect(isValidGtmCheck("GMT-10:45")).to.eq(true);
-      expect(isValidGtmCheck("GMT+00:00")).to.eq(true);
-      expect(isValidGtmCheck("GMT-23:59")).to.eq(true);
-      expect(isValidGtmCheck("GMT+24:00")).to.eq(true);
-    });
-
-    it("should not match invalid GMT offset formats", () => {
-      expect(isValidGtmCheck("+2")).to.eq(false);
-      expect(isValidGtmCheck("+02")).to.eq(false);
-      expect(isValidGtmCheck("UTC+02")).to.eq(false);
-      expect(isValidGtmCheck("GMT2")).to.eq(false);
-      expect(isValidGtmCheck("GMT+2:60")).to.eq(false);
-      expect(isValidGtmCheck("GMT+25:00")).to.eq(false);
-    });
-  });
-
-  describe("gmtToUtc", () => {
-    it("should convert positive GMT offset correctly", () => {
-      expect(gmtToUtc("GMT+2")).to.equal("UTC+02:00");
-      expect(gmtToUtc("GMT+02")).to.equal("UTC+02:00");
-      expect(gmtToUtc("GMT+2:30")).to.equal("UTC+02:30");
-    });
-
-    it("should convert negative GMT offset correctly", () => {
-      expect(gmtToUtc("GMT-5")).to.equal("UTC-05:00");
-      expect(gmtToUtc("GMT-05")).to.equal("UTC-05:00");
-      expect(gmtToUtc("GMT-5:45")).to.equal("UTC-05:45");
-    });
-
-    it("should handle single digit hours", () => {
-      expect(gmtToUtc("GMT+9")).to.equal("UTC+09:00");
-      expect(gmtToUtc("GMT-3")).to.equal("UTC-03:00");
-    });
-
-    it("should handle zero offset", () => {
-      expect(gmtToUtc("GMT+0")).to.equal("UTC+00:00");
-      expect(gmtToUtc("GMT-0")).to.equal("UTC-00:00");
-    });
-
-    it("should throw an error for invalid input", () => {
-      expect(() => gmtToUtc("UTC+2")).to.throw();
-      expect(() => gmtToUtc("GMT2")).to.throw();
-      expect(() => gmtToUtc("GMT+2:60")).to.throw();
-      // expect(() => gmtToUtc("GMT+24")).to.throw("Invalid GMT offset format");
-    });
-
-    it("should handle offsets with minutes", () => {
-      expect(gmtToUtc("GMT+5:30")).to.equal("UTC+05:30");
-      expect(gmtToUtc("GMT-3:15")).to.equal("UTC-03:15");
-    });
-
-    it("should handle offsets at the extremes", () => {
-      expect(gmtToUtc("GMT+14")).to.equal("UTC+14:00");
-      expect(gmtToUtc("GMT-12")).to.equal("UTC-12:00");
-    });
-
-    it("should handle offsets with leading zeros", () => {
-      expect(gmtToUtc("GMT+02:00")).to.equal("UTC+02:00");
-      expect(gmtToUtc("GMT-09:30")).to.equal("UTC-09:30");
     });
   });
 
@@ -171,6 +106,177 @@ describe("lib_helpers.luxon", () => {
       const milliseconds = 1704120600000;
       const result = mssToTime(milliseconds, user);
       expect(result).to.equal("9:50 AM");
+    });
+  });
+
+  describe("computeTimeOffsetBasedOnInput", () => {
+    let clock: sinon.SinonFakeTimers;
+
+    const makeMsg = (text: string) => ({ text } as TelegramBot.Message);
+
+    afterEach(() => {
+      if (clock) clock.restore();
+    });
+
+    it("returns UTC+00:00 when times match (now=2025-01-01T12:00Z, input=12:00)", () => {
+      clock = sinon.useFakeTimers(new Date("2025-01-01T12:00:00Z").getTime());
+      const res = computeTimeOffsetBasedOnInput(makeMsg("12:00"));
+      expect(res).to.equal("UTC+00:00");
+    });
+
+    it("calculates positive hour shift (now=12:00Z, input=15:00 -> UTC+03:00)", () => {
+      clock = sinon.useFakeTimers(new Date("2025-01-01T12:00:00Z").getTime());
+      const res = computeTimeOffsetBasedOnInput(makeMsg("15:00"));
+      expect(res).to.equal("UTC+03:00");
+    });
+
+    it("rounds up to the nearest 30 minutes (now=12:00Z, input=12:15 -> UTC+00:30)", () => {
+      clock = sinon.useFakeTimers(new Date("2025-01-01T12:00:00Z").getTime());
+      const res = computeTimeOffsetBasedOnInput(makeMsg("12:15"));
+      expect(res).to.equal("UTC+00:30");
+    });
+
+    it("handles half-hour positive shift (now=12:00Z, input=15:29 -> rounded to 03:30)", () => {
+      clock = sinon.useFakeTimers(new Date("2025-01-01T12:00:00Z").getTime());
+      const res = computeTimeOffsetBasedOnInput(makeMsg("15:29"));
+      expect(res).to.equal("UTC+03:30");
+    });
+
+    it("handles half-hour negative shift (now=12:00Z, input=08:31 -> rounded to -03:30)", () => {
+      clock = sinon.useFakeTimers(new Date("2025-01-01T12:00:00Z").getTime());
+      const res = computeTimeOffsetBasedOnInput(makeMsg("08:31"));
+      expect(res).to.equal("UTC-03:30");
+    });
+
+    it("handles pure negative hour shift (now=12:00Z, input=03:00 -> UTC-09:00)", () => {
+      clock = sinon.useFakeTimers(new Date("2025-01-01T12:00:00Z").getTime());
+      const res = computeTimeOffsetBasedOnInput(makeMsg("03:00"));
+      expect(res).to.equal("UTC-09:00");
+    });
+
+    it("adjusts >12h forward to nearest backward (now=01:00Z, input=16:00 -> diff +900 -> -540 -> UTC-09:00)", () => {
+      clock = sinon.useFakeTimers(new Date("2025-01-01T01:00:00Z").getTime());
+      const res = computeTimeOffsetBasedOnInput(makeMsg("16:00"));
+      expect(res).to.equal("UTC-09:00");
+    });
+
+    it("adjusts <-12h backward to nearest forward (now=23:00Z, input=10:00 -> -780 -> +660 -> UTC+11:00)", () => {
+      clock = sinon.useFakeTimers(new Date("2025-01-01T23:00:00Z").getTime());
+      const res = computeTimeOffsetBasedOnInput(makeMsg("10:00"));
+      expect(res).to.equal("UTC+11:00");
+    });
+
+    it("pads hours with zero (UTC+09:00)", () => {
+      clock = sinon.useFakeTimers(new Date("2025-01-01T00:00:00Z").getTime());
+      const res = computeTimeOffsetBasedOnInput(makeMsg("09:00"));
+      expect(res).to.equal("UTC+09:00");
+    });
+
+    it("does not wrap at exactly 12h difference (now=12:00Z, input=00:00 -> -720 => UTC-12:00)", () => {
+      clock = sinon.useFakeTimers(new Date("2025-01-01T12:00:00Z").getTime());
+      const res = computeTimeOffsetBasedOnInput(makeMsg("00:00"));
+      expect(res).to.equal("UTC-12:00");
+    });
+
+    it("rounds 14 minutes down to 0 (now=12:00Z, input=12:14 -> UTC+00:00)", () => {
+      clock = sinon.useFakeTimers(new Date("2025-01-01T12:00:00Z").getTime());
+      const res = computeTimeOffsetBasedOnInput(makeMsg("12:14"));
+      expect(res).to.equal("UTC+00:00");
+    });
+
+    it("rounds 15 minutes up to +30 (now=12:00Z, input=12:15 -> UTC+00:30)", () => {
+      clock = sinon.useFakeTimers(new Date("2025-01-01T12:00:00Z").getTime());
+      const res = computeTimeOffsetBasedOnInput(makeMsg("12:15"));
+      expect(res).to.equal("UTC+00:30");
+    });
+
+    it("works correctly around midnight (now=23:50Z, input=00:05 -> +15 -> UTC+00:30)", () => {
+      clock = sinon.useFakeTimers(new Date("2025-01-01T23:50:00Z").getTime());
+      const res = computeTimeOffsetBasedOnInput(makeMsg("00:05"));
+      expect(res).to.equal("UTC+00:30");
+    });
+  });
+
+  describe("computeTimezoneShift", () => {
+    const makeMsg = (tz: string | null) =>
+      ({ user: { timezone: tz } } as TelegramBot.Message);
+
+    it("returns UTC+00:00 when timezone is missing", () => {
+      const res = computeTimezoneShift(makeMsg(null), 10);
+      expect(res).to.equal("UTC+00:00");
+    });
+
+    it("shifts whole-hour positive offset backward by 1h", () => {
+      const res = computeTimezoneShift(makeMsg("UTC+05:00"), -10);
+      expect(res).to.equal("UTC+04:00");
+    });
+
+    it("shifts whole-hour positive offset forward by 30m", () => {
+      const res = computeTimezoneShift(makeMsg("UTC+05:00"), 5);
+      expect(res).to.equal("UTC+05:30");
+    });
+
+    it("shifts half-hour positive offset forward by 30m to next hour", () => {
+      const res = computeTimezoneShift(makeMsg("UTC+05:30"), 5);
+      expect(res).to.equal("UTC+06:00");
+    });
+
+    it("shifts half-hour positive offset backward by 30m to whole hour", () => {
+      const res = computeTimezoneShift(makeMsg("UTC+05:30"), -5);
+      expect(res).to.equal("UTC+05:00");
+    });
+
+    it("handles negative half-hour correctly: -04:30 + 30m => -04:00", () => {
+      const res = computeTimezoneShift(makeMsg("UTC-04:30"), 5);
+      expect(res).to.equal("UTC-04:00");
+    });
+
+    it("handles -00:30 forward by 30m => +00:00", () => {
+      const res = computeTimezoneShift(makeMsg("UTC-00:30"), 5);
+      expect(res).to.equal("UTC+00:00");
+    });
+
+    it("handles -00:30 forward by 1h => +00:30", () => {
+      const res = computeTimezoneShift(makeMsg("UTC-00:30"), 10);
+      expect(res).to.equal("UTC+00:30");
+    });
+
+    it("zero-pads hours: +09:00 + 30m => +09:30", () => {
+      const res = computeTimezoneShift(makeMsg("UTC+09:00"), 5);
+      expect(res).to.equal("UTC+09:30");
+    });
+
+    it("zero-pads hours with negative sign: -09:30 + 30m => -09:00", () => {
+      const res = computeTimezoneShift(makeMsg("UTC-09:30"), 5);
+      expect(res).to.equal("UTC-09:00");
+    });
+
+    // Wrapping over the upper bound (+14:00)
+    it("wraps past +14:00: +14:00 + 30m => -09:30", () => {
+      const res = computeTimezoneShift(makeMsg("UTC+14:00"), 5);
+      expect(res).to.equal("UTC-09:30");
+    });
+
+    it("wraps past +14:00: +13:30 + 1h => -09:30", () => {
+      const res = computeTimezoneShift(makeMsg("UTC+13:30"), 10);
+      expect(res).to.equal("UTC-09:30");
+    });
+
+    // Wrapping below the lower bound (-12:00)
+    it("wraps past -12:00: -12:00 - 30m => +11:30", () => {
+      const res = computeTimezoneShift(makeMsg("UTC-12:00"), -5);
+      expect(res).to.equal("UTC+11:30");
+    });
+
+    it("wraps past -12:00: -12:30 - 30m => +11:00", () => {
+      const res = computeTimezoneShift(makeMsg("UTC-12:30"), -5);
+      expect(res).to.equal("UTC+11:00");
+    });
+
+    // General format sanity check
+    it("returns string in format UTC[+|-]HH:(00|30)", () => {
+      const res = computeTimezoneShift(makeMsg("UTC+02:30"), -5);
+      expect(res).to.match(/^UTC[+-]\d{2}:(00|30)$/);
     });
   });
 });
