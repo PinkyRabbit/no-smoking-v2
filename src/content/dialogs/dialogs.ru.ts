@@ -7,6 +7,7 @@ const donate_link = process.env.DONATE_LINK;
 // https://en.wikipedia.org/wiki/List_of_emojis
 export const dialogsRu: MultilineContent = {
   [Content.MESSAGE]: "Received your message",
+  [Content.ERROR]: "🍄 Something goes wrong. {{error}}",
   [Content.USER_UNKNOWN]: `
     🤖 Функционал доступен только для авторизированных пользователей.${ND}
     Пожалуйста, авторизируйтесь, нажав на кнопку ниже.

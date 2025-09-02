@@ -6,6 +6,7 @@ const donate_link = process.env.DONATE_LINK;
 
 export const dialogsEn: MultilineContent = {
   [Content.MESSAGE]: "Received your message",
+  [Content.ERROR]: "🍄 Something goes wrong. {{error}}",
   [Content.USER_UNKNOWN]: `
     🤖 ${B}Functionality is available only for authorized users${B}${ND}
     Please log in by clicking the button below.

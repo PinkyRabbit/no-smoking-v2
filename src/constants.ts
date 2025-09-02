@@ -43,6 +43,7 @@ export enum TimeShifting {
  */
 export enum Content {
   MESSAGE = "MESSAGE",
+  ERROR = "ERROR",
   USER_UNKNOWN = "User_Unknown",
   START_NEW = "Start_New_User",
   START_EXISTING = "Start_Existing_User",
@@ -175,6 +176,8 @@ export enum BTN {
   Local_Time_Plus_30 = "local_time_plus_30",
   Local_Time_Minus_1 = "local_time_minus_1",
   Local_Time_Minus_30 = "local_time_minus_30",
+  Local_Time_24h = "local_time_24h",
+  Local_Time_AmPm = "local_time_ampm",
   Local_Time_Confirmed = "local_time_confirmed",
   Dev_Delete_User = "dev_delete_user",
   Dev_To_Stage_1 = "dev_to_stage_1",

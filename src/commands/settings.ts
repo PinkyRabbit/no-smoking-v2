@@ -2,11 +2,12 @@ import TelegramBot from "node-telegram-bot-api";
 import { DateTime } from "luxon";
 import { onlyForKnownUsers, transformMsg } from "./decorators";
 import { Content, DialogKey, Difficulty, HourFormat, Lang, TimeShifting } from "../constants";
-import { computeTimeOffsetBasedOnInput, mssToTime } from "../lib_helpers/luxon";
+import { computeTimeOffsetBasedOnInput, computeTimezoneShift, mssToTime } from "../lib_helpers/luxon";
 import { difficultyNameByLevel } from "../helpers";
 import { UsersRepo } from "../db";
 import logger from "../logger";
 import { IGNORE_TIME } from "./constants";
+import { PlainUser } from "../global";
 
 export class Settings {
   /**
@@ -88,33 +89,42 @@ export class Settings {
     await this._res(msg.user, Content.LOCAL_TIME_NEW, { time_sample });
   }
 
-  private async localTimeDialog(msg: TelegramBot.Message) {
-    const local_time = mssToTime(msg.ts, msg.user);
-    await this._res(msg.user, Content.LOCAL_TIME, { local_time }, DialogKey.local_time);
+  private async localTimeDialog(ts: number, user: PlainUser) {
+    const local_time = mssToTime(ts, user);
+    await this._res(user, Content.LOCAL_TIME, { local_time }, DialogKey.local_time);
   }
 
   @transformMsg
   @onlyForKnownUsers
   public async localTimeDialogCall(msg: TelegramBot.Message) {
-    await this.localTimeDialog(msg);
+    await this.localTimeDialog(msg.ts, msg.user);
   }
 
   @transformMsg
   @onlyForKnownUsers
   public async makeATimeShift(msg: TelegramBot.Message, timeShift: TimeShifting) {
-    if (timeShift === TimeShifting.Confirmed) {
+    try {
+
+      if (timeShift === TimeShifting.Confirmed) {
       // TODO: confirm dialog
-      return;
+        return;
+      }
+      const shift = {
+        [TimeShifting.Plus_1H]: 10,
+        [TimeShifting.Minus_1H]: -10,
+        [TimeShifting.Plus_30Min]: 5,
+        [TimeShifting.Minus_30Min]: -5,
+      }[timeShift] as -5 | 5 | -10 | 10 ;
+      if (!shift) {
+        await this._res(msg.user, Content.ERROR);
+        return;
+      }
+      const timezone = computeTimezoneShift(msg, shift);
+      await UsersRepo.updateUser(msg, { timezone });
+      await this.localTimeDialog(msg.ts, { ...msg.user, timezone });
+    } catch (error) {
+      await this._res(msg.user, Content.ERROR, { error });
     }
-    /*
-    const deltaMinutes = {
-      [TimeShifting.Plus_1H]: 60,
-      [TimeShifting.Minus_1H]: -60,
-      [TimeShifting.Plus_30Min]: 30,
-      [TimeShifting.Minus_30Min]: -30,
-    }[timeShift];
-     */
-    await this.localTimeDialog(msg);
   }
 
   @transformMsg
