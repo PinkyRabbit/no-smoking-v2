@@ -124,6 +124,9 @@ export const dialogsEn: MultilineContent = {
     Time logged ✅️${ND}
     The next recommended time to smoke is after {{time_to_get_smoke}} ⏰️
   `,
+  [Content.STAGE_2_ON_CONFIRM]: `
+    The next recommended time to smoke is after {{time_to_get_smoke}} ⏰️
+  `,
   [Content.STAGE_2_SUCCESS]: `
     Time logged. Well done 👍${ND}
     The next recommended time to smoke is after {{time_to_get_smoke}} ⏰️
@@ -159,7 +162,7 @@ export const dialogsEn: MultilineContent = {
     Your next recommended smoke break will be after {{time_to_get_smoke}} ⏰️ 
   `,
   [Content.ON_IDLE_START]: `💤💤💤 ${B}Long Break${B}${N2}`,
-  [Content.ON_IDLE_TIME_CONFIRMATION]: `Let's sync our watches. Is it ${B}{{local_time}}${B} for you?`,
+  [Content.ON_IDLE_TIME_CONFIRMATION]: `⏰️ Let's sync our watches. Is it ${B}{{local_time}}${B} for you?`,
   [Content.ON_IDLE_STATS_1]: `Yesterday, you smoked ${B}{{cigarettes}}${B} times${NL}`,
   [Content.ON_IDLE_STATS_2]: `
     The interval between your smoke smoke breaks has been recalculated:${NL}

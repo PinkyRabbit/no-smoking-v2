@@ -68,6 +68,9 @@ export const botActionsInit = (bot: TgBot) => {
       case BTN.Recommendations:
         act.ignoreSuccess(message);
         break;
+      case BTN.Local_Time_Wrong:
+        act.localTimeDialogCall(message);
+        break;
       case BTN.Local_Time_Minus_1:
         act.makeATimeShift(message, TimeShifting.Minus_1H);
         break;
@@ -88,6 +91,9 @@ export const botActionsInit = (bot: TgBot) => {
         break;
       case BTN.Local_Time_Confirmed:
         act.localTimeConfirmation(message);
+        break;
+      case BTN.Local_Time_Correct:
+        act.localTimeConfirmation(message, true);
         break;
       case BTN.Dev_Delete_User:
         act.devOnDel(message);

@@ -127,6 +127,9 @@ export const dialogsRu: MultilineContent = {
     Записали время ✅️${ND}
     Следующий перекур будет после {{time_to_get_smoke}} ⏰️ 
   `,
+  [Content.STAGE_2_ON_CONFIRM]: `
+    Следующий перекур будет после {{time_to_get_smoke}} ⏰️ 
+  `,
   [Content.STAGE_2_SUCCESS]: `
     Время учтено. Вы выдержали 👍${ND}
     Следующий перекур будет после {{time_to_get_smoke}} ⏰️ 
@@ -162,7 +165,7 @@ export const dialogsRu: MultilineContent = {
   `,
   [Content.TIME_FOR_A_SMOKE]: "🔥 Время для перекура! 🔥",
   [Content.ON_IDLE_START]: `💤💤💤 ${B}Большой Интервал${B}${N2}`,
-  [Content.ON_IDLE_TIME_CONFIRMATION]: `Сверим часы. У вас ${B}{{local_time}}${B}?`,
+  [Content.ON_IDLE_TIME_CONFIRMATION]: `⏰️ Сверим часы. У вас ${B}{{local_time}}${B}?`,
   [Content.ON_IDLE_STATS_1]: `
     За вчера вы выкурили ${B}{{cigarettes}}${B}${NL}
   `,

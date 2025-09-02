@@ -61,6 +61,7 @@ export enum Content {
   STAGE_1_END = "Stage_1_End",
   STAGE_2_INITIAL = "Stage_2_Initial",
   STAGE_2 = "Stage_2",
+  STAGE_2_ON_CONFIRM = "Stage_2_On_Confirm",
   STAGE_2_SUCCESS = "Stage_2_Success",
   STAGE_2_IGNORE_MIN = "Stage_2_Ignore_Min",
   STAGE_2_PROPS_MISSING = "Stage_2_Props_Missing",
@@ -133,6 +134,7 @@ export enum DialogKey {
   ignore = "ignore",
   max_time = "max_time",
   local_time = "local_time",
+  confirm_local_time = "local_time_confirmation",
 }
 
 /**
@@ -168,6 +170,8 @@ export enum BTN {
   Ignore_Failed = "ignore_failed",
   Ignore_Busy = "ignore_busy",
   Ignore_Penalty_10 = "ignore_penalty_10",
+  Local_Time_Correct = "local_time_correct",
+  Local_Time_Wrong = "local_time_wrong",
   Local_Time_Plus_1 = "local_time_plus_1",
   Local_Time_Plus_30 = "local_time_plus_30",
   Local_Time_Minus_1 = "local_time_minus_1",

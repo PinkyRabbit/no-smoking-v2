@@ -131,9 +131,9 @@ export class Settings {
 
   @transformMsg
   @onlyForKnownUsers
-  public async localTimeConfirmation(msg: TelegramBot.Message) {
+  public async localTimeConfirmation(msg: TelegramBot.Message, isConfirm?: boolean) {
     if (msg.user.difficulty) {
-      return this.onSettingsDone(msg);
+      return this.onSettingsDone(msg, isConfirm);
     }
     await UsersRepo.updateUser(msg, { difficulty: Difficulty.EASY });
     await this._res(msg.user, Content.DIFFICULTY_AUTO);
@@ -176,7 +176,7 @@ export class Settings {
    * When everything is set up
    * @private
    */
-  private async onSettingsDone(msg: TelegramBot.Message) {
+  private async onSettingsDone(msg: TelegramBot.Message, isConfirm?: boolean) {
     if (!msg.user.deltaTime || !msg.user.timezone) {
       logger.error("Incorrect call of onSettingsDone");
       return;
@@ -200,6 +200,10 @@ export class Settings {
     }
     // stage 2 normal
     const time_to_get_smoke = mssToTime(msg.user.nextTime, msg.user);
+    if (isConfirm) {
+      await this._res(msg.user, Content.STAGE_2_ON_CONFIRM, { time_to_get_smoke }, DialogKey.im_smoking);
+      return;
+    }
     await this._res(msg.user, Content.SETTINGS_UPDATED, { time_to_get_smoke }, DialogKey.im_smoking);
   }
 }

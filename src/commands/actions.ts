@@ -58,7 +58,7 @@ export class Actions extends Mixin(DevActions, Settings) {
     });
   }
 
-  protected override _resV2( chatId: number, content: string  ): Promise<void> {
+  protected override _resV2(chatId: number, content: string): Promise<void> {
     return new Promise((resolve) => {
       setTimeout(async () => {
         const ops: TelegramBot.SendMessageOptions = { parse_mode: "MarkdownV2" };
@@ -72,15 +72,12 @@ export class Actions extends Mixin(DevActions, Settings) {
    * Method to send an image
    * @protected
    */
-  protected override _image(
-    user: User,
-    fileName: string,
-    caption: string
-  ): Promise<void> {
+  protected override _image(user: User, fileName: string, caption: string): Promise<void> {
     const path = pathJoin(__dirname, `../../images/${fileName}`);
     return new Promise((resolve) => {
       setTimeout(() => {
-        this.bot.sendPhoto(user.chatId, path, { caption })
+        this.bot
+          .sendPhoto(user.chatId, path, { caption })
           .catch((error) => {
             logger.error(`U-${user.chatId} -> Can't send an image ${path}`, { error });
           })
@@ -92,7 +89,15 @@ export class Actions extends Mixin(DevActions, Settings) {
   /**
    * Helper to calculate new delta time
    */
-  public _computeNewDelta = ({ deltaTime, difficulty, penalty, minDeltaTime }: Pick<User, "deltaTime" | "difficulty" | "penalty" | "minDeltaTime">, isTenMinPenalty?: boolean) => {
+  public _computeNewDelta = (
+    {
+      deltaTime,
+      difficulty,
+      penalty,
+      minDeltaTime,
+    }: Pick<User, "deltaTime" | "difficulty" | "penalty" | "minDeltaTime">,
+    isTenMinPenalty?: boolean,
+  ) => {
     if (isTenMinPenalty) {
       const newDeltaTime = deltaTime - 10;
       return newDeltaTime >= minDeltaTime ? newDeltaTime : minDeltaTime;
@@ -100,7 +105,7 @@ export class Actions extends Mixin(DevActions, Settings) {
     const deltaTimeInt = deltaTime * 10;
     const stepInt = stepByDifficulty(difficulty) * 10;
     const penaltyInt = penaltyByDifficulty(difficulty, penalty) * 10;
-    const newDelta = (deltaTimeInt  + stepInt - penaltyInt) / 10;
+    const newDelta = (deltaTimeInt + stepInt - penaltyInt) / 10;
     return newDelta >= minDeltaTime ? newDelta : minDeltaTime;
   };
 
@@ -162,7 +167,7 @@ export class Actions extends Mixin(DevActions, Settings) {
   @onlyForKnownUsers
   public async toStage1(msg: TelegramBot.Message) {
     await this._res(msg.user, Content.STAGE_1, {}, DialogKey.im_smoking);
-  };
+  }
 
   /**
    * Stage 1
@@ -195,7 +200,7 @@ export class Actions extends Mixin(DevActions, Settings) {
     if (deltaTime > STAGE_1_MAX) {
       logger.debug(`deltaTime > STAGE_1_MAX ${deltaTime} > ${STAGE_1_MAX}`);
       isValidDeltaTime = false;
-      const contentProps = { max_stage_1: STAGE_1_MAX, stage_1_left: deltaTimesLeft  };
+      const contentProps = { max_stage_1: STAGE_1_MAX, stage_1_left: deltaTimesLeft };
       await this._res(msg.user, Content.STAGE_1_IGNORE_MAX, contentProps, DialogKey.im_smoking);
     }
     // add time if timestamp is valid
@@ -370,7 +375,7 @@ export class Actions extends Mixin(DevActions, Settings) {
       winstrike: 0,
     });
     const contentProps = { delta_time: minsToTimeString(msg.user.deltaTime, msg.user.lang) };
-    await this._res(msg.user, Content.START_RESET_IGNORE,contentProps, DialogKey.im_smoking);
+    await this._res(msg.user, Content.START_RESET_IGNORE, contentProps, DialogKey.im_smoking);
   }
 
   @transformMsg

@@ -178,6 +178,11 @@ const selectButtonsByKey = (key: DialogKey, locale: Lang): InlineKeyboard => {
       [buttonFor(BTN.Local_Time_Confirmed, locale)],
     ];
   }
+  if (key === DialogKey.confirm_local_time) {
+    return [
+      [buttonFor(BTN.Local_Time_Wrong, locale), buttonFor(BTN.Local_Time_Correct, locale)],
+    ];
+  }
   return [];
 };
 

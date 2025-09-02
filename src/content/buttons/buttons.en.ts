@@ -15,6 +15,8 @@ export const buttonsEn: ButtonNames = {
   [BTN.Ignore_Failed]: "I’ll keep smoking 👎",
   [BTN.Ignore_Busy]: "Let’s continue ▶️",
   [BTN.Ignore_Penalty_10]: "Make 10 penalty 🚀",
+  [BTN.Local_Time_Correct]: "Correct ✅",
+  [BTN.Local_Time_Wrong]: "✏️ Edit",
   [BTN.Local_Time_Plus_1]: "+ 1 hour",
   [BTN.Local_Time_Minus_1]: "- 1 hour",
   [BTN.Local_Time_Plus_30]: "+ 30 minutes",
