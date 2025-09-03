@@ -420,8 +420,9 @@ export class Actions extends Mixin(DevActions, Settings) {
   @onlyForKnownUsers
   public async ignoreBusy(msg: TelegramBot.Message) {
     await UsersRepo.updateUser(msg, { ignoreTime: msg.ts + IGNORE_TIME, winstrike: 0 });
-    const contentProps = { delta_time: minsToTimeString(msg.user.minDeltaTime, msg.user.lang) };
-    await this._res(msg.user, Content.BOT_IGNORE_BUSY, contentProps, DialogKey.im_smoking);
+    await this._res(msg.user, Content.BOT_IGNORE_BUSY);
+    const local_time = mssToTime(msg.ts, msg.user);
+    await this._res(msg.user, Content.ON_IDLE_TIME_CONFIRMATION, { local_time }, DialogKey.confirm_local_time);
   }
 
   @transformMsg
@@ -439,7 +440,9 @@ export class Actions extends Mixin(DevActions, Settings) {
     const delta_time = minsToTimeString(newDelta, msg.user.lang);
     const delta_min = minsToTimeString(msg.user.minDeltaTime, msg.user.lang);
     const contentProps = { delta_min, delta_time };
-    await this._res(msg.user, Content.BOT_IGNORE_PENALTY_10, contentProps, DialogKey.im_smoking);
+    await this._res(msg.user, Content.BOT_IGNORE_PENALTY_10, contentProps);
+    const local_time = mssToTime(msg.ts, msg.user);
+    await this._res(msg.user, Content.ON_IDLE_TIME_CONFIRMATION, { local_time }, DialogKey.confirm_local_time);
   }
 
   @transformMsg

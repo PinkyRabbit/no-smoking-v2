@@ -301,9 +301,7 @@ export const dialogsEn: MultilineContent = {
     ${B}Let’s just continue!${B} Great! 👍${ND}
     We understand that life is truly fast-paced and busy these days.${N2}
     That’s exactly why you shouldn’t give up on quitting smoking.${NL}
-    You just need to finish what you started.${NL}
-    Right now, your interval is ${B}{{delta_time}}${B}.${N2}
-    The next time please press the the ${B}"I’m having a smoke"${B} button.
+    You just need to finish what you started.
   `,
   [Content.BOT_IGNORE_PENALTY_10]: `
     You chose the "${B}10-minute penalty${B}". 
@@ -312,8 +310,7 @@ export const dialogsEn: MultilineContent = {
     Your interval has been recalculated ♨${N2}️
     A ${I}10-minute penalty${I} has been applied.${NL}
     Your starting value was ${I}{{delta_min}}${I}${NL}
-    The new interval between smoke breaks is now ${B}{{delta_time}}${B}.${N2}
-    Next time you smoke, please press the the ${B}"I’m having a smoke"${B} button.
+    The new interval between smoke breaks is now ${B}{{delta_time}}${B}.
   `,
   [Content.BOT_IGNORE_FAILED]: `
     You decided ${B}not to quit smoking${B} 🤯${ND}
