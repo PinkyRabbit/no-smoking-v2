@@ -262,7 +262,7 @@ export const dialogsEn: MultilineContent = {
     Please check the time on your phone or computer
     and enter it in 24h format.${N2}
     Examples:${NL}
-    {{time_sample}}, 19:00, 01:14
+    {{time_sample}}, 0:21, 19:00, 01:14
   `,
   [Content.LOCAL_TIME]: `
     👉 Your current time should be ${B}{{local_time}}${B} ⏳${N2}  
