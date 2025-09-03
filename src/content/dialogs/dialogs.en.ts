@@ -381,8 +381,14 @@ export const dialogsEn: MultilineContent = {
   [Content.DEV_LAST_TIME_MINUS_HOUR]: "🔮 Last time set to 1 hour ago",
   [Content.DEV_STAGE_1_MORE_THAN_MAX]: "🔮 Last time set to more than max value",
   [Content.DEV_TO_IDLE]: "🔮 User switched to Idle mode",
-  [Content.DEV_NEXT]: "🔮 Next smoke break will happen in 1 minute",
+  [Content.DEV_NEXT]: `
+    🔮 Next smoke break will happen in 1 minute${N2}
+    Waiting for timer... 🧭
+  `,
   [Content.DEV_MOTIVIZER]: "🔮 Motivizer Updated",
-  [Content.DEV_IGNORE]: "🔮 User switched to Ignore Mode",
+  [Content.DEV_IGNORE]: `
+    🔮 The application lost the user${N2}
+    Waiting for timer... 🧭
+  `,
   [Content.DEV_LANG]: "🕉️ Select language:",
 };
