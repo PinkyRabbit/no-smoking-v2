@@ -157,7 +157,7 @@ export class Settings {
     if (msg.user.timezone) {
       return Promise.resolve();
     }
-    if (!/^([0-1]\d|2[0-3]):[0-5]\d$/.test(msg.text!.trim())) {
+    if (!/^([0-1]?\d|2[0-3]):[0-5]\d$/.test(msg.text!.trim())) {
       return;
     }
     try {

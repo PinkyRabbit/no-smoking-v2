@@ -158,8 +158,7 @@ export const dialogsEn: MultilineContent = {
     🌀 ${B}Starting Fresh Today${B}${N2}
     For some reason, you didn’t log your smoke breaks last time.${NL}
     However, the fact that you haven’t given up on your goal to quit smoking speaks to your determination.${N2}
-    Please, keep going!${ND}
-    Your next recommended smoke break will be after {{time_to_get_smoke}} ⏰️ 
+    ${B}Please, keep going!${B} 🚀
   `,
   [Content.ON_IDLE_START]: `💤💤💤 ${B}Long Break${B}${N2}`,
   [Content.ON_IDLE_TIME_CONFIRMATION]: `⏰️ Let's sync our watches. Is it ${B}{{local_time}}${B} for you?`,
@@ -262,7 +261,7 @@ export const dialogsEn: MultilineContent = {
     Please check the time on your phone or computer
     and enter it in 24h format.${N2}
     Examples:${NL}
-    {{time_sample}}, 19:00, 01:14
+    {{time_sample}}, 0:21, 19:00, 01:14
   `,
   [Content.LOCAL_TIME]: `
     👉 Your current time should be ${B}{{local_time}}${B} ⏳${N2}  
@@ -301,9 +300,7 @@ export const dialogsEn: MultilineContent = {
     ${B}Let’s just continue!${B} Great! 👍${ND}
     We understand that life is truly fast-paced and busy these days.${N2}
     That’s exactly why you shouldn’t give up on quitting smoking.${NL}
-    You just need to finish what you started.${NL}
-    Right now, your interval is ${B}{{delta_time}}${B}.${N2}
-    The next time please press the the ${B}"I’m having a smoke"${B} button.
+    You just need to finish what you started.
   `,
   [Content.BOT_IGNORE_PENALTY_10]: `
     You chose the "${B}10-minute penalty${B}". 
@@ -312,8 +309,7 @@ export const dialogsEn: MultilineContent = {
     Your interval has been recalculated ♨${N2}️
     A ${I}10-minute penalty${I} has been applied.${NL}
     Your starting value was ${I}{{delta_min}}${I}${NL}
-    The new interval between smoke breaks is now ${B}{{delta_time}}${B}.${N2}
-    Next time you smoke, please press the the ${B}"I’m having a smoke"${B} button.
+    The new interval between smoke breaks is now ${B}{{delta_time}}${B}.
   `,
   [Content.BOT_IGNORE_FAILED]: `
     You decided ${B}not to quit smoking${B} 🤯${ND}
@@ -381,8 +377,14 @@ export const dialogsEn: MultilineContent = {
   [Content.DEV_LAST_TIME_MINUS_HOUR]: "🔮 Last time set to 1 hour ago",
   [Content.DEV_STAGE_1_MORE_THAN_MAX]: "🔮 Last time set to more than max value",
   [Content.DEV_TO_IDLE]: "🔮 User switched to Idle mode",
-  [Content.DEV_NEXT]: "🔮 Next smoke break will happen in 1 minute",
+  [Content.DEV_NEXT]: `
+    🔮 Next smoke break will happen in 1 minute${N2}
+    Waiting for timer... 🧭
+  `,
   [Content.DEV_MOTIVIZER]: "🔮 Motivizer Updated",
-  [Content.DEV_IGNORE]: "🔮 User switched to Ignore Mode",
+  [Content.DEV_IGNORE]: `
+    🔮 The application lost the user${N2}
+    Waiting for timer... 🧭
+  `,
   [Content.DEV_LANG]: "🕉️ Select language:",
 };

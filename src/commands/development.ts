@@ -14,6 +14,24 @@ import { difficultyNameByLevel, penaltyMinutesString, stepByDifficulty } from ".
  * @remark This class should be inherited by Actions class
  */
 export class DevActions {
+  private readonly stage1UserParams: Partial<User> = {
+    lastTime: 0,
+    nextTime: 0,
+    minDeltaTime: 0,
+    minDeltaTimesInitial: [],
+    timezone: undefined,
+    difficulty: Difficulty.DOESNT_SET,
+  };
+
+  get lastTimeToSmoke() {
+    const validInterval = MIN_INTERVAL + 1;
+    return dateNow() - (validInterval * 60 * 1000);
+  }
+
+  get nextTimeToSmoke() {
+    return dateNow() - 60 * 1000;
+  }
+
   /**
    * @see {import('./actions').Actions#_res}
    */
@@ -57,15 +75,7 @@ export class DevActions {
   @transformMsg
   @onlyForKnownUsers
   public async devResetToStage1(msg: TelegramBot.Message) {
-    const update: Partial<User> = {
-      lastTime: 0,
-      nextTime: 0,
-      minDeltaTime: 0,
-      minDeltaTimesInitial: [],
-      timezone: undefined,
-      difficulty: Difficulty.DOESNT_SET,
-    };
-    await UsersRepo.updateUser(msg, update);
+    await UsersRepo.updateUser(msg, this.stage1UserParams);
     await this._res(msg.user, Content.DEV_TO_STAGE_1);
   }
 
@@ -73,16 +83,17 @@ export class DevActions {
   @transformMsg
   @onlyForKnownUsers
   public async devFillStage1(msg: TelegramBot.Message) {
+    const INTERVAL_STEP = 1;
     const minDeltaTimesInitial = [...msg.user.minDeltaTimesInitial];
     let stepsAdded = 0;
-    const validInterval = MIN_INTERVAL + 1;
     while (minDeltaTimesInitial.length < STAGE_1_STEPS - 1) {
       stepsAdded += 1;
-      minDeltaTimesInitial.push(validInterval);
+      minDeltaTimesInitial.push(MIN_INTERVAL + INTERVAL_STEP);
     }
     const update: Partial<User> = {
-      lastTime: dateNow() - (validInterval * 60 * 1000),
-      nextTime: 0,
+      ...this.stage1UserParams,
+      lastTime: this.lastTimeToSmoke,
+      nextTime: this.nextTimeToSmoke,
       minDeltaTimesInitial: minDeltaTimesInitial,
     };
     await UsersRepo.updateUser(msg, update);
@@ -105,9 +116,8 @@ export class DevActions {
   @transformMsg
   @onlyForKnownUsers
   public async devStage1MoreThanMax(msg: TelegramBot.Message) {
-    const moreThanMax = STAGE_1_MAX + 1;
     const update: Partial<User> = {
-      lastTime: dateNow() - (moreThanMax * 60 * 1000),
+      lastTime: dateNow() - ((STAGE_1_MAX + 1) * 60 * 1000),
     };
     await UsersRepo.updateUser(msg, update);
     await this._res(msg.user, Content.DEV_STAGE_1_MORE_THAN_MAX);
@@ -116,16 +126,24 @@ export class DevActions {
   @devModeOnly
   @transformMsg
   @onlyForKnownUsers
-  public async devToIdle(msg: TelegramBot.Message, isEmpty = false, { isThree, isMax }: Record<string, boolean> = {}) {
-    const moreThanMax = USER_IDLE_TIME + 1;
-    const lastTime = dateNow() - (moreThanMax * 60 * 1000);
+  public async devToIdle(msg: TelegramBot.Message, isEmpty = false, { isThree, isInMaxPossibleDeltaTime }: Record<string, boolean> = {}) {
+    const lastTime = dateNow() - ((USER_IDLE_TIME + 1)* 60 * 1000);
     const update: Partial<User> = {
       lastTime,
       nextTime: lastTime + msg.user.deltaTime * 60 * 1000,
-      cigarettesInDay: isEmpty ? 0 : 2,
-      penaltyDays: isThree ? 2 : 0,
-      deltaTime: isMax ? USER_IDLE_TIME : msg.user.deltaTime,
+      cigarettesInDay: 2,
+      penaltyDays: 0,
+      deltaTime: msg.user.deltaTime,
     };
+    if (isEmpty) {
+      update.cigarettesInDay = 0;
+    }
+    if (isThree) {
+      update.penaltyDays = 2;
+    }
+    if (isInMaxPossibleDeltaTime) {
+      update.deltaTime = USER_IDLE_TIME;
+    }
     await UsersRepo.updateUser(msg, update);
     await this._res(msg.user, Content.DEV_TO_IDLE);
   }
@@ -134,10 +152,9 @@ export class DevActions {
   @transformMsg
   @onlyForKnownUsers
   public async devByTimer(msg: TelegramBot.Message) {
-    const validInterval = MIN_INTERVAL + 1;
     const update: Partial<User> = {
-      lastTime: dateNow() - (validInterval * 60 * 1000),
-      nextTime: dateNow() - 60 * 1000,
+      lastTime: this.lastTimeToSmoke,
+      nextTime: this.nextTimeToSmoke,
     };
     await UsersRepo.updateUser(msg, update);
     await this._res(msg.user, Content.DEV_NEXT);
@@ -182,9 +199,8 @@ export class DevActions {
   @transformMsg
   @onlyForKnownUsers
   public async devIgnore(msg: TelegramBot.Message) {
-    const validInterval = MIN_INTERVAL + 1;
     const update: Partial<User> = {
-      lastTime: dateNow() - (validInterval * 60 * 1000),
+      lastTime: this.lastTimeToSmoke,
       nextTime: 0,
       ignoreTime: dateNow() - 60 * 1000,
     };
