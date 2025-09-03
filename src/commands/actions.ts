@@ -269,8 +269,9 @@ export class Actions extends Mixin(DevActions, Settings) {
     // idle
     const isIdle = currentDelta >= USER_IDLE_TIME;
     if (isIdle && !msg.user.cigarettesInDay) {
-      const time_to_get_smoke = mssToTime(update.nextTime!, msg.user);
-      await this._res(msg.user, Content.IDLE_NO_CIGARETTES, { time_to_get_smoke }, DialogKey.im_smoking);
+      await this._res(msg.user, Content.IDLE_NO_CIGARETTES);
+      const local_time = mssToTime(msg.ts, msg.user);
+      await this._res(msg.user, Content.ON_IDLE_TIME_CONFIRMATION, { local_time }, DialogKey.confirm_local_time);
     }
     const isNonEmptyIdle = isIdle && msg.user.cigarettesInDay > 0;
     if (isNonEmptyIdle) {

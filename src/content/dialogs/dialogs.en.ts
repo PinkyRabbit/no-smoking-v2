@@ -158,8 +158,7 @@ export const dialogsEn: MultilineContent = {
     🌀 ${B}Starting Fresh Today${B}${N2}
     For some reason, you didn’t log your smoke breaks last time.${NL}
     However, the fact that you haven’t given up on your goal to quit smoking speaks to your determination.${N2}
-    Please, keep going!${ND}
-    Your next recommended smoke break will be after {{time_to_get_smoke}} ⏰️ 
+    ${B}Please, keep going!${B} 🚀
   `,
   [Content.ON_IDLE_START]: `💤💤💤 ${B}Long Break${B}${N2}`,
   [Content.ON_IDLE_TIME_CONFIRMATION]: `⏰️ Let's sync our watches. Is it ${B}{{local_time}}${B} for you?`,

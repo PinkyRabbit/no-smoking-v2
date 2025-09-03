@@ -126,15 +126,24 @@ export class DevActions {
   @devModeOnly
   @transformMsg
   @onlyForKnownUsers
-  public async devToIdle(msg: TelegramBot.Message, isEmpty = false, { isThree, isMax }: Record<string, boolean> = {}) {
+  public async devToIdle(msg: TelegramBot.Message, isEmpty = false, { isThree, isInMaxPossibleDeltaTime }: Record<string, boolean> = {}) {
     const lastTime = dateNow() - ((USER_IDLE_TIME + 1)* 60 * 1000);
     const update: Partial<User> = {
       lastTime,
       nextTime: lastTime + msg.user.deltaTime * 60 * 1000,
-      cigarettesInDay: isEmpty ? 0 : 2,
-      penaltyDays: isThree ? 2 : 0,
-      deltaTime: isMax ? USER_IDLE_TIME : msg.user.deltaTime,
+      cigarettesInDay: 2,
+      penaltyDays: 0,
+      deltaTime: msg.user.deltaTime,
     };
+    if (isEmpty) {
+      update.cigarettesInDay = 0;
+    }
+    if (isThree) {
+      update.penaltyDays = 2;
+    }
+    if (isInMaxPossibleDeltaTime) {
+      update.deltaTime = USER_IDLE_TIME;
+    }
     await UsersRepo.updateUser(msg, update);
     await this._res(msg.user, Content.DEV_TO_IDLE);
   }

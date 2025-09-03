@@ -111,7 +111,7 @@ export const botActionsInit = (bot: TgBot) => {
         act.devStage1MoreThanMax(message);
         break;
       case BTN.Dev_To_Idle_Empty:
-        act.devToIdle(message);
+        act.devToIdle(message, true);
         break;
       case BTN.Dev_To_Idle:
         act.devToIdle(message, false);
@@ -120,7 +120,7 @@ export const botActionsInit = (bot: TgBot) => {
         act.devToIdle(message, false, { isThree: true });
         break;
       case BTN.Dev_To_Idle_Max_Limit:
-        act.devToIdle(message, false, { isMax: true });
+        act.devToIdle(message, false, { isInMaxPossibleDeltaTime: true });
         break;
       case BTN.Dev_Next:
         act.devByTimer(message);
