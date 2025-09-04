@@ -1,21 +1,20 @@
 import winston from "winston";
+import { Logtail } from "@logtail/node";
+import { LogtailTransport } from "@logtail/winston";
 
-const isProduction = process.env.NODE_ENV === "production";
-const isFileLoggingEnabled = `${process.env.LOGS_FOR_PROD_DEBUG}` === "true";
+const level = process.env.LOGS_LEVEL || "debug";
 
-const level = isProduction && !isFileLoggingEnabled ? "info" : "debug";
-
-const transports: winston.transport[] = [new winston.transports.Console()];
-if (isFileLoggingEnabled) {
-  const options = {
-    dirname: "logs/",
-    maxsize: 5242880, // 5MB
-    maxFiles: 5,
-    tailable: true
-  };
-  const onlyErrors = new winston.transports.File({ ...options, filename: "error.log", level: "error" });
-  const allLogs = new winston.transports.File({ ...options, filename: "combined.log" });
-  transports.push(onlyErrors, allLogs);
+const transports: winston.transport[] = [];
+const isDevelopment = process.env.NODE_ENV !== "production";
+if (isDevelopment) {
+  const consoleLogTransport = new winston.transports.Console();
+  transports.push(consoleLogTransport);
+}
+const logitailToken = process.env.LOGTAIL_TOKEN;
+if (logitailToken) {
+  const logtail = new Logtail(logitailToken);
+  const logitailTransport = new LogtailTransport(logtail);
+  transports.push(logitailTransport);
 }
 
 const logger = winston.createLogger({
@@ -23,9 +22,9 @@ const logger = winston.createLogger({
   transports,
   format: winston.format.combine(
     winston.format.timestamp(),
-    isProduction
-      ? winston.format.uncolorize()
-      : winston.format.colorize({ level: true }),
+    isDevelopment
+      ? winston.format.colorize({ level: true })
+      : winston.format.uncolorize(),
     winston.format.printf(({ level, message, timestamp }) => {
       return `${timestamp} ${level}: ${message}`;
     })
