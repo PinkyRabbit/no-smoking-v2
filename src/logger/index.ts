@@ -2,7 +2,7 @@ import winston from "winston";
 import { Logtail } from "@logtail/node";
 import { LogtailTransport } from "@logtail/winston";
 
-const level = process.env.LOGS_LEVEL || "debug";
+const level = process.env.LOG_LEVEL || "debug";
 
 const transports: winston.transport[] = [];
 const isDevelopment = process.env.NODE_ENV !== "production";

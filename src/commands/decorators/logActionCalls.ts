@@ -23,7 +23,7 @@ export function LogActionCalls<T extends new (...args: any[]) => Actions>(constr
           // @ts-expect-error
           this[methodName as keyof Actions] = function(this: Actions, msg: Message, ...args: unknown[]) {
             const argsStr = (args || []).map(arg => JSON.stringify(arg)).join(", ");
-            logger.info(`U-${msg.chat.id} ${methodName} ${argsStr}`);
+            logger.debug(`U-${msg.chat.id} ${methodName} ${argsStr}`);
             return originalMethod.apply(this, [msg, ...args]);
           };
         }

@@ -48,7 +48,7 @@ export class Actions extends Mixin(DevActions, Settings) {
         const contentPropsString = Object.entries(contentProps || {})
           .map(([k, v]) => `${k} = "${v}"`)
           .join(", ");
-        logger.info(`U-${user.chatId} -> ${contentKey} ${contentPropsString}`);
+        logger.debug(`U-${user.chatId} -> ${contentKey} ${contentPropsString}`);
         this.bot.sendToUser(user, contentKey, contentProps, dialogKey).catch((err) => reject(err));
         resolve();
       }, 400);
@@ -136,7 +136,9 @@ export class Actions extends Mixin(DevActions, Settings) {
   public async onStart(msg: TelegramBot.Message) {
     if (!msg.user) {
       const user = await UsersRepo.addNewUser(msg);
-      // @FIXME: track analytics based on logs!
+      const tglang = msg.from?.language_code || "Unknown";
+      const username = msg.from?.username || "Unknown";
+      logger.info(`New user @${username}`, { tglang });
       await this._res(user, Content.START_NEW, {}, DialogKey.beginning);
       return;
     }

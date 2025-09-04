@@ -245,7 +245,7 @@ export class UsersRepo extends RequestOptions {
     const userIds = users.map(({ _id }) => _id);
     const chatIds = users.map(({ chatId }) => chatId);
     const dateTimeString = tsToDateTime(ts);
-    logger.info(`[${dateTimeString}] smokingTimeTest call, ${chatIds.length} affected`);
+    logger.debug(`[${dateTimeString}] smokingTimeTest call, ${chatIds.length} affected`);
     await UsersRepo.call.update({ _id: { $in: userIds } }, { $set: { nextTime: 0 } });
     return users;
   }
@@ -264,7 +264,7 @@ export class UsersRepo extends RequestOptions {
     const userIds = users.map(({ _id }) => _id);
     const chatIds = users.map(({ chatId }) => chatId);
     const dateTimeString = tsToDateTime(ts);
-    logger.info(`[${dateTimeString}] ignoringBot call, ${chatIds.length} affected`);
+    logger.debug(`[${dateTimeString}] ignoringBot call, ${chatIds.length} affected`);
     await UsersRepo.call.update({ _id: { $in: userIds } }, {
       $set: {
         cigarettesInDay: 0,
