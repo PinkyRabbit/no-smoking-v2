@@ -124,6 +124,14 @@ export const dialogsEn: MultilineContent = {
     Time logged ✅️${ND}
     The next recommended time to smoke is after {{time_to_get_smoke}} ⏰️
   `,
+  [Content.STAGE_2_HINT]: `
+    ⚠️ ${B}Important to remember!${B}${N2}
+    The urge to smoke lasts for ${I}no more than 5 minutes${I}❗️${NL}
+    So if you suddenly feel like smoking but the time hasn’t come yet — 
+    just keep yourself busy with something, and in 5 minutes 
+    you’ll forget you even wanted to smoke.${NL}
+    That’s exactly how it works!
+  `,
   [Content.STAGE_2_ON_CONFIRM]: `
     The next recommended time to smoke is after {{time_to_get_smoke}} ⏰️
   `,
