@@ -20,7 +20,6 @@ import { InlineKeyboard } from "../content/types";
 
 @LogActionCalls
 export class Actions extends Mixin(DevActions, Settings) {
-
   constructor(private bot: TgBot) {
     super();
     this.bot = bot;
@@ -243,15 +242,17 @@ export class Actions extends Mixin(DevActions, Settings) {
   private async _stage2(msg: TelegramBot.Message) {
     const timeDifferenceMs = msg.ts - msg.user.lastTime;
     const currentDelta = Math.round(timeDifferenceMs / 60 / 1000); // in minutes
-    logger.debug(`timeDifferenceMs = ${msg.ts} - ${msg.user.lastTime} = ${currentDelta} min (${Math.floor(currentDelta / 60 / 24)} days)`);
+    const daysToLog = Math.floor(currentDelta / 60 / 24);
+    logger.debug(`timeDifferenceMs = ${msg.ts} - ${msg.user.lastTime} = ${currentDelta} min (${daysToLog} days)`);
     // ignore spam
     if (currentDelta < MIN_INTERVAL) {
-      await this._res(msg.user, Content.STAGE_2_IGNORE_MIN, { min_interval: minsToTimeString(MIN_INTERVAL, msg.user.lang) });
+      const min_interval = minsToTimeString(MIN_INTERVAL, msg.user.lang);
+      await this._res(msg.user, Content.STAGE_2_IGNORE_MIN, { min_interval });
       return;
     }
     const update: Partial<User> = {
       lastTime: msg.ts,
-      nextTime: msg.ts + (msg.user.deltaTime * 60 * 1000),
+      nextTime: msg.ts + msg.user.deltaTime * 60 * 1000,
       ignoreTime: msg.ts + IGNORE_TIME,
       cigarettesInDay: msg.user.cigarettesInDay + 1,
       cigarettesSummary: msg.user.cigarettesSummary + 1,
@@ -278,7 +279,7 @@ export class Actions extends Mixin(DevActions, Settings) {
       logger.debug(`U-${msg.user.chatId} [idle] ${currentDelta} >= ${USER_IDLE_TIME}`);
       const isMaxTimeLimitReached = msg.user.deltaTime >= USER_IDLE_TIME - 5;
       const newDelta = isMaxTimeLimitReached ? msg.user.deltaTime : this._computeNewDelta(msg.user);
-      const newNextTime = msg.ts + (newDelta * 60 * 1000);
+      const newNextTime = msg.ts + newDelta * 60 * 1000;
       update.penalty = 0;
       update.penaltyDays = msg.user.penalty ? msg.user.penaltyDays + 1 : 0;
       update.cigarettesInDay = 0;
@@ -295,13 +296,15 @@ export class Actions extends Mixin(DevActions, Settings) {
       const motivizerNext = msg.user.motivizerIndex + 1;
       update.motivizerIndex = motivizerNext !== motivizer.length ? motivizerNext : 0;
       const step = stepByDifficulty(msg.user.difficulty);
-      content.push(getContent(msg.user.lang, Content.ON_IDLE_STATS_2, {
-        prev_delta: minsToTimeString(msg.user.deltaTime, msg.user.lang),
-        new_delta: minsToTimeString(newDelta, msg.user.lang),
-        penalty: msg.user.penalty,
-        penalty_mins: penaltyMinutesString(msg.user),
-        step: minsToTimeString(step, msg.user.lang),
-      }));
+      content.push(
+        getContent(msg.user.lang, Content.ON_IDLE_STATS_2, {
+          prev_delta: minsToTimeString(msg.user.deltaTime, msg.user.lang),
+          new_delta: minsToTimeString(newDelta, msg.user.lang),
+          penalty: msg.user.penalty,
+          penalty_mins: penaltyMinutesString(msg.user),
+          step: minsToTimeString(step, msg.user.lang),
+        }),
+      );
       const ops: TelegramBot.SendMessageOptions = { parse_mode: "MarkdownV2" };
       await this.bot.sendMessage(msg.user.chatId, content.join(""), ops);
 
