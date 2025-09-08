@@ -241,11 +241,15 @@ export class DevActions {
   @transformMsg
   @onlyForKnownUsers
   public async devContent(msg: TelegramBot.Message) {
+    /*
     const contentKey: Content = Content.DIFFICULTY_SELECTED;
     const dialogKey: DialogKey = DialogKey.difficulty;
     // const dialogKey = undefined;
     const fakeProps = this.getDevContentProps(msg.user);
     await this._res(msg.user, contentKey, fakeProps, dialogKey);
+     */
+    const time_to_get_smoke = mssToTime(msg.user.nextTime, msg.user);
+    await this._res(msg.user, Content.NEXT_SMOKING_TIME, { time_to_get_smoke }, DialogKey.im_smoking);
   }
 
   @devModeOnly
