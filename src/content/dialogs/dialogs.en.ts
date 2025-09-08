@@ -120,12 +120,7 @@ export const dialogsEn: MultilineContent = {
     If you miss the scheduled time, no worries.${NL} 
     Just don’t forget to press the ${B}"I’m having a smoke"${B} button.${NL}
     We’ll take it into account, but it won’t stop your progress.${N2}
-    Let’s get started!${ND}
-    The next recommended time for you to smoke is after {{time_to_get_smoke}} ⏰️
-  `,
-  [Content.STAGE_2]: `
-    Time logged ✅️${ND}
-    The next recommended time to smoke is after {{time_to_get_smoke}} ⏰️
+    Let’s get started!
   `,
   [Content.STAGE_2_HINT]: `
     ⚠️ ${B}Important to remember!${B}${N2}
@@ -135,9 +130,11 @@ export const dialogsEn: MultilineContent = {
     you’ll forget you even wanted to smoke.${NL}
     That’s exactly how it works!
   `,
+  [Content.STAGE_2]: `
+    Time logged ✅️
+  `,
   [Content.STAGE_2_SUCCESS]: `
-    Time logged. Well done 👍${ND}
-    The next recommended time to smoke is after {{time_to_get_smoke}} ⏰️
+    Time logged. Well done 👍
   `,
   [Content.STAGE_2_IGNORE_MIN]: `
     You’re pressing the button too frequently.${NL}
@@ -284,8 +281,7 @@ export const dialogsEn: MultilineContent = {
     Start using the bot ⤵️ 
   `,
   [Content.SETTINGS_UPDATED]: `
-    ${B}Your settings have been updated${B} ✔${ND}️
-    Your next recommended smoke break will be after {{time_to_get_smoke}} ⏰️ 
+    ${B}Your settings have been updated${B} ✔
   `,
   [Content.SETTINGS_UPDATED_ON_IDLE]: `
     ${B}Your settings have been updated${B} ✔${ND}️

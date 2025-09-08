@@ -350,7 +350,8 @@ export class Actions extends Mixin(DevActions, Settings) {
     if (currentDelta < USER_IDLE_TIME) {
       const time_to_get_smoke = mssToTime(update.nextTime!, msg.user);
       const content = !isPenalty && msg.user.cigarettesInDay ? Content.STAGE_2_SUCCESS : Content.STAGE_2;
-      await this._res(msg.user, content, { time_to_get_smoke }, DialogKey.im_smoking);
+      await this._res(msg.user, content);
+      await this._res(msg.user, Content.NEXT_SMOKING_TIME, { time_to_get_smoke }, DialogKey.im_smoking);
     }
     // update user
     await UsersRepo.updateUser(msg, update);
