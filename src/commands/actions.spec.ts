@@ -295,10 +295,14 @@ describe("Actions", () => {
       msg.ts = user.lastTime + timeShift;
 
       await actions.imSmokingHandler(msg);
-      expect(_resSpy.calledOnce).to.be.true;
+      expect(_resSpy.calledTwice).to.be.true;
       expect(_resSpy.firstCall.args).to.be.deep.equal([
         user,
         Content.STAGE_2_SUCCESS,
+      ]);
+      expect(_resSpy.secondCall.args).to.be.deep.equal([
+        user,
+        Content.NEXT_SMOKING_TIME,
         { time_to_get_smoke: "15:53" },
         DialogKey.im_smoking,
       ]);
@@ -342,12 +346,16 @@ describe("Actions", () => {
       msg.ts = user.lastTime + timeShift;
 
       await actions.imSmokingHandler(msg);
-      expect(_resSpy.calledTwice).to.be.true;
+      expect(_resSpy.calledThrice).to.be.true;
       expect(_resSpy.firstCall.args[1]).to.be.equal(Content.PENALTY);
       expect(_resSpy.firstCall.args[2]).to.be.deep.equal({ penalty: user.penalty + 1 });
       expect(_resSpy.secondCall.args).to.be.deep.equal([
         user,
         Content.STAGE_2,
+      ]);
+      expect(_resSpy.thirdCall.args).to.be.deep.equal([
+        user,
+        Content.NEXT_SMOKING_TIME,
         { time_to_get_smoke: "15:25" },
         DialogKey.im_smoking,
       ]);
