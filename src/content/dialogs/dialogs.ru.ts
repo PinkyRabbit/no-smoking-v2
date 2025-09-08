@@ -114,7 +114,7 @@ export const dialogsRu: MultilineContent = {
     Переходим ко второму этапу ⤵️ 
   `,
   [Content.NEXT_SMOKING_TIME]: `
-    Следующий перекур будет после {{time_to_get_smoke}} ⏰️ 
+    Следующий перекур после {{time_to_get_smoke}} ⏰️ 
   `,
   [Content.STAGE_2_INITIAL]: `
     ${B}Всё готово${B}${N2}
