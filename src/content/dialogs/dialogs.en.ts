@@ -110,6 +110,9 @@ export const dialogsEn: MultilineContent = {
     It’s ${B}{{delta_time}}${B}.${ND}
     Let’s move on to Stage 2 ⤵️
   `,
+  [Content.NEXT_SMOKING_TIME]: `
+    The next recommended time to smoke is after {{time_to_get_smoke}} ⏰️
+  `,
   [Content.STAGE_2_INITIAL]: `
     ${B}All set!${B}${N2}
     Now we’ll try to stick to a smoking schedule.${NL}
@@ -131,9 +134,6 @@ export const dialogsEn: MultilineContent = {
     just keep yourself busy with something, and in 5 minutes 
     you’ll forget you even wanted to smoke.${NL}
     That’s exactly how it works!
-  `,
-  [Content.STAGE_2_ON_CONFIRM]: `
-    The next recommended time to smoke is after {{time_to_get_smoke}} ⏰️
   `,
   [Content.STAGE_2_SUCCESS]: `
     Time logged. Well done 👍${ND}

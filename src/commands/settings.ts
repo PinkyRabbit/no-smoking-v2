@@ -202,7 +202,7 @@ export class Settings {
     const time_to_get_smoke = mssToTime(msg.user.nextTime, msg.user);
     if (isConfirm) {
       await this._res(msg.user, Content.STAGE_2_HINT);
-      await this._res(msg.user, Content.STAGE_2_ON_CONFIRM, { time_to_get_smoke }, DialogKey.im_smoking);
+      await this._res(msg.user, Content.NEXT_SMOKING_TIME, { time_to_get_smoke }, DialogKey.im_smoking);
       return;
     }
     await this._res(msg.user, Content.SETTINGS_UPDATED, { time_to_get_smoke }, DialogKey.im_smoking);
