@@ -111,7 +111,7 @@ export const dialogsEn: MultilineContent = {
     Let’s move on to Stage 2 ⤵️
   `,
   [Content.NEXT_SMOKING_TIME]: `
-    The next recommended time to smoke is after {{time_to_get_smoke}} ⏰️
+    Next smoking break is after {{time_to_get_smoke}} ⏰️
   `,
   [Content.STAGE_2_INITIAL]: `
     ${B}All set!${B}${N2}
