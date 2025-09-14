@@ -84,8 +84,10 @@ export const dialogsEn: MultilineContent = {
     ✅️ {{stage_1_left}} times left
   `,
   [Content.STAGE_1_IGNORE_MIN]: `
-    You’re pressing the button too frequently.${N2}
-    The minimum interval to be recorded is {{min_stage_1}}.${ND}
+    You’re pressing the button too often.${N2}
+    If this happened through no fault of your own — we understand —
+    ${I}get used to closing the bot IMMEDIATELY${I} after reading the messages.${N2}
+    The minimum interval to be counted is {{min_stage_1}}.${ND}
     💢 {{stage_1_left}} times left
   `,
   [Content.STAGE_1_IGNORE_MAX]: `
@@ -139,6 +141,9 @@ export const dialogsEn: MultilineContent = {
   [Content.STAGE_2_IGNORE_MIN]: `
     You’re pressing the button too frequently.${NL}
     The minimum interval we will count is {{min_interval}}.
+    On modern phones, this may happen without the user’s fault.
+    We understand that this can be very annoying.${NL}
+    To avoid this — ${B}close the dialog with the bot as soon as you see the time${B}.
   `,
   [Content.STAGE_2_PROPS_MISSING]: `
     💢 Error: Settings not found.${N2}
@@ -179,7 +184,7 @@ export const dialogsEn: MultilineContent = {
     ⚡️ You've been going strong for {{winstrike}}! Well done!
   `,
   [Content.WINSTRIKE_BASE]: `
-    📚 To exit training mode, complete several consecutive days without a penalty. {{day}} / {{of_days}}
+    📚 To exit training mode, complete several days without a penalty. {{day}} / {{of_days}}
   `,
   [Content.WINSTRIKE_BASE_FAILED]: `
     📌 You are on the ${B}training${B} difficulty level. 
