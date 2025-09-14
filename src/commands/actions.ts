@@ -287,6 +287,15 @@ export class Actions extends Mixin(DevActions, Settings) {
       update.nextTime = newNextTime;
       update.winstrike = msg.user.penalty ? 0 : msg.user.winstrike + 1;
 
+      const isEasyDifficulty = msg.user.difficulty === Difficulty.EASY;
+      if (isEasyDifficulty) {
+        update.penaltyDays = 0;
+        update.winstrike = msg.user.penalty ? msg.user.winstrike : msg.user.winstrike + 1;
+      } else {
+        update.penaltyDays = msg.user.penalty ? msg.user.penaltyDays + 1 : 0;
+        update.winstrike = msg.user.penalty ? 0 : msg.user.winstrike + 1;
+      }
+
       const content: string[] = [];
       const cigarettes = cigarettesText(msg);
       content.push(getContent(msg.user.lang, Content.ON_IDLE_STATS_1, { cigarettes }));
@@ -315,7 +324,6 @@ export class Actions extends Mixin(DevActions, Settings) {
       }
       // winstrike messages
       const WINSTRIKE_MIN_DAYS = 3;
-      const isEasyDifficulty = msg.user.difficulty === Difficulty.EASY;
       const isWinstrike = update.winstrike > WINSTRIKE_MIN_DAYS - 1;
       if (isWinstrike) {
         const winstrikeDays = daysToString(update.winstrike, msg.user.lang);
@@ -328,7 +336,7 @@ export class Actions extends Mixin(DevActions, Settings) {
         const props = { day: update.winstrike, of_days: WINSTRIKE_MIN_DAYS };
         await this._res(msg.user, Content.WINSTRIKE_BASE, props);
       }
-      if (isEasyDifficulty && !update.winstrike) {
+      if (isEasyDifficulty && !msg.user.penalty) {
         await this._res(msg.user, Content.WINSTRIKE_BASE_FAILED);
       }
       // display hint if limit is reached

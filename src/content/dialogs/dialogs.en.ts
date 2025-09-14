@@ -179,7 +179,7 @@ export const dialogsEn: MultilineContent = {
     ⚡️ You've been going strong for {{winstrike}}! Well done!
   `,
   [Content.WINSTRIKE_BASE]: `
-    📚 To exit training mode, complete several consecutive days without a penalty. {{day}} / {{of_days}}
+    📚 To exit training mode, complete several days without a penalty. {{day}} / {{of_days}}
   `,
   [Content.WINSTRIKE_BASE_FAILED]: `
     📌 You are on the ${B}training${B} difficulty level. 
