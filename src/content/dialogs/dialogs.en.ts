@@ -139,6 +139,9 @@ export const dialogsEn: MultilineContent = {
   [Content.STAGE_2_IGNORE_MIN]: `
     You’re pressing the button too frequently.${NL}
     The minimum interval we will count is {{min_interval}}.
+    On modern phones, this may happen without the user’s fault.
+    We understand that this can be very annoying.${NL}
+    To avoid this — ${B}close the dialog with the bot as soon as you see the time${B}.
   `,
   [Content.STAGE_2_PROPS_MISSING]: `
     💢 Error: Settings not found.${N2}
