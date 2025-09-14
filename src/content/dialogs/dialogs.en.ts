@@ -84,8 +84,10 @@ export const dialogsEn: MultilineContent = {
     ✅️ {{stage_1_left}} times left
   `,
   [Content.STAGE_1_IGNORE_MIN]: `
-    You’re pressing the button too frequently.${N2}
-    The minimum interval to be recorded is {{min_stage_1}}.${ND}
+    You’re pressing the button too often.${N2}
+    If this happened through no fault of your own — we understand —
+    ${I}get used to closing the bot IMMEDIATELY${I} after reading the messages.${N2}
+    The minimum interval to be counted is {{min_stage_1}}.${ND}
     💢 {{stage_1_left}} times left
   `,
   [Content.STAGE_1_IGNORE_MAX]: `
