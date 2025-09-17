@@ -187,9 +187,10 @@ export const dialogsEn: MultilineContent = {
     📚 To exit training mode, complete several days without a penalty. {{day}} / {{of_days}}
   `,
   [Content.WINSTRIKE_BASE_FAILED]: `
-    📌 You are on the ${B}training${B} difficulty level. 
-    It’s designed to help you understand how the bot works.${NL} 
-    ${I}Penalty points are not applied.${I}
+    ⭐️ You are on the ${B}training${B} difficulty level${N2}
+    ✨${I}Penalty points are not counted.${I}✨${N2}
+    This is to make it easier for you to understand how the bot works.${N2}
+    Still, try to get through without penalties next time 😉
   `,
   [Content.WINSTRIKE_BASE_SUCCESS]: `
     🥁 We can see that you’ve gotten the hang of it and are ready to change the difficulty.

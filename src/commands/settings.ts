@@ -203,10 +203,14 @@ export class Settings {
     // penalty and win strike section
     const DAYS_TO_CHANGE_DIFFICULTY = 3;
     const isEasyDifficulty = msg.user.difficulty === Difficulty.EASY;
-    console.log("v=", !isConfirm , !isEasyDifficulty , msg.user.penaltyDays >= DAYS_TO_CHANGE_DIFFICULTY);
-    if (!isIgnoreHint && !isEasyDifficulty && msg.user.penaltyDays >= DAYS_TO_CHANGE_DIFFICULTY) {
+    const isPenaltyState = msg.user.penaltyDays >= DAYS_TO_CHANGE_DIFFICULTY;
+    if (!isIgnoreHint && !isEasyDifficulty && isPenaltyState) {
       await this._res(msg.user, Content.PENALTY_3, {}, DialogKey.difficulty_easy);
       return;
+    }
+    console.log("v = ", isEasyDifficulty, isPenaltyState);
+    if (isEasyDifficulty && isPenaltyState) {
+      await this._res(msg.user, Content.WINSTRIKE_BASE_FAILED);
     }
     // winstrike messages
     // const isWinstrike = msg.user.winstrike >= DAYS_TO_CHANGE_DIFFICULTY;

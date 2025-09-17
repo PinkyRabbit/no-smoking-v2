@@ -290,7 +290,7 @@ export class Actions extends Mixin(DevActions, Settings) {
 
       const isEasyDifficulty = msg.user.difficulty === Difficulty.EASY;
       if (isEasyDifficulty) {
-        update.penaltyDays = 0;
+        update.penaltyDays = msg.user.penalty ? 3 : 0;
         update.winstrike = msg.user.penalty ? msg.user.winstrike : msg.user.winstrike + 1;
       } else {
         update.penaltyDays = msg.user.penalty ? msg.user.penaltyDays + 1 : 0;
