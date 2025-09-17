@@ -8,7 +8,7 @@ import { DevActions } from "./development";
 import { Settings } from "./settings";
 import { User, UsersRepo } from "../db";
 import { IGNORE_TIME, MIN_INTERVAL, STAGE_1_MAX, STAGE_1_STEPS, USER_IDLE_TIME } from "./constants";
-import { daysToString, minsToTimeString } from "../lib_helpers/humanize-duration";
+import { minsToTimeString } from "../lib_helpers/humanize-duration";
 import { LogActionCalls, onlyForKnownUsers, transformMsg } from "./decorators";
 import { tgLangCodeToLang } from "../lib_helpers/i18n";
 import { getFormattedStartDate, mssToTime, tsToDateTime } from "../lib_helpers/luxon";
@@ -34,6 +34,7 @@ export class Actions extends Mixin(DevActions, Settings) {
     this.onDev = this.onDev.bind(this);
     this.onHow = this.onHow.bind(this);
     this.devModeDisabled = this.devModeDisabled.bind(this);
+    this.onIgnoreTrainingLevel = this.onIgnoreTrainingLevel.bind(this);
   }
 
   override _res(
@@ -317,28 +318,6 @@ export class Actions extends Mixin(DevActions, Settings) {
       const ops: TelegramBot.SendMessageOptions = { parse_mode: "MarkdownV2" };
       await this.bot.sendMessage(msg.user.chatId, content.join(""), ops);
 
-      // hint three days penalty
-      if (update.penaltyDays === 3) {
-        update.penaltyDays = 0;
-        await this._res(msg.user, Content.PENALTY_3, {}, DialogKey.difficulty_easy);
-      }
-      // winstrike messages
-      const WINSTRIKE_MIN_DAYS = 3;
-      const isWinstrike = update.winstrike > WINSTRIKE_MIN_DAYS - 1;
-      if (isWinstrike) {
-        const winstrikeDays = daysToString(update.winstrike, msg.user.lang);
-        await this._res(msg.user, Content.WINSTRIKE, { winstrike: winstrikeDays });
-      }
-      if (isEasyDifficulty && isWinstrike) {
-        await this._res(msg.user, Content.WINSTRIKE_BASE_SUCCESS);
-      }
-      if (isEasyDifficulty && !isWinstrike && update.winstrike) {
-        const props = { day: update.winstrike, of_days: WINSTRIKE_MIN_DAYS };
-        await this._res(msg.user, Content.WINSTRIKE_BASE, props);
-      }
-      if (isEasyDifficulty && !msg.user.penalty) {
-        await this._res(msg.user, Content.WINSTRIKE_BASE_FAILED);
-      }
       // display hint if limit is reached
       if (isMaxTimeLimitReached) {
         await this._res(msg.user, Content.MAXIMUM_REACHED, {}, DialogKey.max_time);

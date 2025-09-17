@@ -133,7 +133,7 @@ export class Settings {
   @onlyForKnownUsers
   public async localTimeConfirmation(msg: TelegramBot.Message, isConfirm?: boolean) {
     if (msg.user.difficulty) {
-      return this.onSettingsDone(msg, isConfirm);
+      return this.onSettingsDone(msg, { isConfirm });
     }
     await UsersRepo.updateUser(msg, { difficulty: Difficulty.EASY });
     await this._res(msg.user, Content.DIFFICULTY_AUTO);
@@ -176,7 +176,11 @@ export class Settings {
    * When everything is set up
    * @private
    */
-  private async onSettingsDone(msg: TelegramBot.Message, isConfirm?: boolean) {
+  private async onSettingsDone(msg: TelegramBot.Message, options?: {
+    isConfirm?: boolean;
+    isIgnoreHint?: boolean;
+  }) {
+    const { isConfirm, isIgnoreHint } = options || {};
     if (!msg.user.deltaTime || !msg.user.timezone) {
       logger.error("Incorrect call of onSettingsDone");
       return;
@@ -194,6 +198,33 @@ export class Settings {
       await this._res(msg.user, Content.NEXT_SMOKING_TIME, { time_to_get_smoke }, DialogKey.im_smoking);
       return;
     }
+
+    console.log(msg.user);
+    // penalty and win strike section
+    const DAYS_TO_CHANGE_DIFFICULTY = 3;
+    const isEasyDifficulty = msg.user.difficulty === Difficulty.EASY;
+    console.log("v=", !isConfirm , !isEasyDifficulty , msg.user.penaltyDays >= DAYS_TO_CHANGE_DIFFICULTY);
+    if (!isIgnoreHint && !isEasyDifficulty && msg.user.penaltyDays >= DAYS_TO_CHANGE_DIFFICULTY) {
+      await this._res(msg.user, Content.PENALTY_3, {}, DialogKey.difficulty_easy);
+      return;
+    }
+    // winstrike messages
+    // const isWinstrike = msg.user.winstrike >= DAYS_TO_CHANGE_DIFFICULTY;
+    // if (isWinstrike) {
+    //   const winstrikeDays = daysToString(update.winstrike, msg.user.lang);
+    //   await this._res(msg.user, Content.WINSTRIKE, { winstrike: winstrikeDays });
+    // }
+    // if (isEasyDifficulty && isWinstrike) {
+    //   await this._res(msg.user, Content.WINSTRIKE_BASE_SUCCESS);
+    // }
+    // if (isEasyDifficulty && !isWinstrike && update.winstrike) {
+    //   const props = { day: update.winstrike, of_days: WINSTRIKE_MIN_DAYS };
+    //   await this._res(msg.user, Content.WINSTRIKE_BASE, props);
+    // }
+    // if (isEasyDifficulty && !msg.user.penalty) {
+    //   await this._res(msg.user, Content.WINSTRIKE_BASE_FAILED);
+    // }
+
     // stage 2 user without next time
     if (!msg.user.nextTime) {
       await this._res(msg.user, Content.SETTINGS_UPDATED_ON_IDLE);
@@ -207,5 +238,11 @@ export class Settings {
       await this._res(msg.user, Content.SETTINGS_UPDATED);
     }
     await this._res(msg.user, Content.NEXT_SMOKING_TIME, { time_to_get_smoke }, DialogKey.im_smoking);
+  }
+
+  @transformMsg
+  @onlyForKnownUsers
+  public onIgnoreTrainingLevel(msg: TelegramBot.Message) {
+    return this.onSettingsDone(msg, { isIgnoreHint: true });
   }
 }

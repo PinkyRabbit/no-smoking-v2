@@ -165,6 +165,7 @@ export enum BTN {
   Reset_Stage_2 = "reset_to_stage_2",
   Reset_Ignore = "reset_ignore",
   Level_Easy = "level_easy",
+  Level_Easy_Ignore = "level_easy_ignore",
   Level_Medium = "level_medium",
   Level_Hard = "level_hard",
   Ignore_Success = "ignore_success",

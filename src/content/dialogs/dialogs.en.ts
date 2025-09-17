@@ -157,9 +157,9 @@ export const dialogsEn: MultilineContent = {
     🚭 Current penalty points: ${B}{{penalty}}${B}
   `,
   [Content.PENALTY_3]: `
-    📚 Most people easily stick to the smoking schedule.${NL}
+    🤯 Most people easily stick to the smoking schedule.${NL}
     However, we’ve noticed that your penalty points are adding up.${NL}
-    You need to stabilise.${NL}
+    You need to stabilise.${N2}
     That’s exactly why ${B}the training mode${B} was created!${N2}
     We strongly recommend ${I}switching to it and regaining your stability.${I}
   `,

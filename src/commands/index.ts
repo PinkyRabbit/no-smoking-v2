@@ -46,6 +46,9 @@ export const botActionsInit = (bot: TgBot) => {
       case BTN.Level_Hard:
         act.changeLevelHandler(message, Difficulty.HARD);
         break;
+      case BTN.Level_Easy_Ignore:
+        act.onIgnoreTrainingLevel(message);
+        break;
       case BTN.Reset_Ignore:
         act.resetIgnoreHandler(message);
         break;

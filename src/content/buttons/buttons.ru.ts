@@ -9,6 +9,7 @@ export const buttonsRu: ButtonNames  = {
   [BTN.Reset_Stage_2]: "Сбросить до Этапа 2 🐯",
   [BTN.Reset_Ignore]: "Оставить \"как есть\" ❌️",
   [BTN.Level_Easy]: "Тренировочный режим 📚",
+  [BTN.Level_Easy_Ignore]: "Продолжим ❌️",
   [BTN.Level_Medium]: "Обычный 👍",
   [BTN.Level_Hard]: "Продвинутый 👑",
   [BTN.Ignore_Success]: "Я бросил!",
