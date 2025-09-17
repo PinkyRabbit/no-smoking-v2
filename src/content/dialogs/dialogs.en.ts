@@ -212,7 +212,7 @@ export const dialogsEn: MultilineContent = {
   [Content.DIFFICULTY_HARD]: "Advanced",
   [Content.DIFFICULTY_SELECTED]: `
     You can always change the difficulty level${NL}
-    ${B}by typing${B} /level{ND}
+    ${B}by typing${B} /level${ND}
     You have selected the ${B}"{{difficulty}}"${B} difficulty level.
   `,
   [Content.DIFFICULTY_AUTO]: `
