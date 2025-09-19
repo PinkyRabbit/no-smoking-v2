@@ -201,6 +201,7 @@ export const dialogsEn: MultilineContent = {
     - ${B}Training Mode${B}: +0.5 minute per day${NL}
     - ${B}Normal${B}: +1 minute per day${NL}
     - ${B}Advanced${B}: +2 minutes per day${NL}
+    Your current difficulty level - ${B}{{difficulty}}${B}${N2}
     The ${B}Training Mode${B} is ideal for beginners, helping you get used to following intervals
     even if you occasionally miss the schedule. It’s a training mode designed to help you ease into the process.${N2}
     If you’re ready to make serious progress with your habit, choose ${B}Normal${B} or ${B}Advanced${B}. 

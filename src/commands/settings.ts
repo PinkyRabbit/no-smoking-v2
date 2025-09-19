@@ -63,7 +63,8 @@ export class Settings {
   @transformMsg
   @onlyForKnownUsers
   public async onLevel(msg: TelegramBot.Message) {
-    await this._res(msg.user, Content.DIFFICULTY, {}, DialogKey.difficulty);
+    const difficulty = difficultyNameByLevel(msg.user.difficulty, msg.user.lang);
+    await this._res(msg.user, Content.DIFFICULTY, { difficulty }, DialogKey.difficulty);
   }
 
   @transformMsg
