@@ -214,17 +214,14 @@ export class Settings {
       const winstrikeDays = daysToString(msg.user.winstrike, msg.user.lang);
       await this._res(msg.user, Content.WINSTRIKE, { winstrike: winstrikeDays });
     }
-    if (isEasyDifficulty && isWinstrike && !isIgnoreHint) {
+    if (isEasyDifficulty && !isIgnoreHint && isWinstrike) {
       await this._res(msg.user, Content.WINSTRIKE_BASE_SUCCESS, {}, DialogKey.change_level);
       return;
     }
-    // if (isEasyDifficulty && !isWinstrike && update.winstrike) {
-    //   const props = { day: update.winstrike, of_days: WINSTRIKE_MIN_DAYS };
-    //   await this._res(msg.user, Content.WINSTRIKE_BASE, props);
-    // }
-    // if (isEasyDifficulty && !msg.user.penalty) {
-    //   await this._res(msg.user, Content.WINSTRIKE_BASE_FAILED);
-    // }
+    if (isEasyDifficulty && !isIgnoreHint && !isWinstrike && msg.user.winstrike) {
+      const props = { day: msg.user.winstrike, of_days: DAYS_TO_CHANGE_DIFFICULTY };
+      await this._res(msg.user, Content.WINSTRIKE_BASE, props);
+    }
 
     // stage 2 user without next time
     if (!msg.user.nextTime) {
