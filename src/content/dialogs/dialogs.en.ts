@@ -139,11 +139,11 @@ export const dialogsEn: MultilineContent = {
     Time logged. Well done 👍
   `,
   [Content.STAGE_2_IGNORE_MIN]: `
-    You’re pressing the button too frequently.${NL}
-    The minimum interval we will count is {{min_interval}}.
-    On modern phones, this may happen without the user’s fault.
+    You’re pressing the button too frequently ⏳${NL}
+    The minimum interval we will count is ${B}{{min_interval}}${B}.${N2}
+    ${I}On modern phones, this may happen without the user’s fault.
     We understand that this can be very annoying.${NL}
-    To avoid this — ${B}close the dialog with the bot as soon as you see the time${B}.
+    To avoid this — close the chat as soon as you see the time.${I}
   `,
   [Content.STAGE_2_PROPS_MISSING]: `
     💢 Error: Settings not found.${N2}
@@ -190,7 +190,7 @@ export const dialogsEn: MultilineContent = {
     ⭐️ You are on the ${B}training${B} difficulty level${N2}
     ✨${I}Penalty points are not counted.${I}✨${N2}
     This is to make it easier for you to understand how the bot works.${N2}
-    Still, try to get through without penalties next time 😉
+    Try to get through without penalties next time 😉
   `,
   [Content.WINSTRIKE_BASE_SUCCESS]: `
     🥁 We can see that you’ve gotten the hang of it and are ready to change the difficulty!
