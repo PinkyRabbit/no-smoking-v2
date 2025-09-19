@@ -190,7 +190,7 @@ export const dialogsEn: MultilineContent = {
     ⭐️ You are on the ${B}training${B} difficulty level${N2}
     ✨${I}Penalty points are not counted.${I}✨${N2}
     This is to make it easier for you to understand how the bot works.${N2}
-    Try to get through without penalties next time 😉
+    Try to get through without penalties 😉
   `,
   [Content.WINSTRIKE_BASE_SUCCESS]: `
     🥁 We can see that you’ve gotten the hang of it and are ready to change the difficulty!
