@@ -139,6 +139,8 @@ export class DevActions {
       update.cigarettesInDay = 0;
     }
     if (isThree) {
+      update.difficulty = Difficulty.HARD;
+      update.penalty = 1;
       update.penaltyDays = 2;
     }
     if (isInMaxPossibleDeltaTime) {

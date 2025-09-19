@@ -139,11 +139,11 @@ export const dialogsEn: MultilineContent = {
     Time logged. Well done 👍
   `,
   [Content.STAGE_2_IGNORE_MIN]: `
-    You’re pressing the button too frequently.${NL}
-    The minimum interval we will count is {{min_interval}}.
-    On modern phones, this may happen without the user’s fault.
+    You’re pressing the button too frequently ⏳${NL}
+    The minimum interval we will count is ${B}{{min_interval}}${B}.${N2}
+    ${I}On modern phones, this may happen without the user’s fault.
     We understand that this can be very annoying.${NL}
-    To avoid this — ${B}close the dialog with the bot as soon as you see the time${B}.
+    To avoid this — close the chat as soon as you see the time.${I}
   `,
   [Content.STAGE_2_PROPS_MISSING]: `
     💢 Error: Settings not found.${N2}
@@ -157,9 +157,9 @@ export const dialogsEn: MultilineContent = {
     🚭 Current penalty points: ${B}{{penalty}}${B}
   `,
   [Content.PENALTY_3]: `
-    📚 Most people easily stick to the smoking schedule.${NL}
+    🤯 Most people easily stick to the smoking schedule.${NL}
     However, we’ve noticed that your penalty points are adding up.${NL}
-    You need to stabilise.${NL}
+    You need to stabilise.${N2}
     That’s exactly why ${B}the training mode${B} was created!${N2}
     We strongly recommend ${I}switching to it and regaining your stability.${I}
   `,
@@ -187,13 +187,13 @@ export const dialogsEn: MultilineContent = {
     📚 To exit training mode, complete several days without a penalty. {{day}} / {{of_days}}
   `,
   [Content.WINSTRIKE_BASE_FAILED]: `
-    📌 You are on the ${B}training${B} difficulty level. 
-    It’s designed to help you understand how the bot works.${NL} 
-    ${I}Penalty points are not applied.${I}
+    ⭐️ You are on the ${B}training${B} difficulty level${N2}
+    ✨${I}Penalty points are not counted.${I}✨${N2}
+    This is to make it easier for you to understand how the bot works.${N2}
+    Try to get through without penalties 😉
   `,
   [Content.WINSTRIKE_BASE_SUCCESS]: `
-    🥁 We can see that you’ve gotten the hang of it and are ready to change the difficulty.
-    To do so, press /level.
+    🥁 We can see that you’ve gotten the hang of it and are ready to change the difficulty!
   `,
   [Content.DIFFICULTY]: `
     📈 ${B}Choose Your Difficulty Level${B}${N2}
@@ -201,6 +201,7 @@ export const dialogsEn: MultilineContent = {
     - ${B}Training Mode${B}: +0.5 minute per day${NL}
     - ${B}Normal${B}: +1 minute per day${NL}
     - ${B}Advanced${B}: +2 minutes per day${NL}
+    Your current difficulty level - ${B}{{difficulty}}${B}${N2}
     The ${B}Training Mode${B} is ideal for beginners, helping you get used to following intervals
     even if you occasionally miss the schedule. It’s a training mode designed to help you ease into the process.${N2}
     If you’re ready to make serious progress with your habit, choose ${B}Normal${B} or ${B}Advanced${B}. 
@@ -212,7 +213,7 @@ export const dialogsEn: MultilineContent = {
   [Content.DIFFICULTY_HARD]: "Advanced",
   [Content.DIFFICULTY_SELECTED]: `
     You can always change the difficulty level${NL}
-    ${B}by typing${B} /level{ND}
+    ${B}by typing${B} /level${ND}
     You have selected the ${B}"{{difficulty}}"${B} difficulty level.
   `,
   [Content.DIFFICULTY_AUTO]: `

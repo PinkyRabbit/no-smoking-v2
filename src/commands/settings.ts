@@ -8,6 +8,7 @@ import { UsersRepo } from "../db";
 import logger from "../logger";
 import { IGNORE_TIME } from "./constants";
 import { PlainUser } from "../global";
+import { daysToString } from "../lib_helpers/humanize-duration";
 
 export class Settings {
   /**
@@ -62,7 +63,8 @@ export class Settings {
   @transformMsg
   @onlyForKnownUsers
   public async onLevel(msg: TelegramBot.Message) {
-    await this._res(msg.user, Content.DIFFICULTY, {}, DialogKey.difficulty);
+    const difficulty = difficultyNameByLevel(msg.user.difficulty, msg.user.lang);
+    await this._res(msg.user, Content.DIFFICULTY, { difficulty }, DialogKey.difficulty);
   }
 
   @transformMsg
@@ -71,10 +73,7 @@ export class Settings {
     await UsersRepo.updateUser(msg, { difficulty });
     const difficultyName = difficultyNameByLevel(difficulty, msg.user.lang);
     await this._res(msg.user, Content.DIFFICULTY_SELECTED, { difficulty: difficultyName });
-    if (!msg.user.timezone) {
-      return this.newLocalTime(msg);
-    }
-    return this.onSettingsDone(msg);
+    return this.onSettingsDone(msg, { isIgnoreHint: true, isConfirm: true });
   }
 
   /**
@@ -133,7 +132,7 @@ export class Settings {
   @onlyForKnownUsers
   public async localTimeConfirmation(msg: TelegramBot.Message, isConfirm?: boolean) {
     if (msg.user.difficulty) {
-      return this.onSettingsDone(msg, isConfirm);
+      return this.onSettingsDone(msg, { isConfirm });
     }
     await UsersRepo.updateUser(msg, { difficulty: Difficulty.EASY });
     await this._res(msg.user, Content.DIFFICULTY_AUTO);
@@ -176,7 +175,11 @@ export class Settings {
    * When everything is set up
    * @private
    */
-  private async onSettingsDone(msg: TelegramBot.Message, isConfirm?: boolean) {
+  private async onSettingsDone(msg: TelegramBot.Message, options?: {
+    isConfirm?: boolean;
+    isIgnoreHint?: boolean;
+  }) {
+    const { isConfirm, isIgnoreHint } = options || {};
     if (!msg.user.deltaTime || !msg.user.timezone) {
       logger.error("Incorrect call of onSettingsDone");
       return;
@@ -194,6 +197,32 @@ export class Settings {
       await this._res(msg.user, Content.NEXT_SMOKING_TIME, { time_to_get_smoke }, DialogKey.im_smoking);
       return;
     }
+
+    // penalty and win strike section
+    const DAYS_TO_CHANGE_DIFFICULTY = 3;
+    const isEasyDifficulty = msg.user.difficulty === Difficulty.EASY;
+    const isPenaltyState = msg.user.penaltyDays >= DAYS_TO_CHANGE_DIFFICULTY;
+    if (!isIgnoreHint && !isEasyDifficulty && isPenaltyState) {
+      await this._res(msg.user, Content.PENALTY_3, {}, DialogKey.difficulty_easy);
+      return;
+    }
+    if (isEasyDifficulty && isPenaltyState) {
+      await this._res(msg.user, Content.WINSTRIKE_BASE_FAILED);
+    }
+    const isWinstrike = !isPenaltyState && msg.user.winstrike >= DAYS_TO_CHANGE_DIFFICULTY;
+    if (isWinstrike && !isIgnoreHint) {
+      const winstrikeDays = daysToString(msg.user.winstrike, msg.user.lang);
+      await this._res(msg.user, Content.WINSTRIKE, { winstrike: winstrikeDays });
+    }
+    if (isEasyDifficulty && !isIgnoreHint && isWinstrike) {
+      await this._res(msg.user, Content.WINSTRIKE_BASE_SUCCESS, {}, DialogKey.change_level);
+      return;
+    }
+    if (isEasyDifficulty && !isIgnoreHint && !isWinstrike && msg.user.winstrike) {
+      const props = { day: msg.user.winstrike, of_days: DAYS_TO_CHANGE_DIFFICULTY };
+      await this._res(msg.user, Content.WINSTRIKE_BASE, props);
+    }
+
     // stage 2 user without next time
     if (!msg.user.nextTime) {
       await this._res(msg.user, Content.SETTINGS_UPDATED_ON_IDLE);
@@ -207,5 +236,11 @@ export class Settings {
       await this._res(msg.user, Content.SETTINGS_UPDATED);
     }
     await this._res(msg.user, Content.NEXT_SMOKING_TIME, { time_to_get_smoke }, DialogKey.im_smoking);
+  }
+
+  @transformMsg
+  @onlyForKnownUsers
+  public onIgnoreChangesGuide(msg: TelegramBot.Message) {
+    return this.onSettingsDone(msg, { isIgnoreHint: true, isConfirm: true });
   }
 }
