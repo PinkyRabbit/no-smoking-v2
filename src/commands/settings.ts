@@ -8,6 +8,7 @@ import { UsersRepo } from "../db";
 import logger from "../logger";
 import { IGNORE_TIME } from "./constants";
 import { PlainUser } from "../global";
+import { daysToString } from "../lib_helpers/humanize-duration";
 
 export class Settings {
   /**
@@ -71,10 +72,7 @@ export class Settings {
     await UsersRepo.updateUser(msg, { difficulty });
     const difficultyName = difficultyNameByLevel(difficulty, msg.user.lang);
     await this._res(msg.user, Content.DIFFICULTY_SELECTED, { difficulty: difficultyName });
-    if (!msg.user.timezone) {
-      return this.newLocalTime(msg);
-    }
-    return this.onSettingsDone(msg);
+    return this.onSettingsDone(msg, { isIgnoreHint: true, isConfirm: true });
   }
 
   /**
@@ -208,19 +206,18 @@ export class Settings {
       await this._res(msg.user, Content.PENALTY_3, {}, DialogKey.difficulty_easy);
       return;
     }
-    console.log("v = ", isEasyDifficulty, isPenaltyState);
     if (isEasyDifficulty && isPenaltyState) {
       await this._res(msg.user, Content.WINSTRIKE_BASE_FAILED);
     }
-    // winstrike messages
-    // const isWinstrike = msg.user.winstrike >= DAYS_TO_CHANGE_DIFFICULTY;
-    // if (isWinstrike) {
-    //   const winstrikeDays = daysToString(update.winstrike, msg.user.lang);
-    //   await this._res(msg.user, Content.WINSTRIKE, { winstrike: winstrikeDays });
-    // }
-    // if (isEasyDifficulty && isWinstrike) {
-    //   await this._res(msg.user, Content.WINSTRIKE_BASE_SUCCESS);
-    // }
+    const isWinstrike = !isPenaltyState && msg.user.winstrike >= DAYS_TO_CHANGE_DIFFICULTY;
+    if (isWinstrike && !isIgnoreHint) {
+      const winstrikeDays = daysToString(msg.user.winstrike, msg.user.lang);
+      await this._res(msg.user, Content.WINSTRIKE, { winstrike: winstrikeDays });
+    }
+    if (isEasyDifficulty && isWinstrike && !isIgnoreHint) {
+      await this._res(msg.user, Content.WINSTRIKE_BASE_SUCCESS, {}, DialogKey.change_level);
+      return;
+    }
     // if (isEasyDifficulty && !isWinstrike && update.winstrike) {
     //   const props = { day: update.winstrike, of_days: WINSTRIKE_MIN_DAYS };
     //   await this._res(msg.user, Content.WINSTRIKE_BASE, props);
@@ -246,7 +243,7 @@ export class Settings {
 
   @transformMsg
   @onlyForKnownUsers
-  public onIgnoreTrainingLevel(msg: TelegramBot.Message) {
-    return this.onSettingsDone(msg, { isIgnoreHint: true });
+  public onIgnoreChangesGuide(msg: TelegramBot.Message) {
+    return this.onSettingsDone(msg, { isIgnoreHint: true, isConfirm: true });
   }
 }

@@ -37,6 +37,9 @@ export const botActionsInit = (bot: TgBot) => {
       case BTN.Lang_EN:
         act.changeLanguageHandler(message, Lang.EN);
         break;
+      case BTN.Level_Change:
+        act.onLevel(message);
+        break;
       case BTN.Level_Easy:
         act.changeLevelHandler(message, Difficulty.EASY);
         break;
@@ -47,7 +50,8 @@ export const botActionsInit = (bot: TgBot) => {
         act.changeLevelHandler(message, Difficulty.HARD);
         break;
       case BTN.Level_Easy_Ignore:
-        act.onIgnoreTrainingLevel(message);
+      case BTN.Level_Keep_As_It_Is:
+        act.onIgnoreChangesGuide(message);
         break;
       case BTN.Reset_Ignore:
         act.resetIgnoreHandler(message);

@@ -12,6 +12,8 @@ export const buttonsEn: ButtonNames = {
   [BTN.Level_Easy_Ignore]: "Ignore ❌️",
   [BTN.Level_Medium]: "Normal 👍",
   [BTN.Level_Hard]: "Advanced 👑",
+  [BTN.Level_Keep_As_It_Is]: "Keep train 📚",
+  [BTN.Level_Change]: "Change level 🥇",
   [BTN.Ignore_Success]: "I quit smoking!",
   [BTN.Ignore_Failed]: "I’ll keep smoking 👎",
   [BTN.Ignore_Busy]: "Let’s continue ▶️",

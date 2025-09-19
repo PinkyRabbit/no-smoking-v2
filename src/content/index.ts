@@ -183,6 +183,9 @@ const selectButtonsByKey = (key: DialogKey, locale: Lang): InlineKeyboard => {
       [buttonFor(BTN.Local_Time_Wrong, locale), buttonFor(BTN.Local_Time_Correct, locale)],
     ];
   }
+  if (key === DialogKey.change_level) {
+    return [[buttonFor(BTN.Level_Keep_As_It_Is, locale), buttonFor(BTN.Level_Change, locale)]];
+  }
   return [];
 };
 

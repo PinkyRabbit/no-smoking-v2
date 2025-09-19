@@ -193,8 +193,7 @@ export const dialogsEn: MultilineContent = {
     Still, try to get through without penalties next time 😉
   `,
   [Content.WINSTRIKE_BASE_SUCCESS]: `
-    🥁 We can see that you’ve gotten the hang of it and are ready to change the difficulty.
-    To do so, press /level.
+    🥁 We can see that you’ve gotten the hang of it and are ready to change the difficulty!
   `,
   [Content.DIFFICULTY]: `
     📈 ${B}Choose Your Difficulty Level${B}${N2}

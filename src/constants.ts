@@ -136,6 +136,7 @@ export enum DialogKey {
   max_time = "max_time",
   local_time = "local_time",
   confirm_local_time = "local_time_confirmation",
+  change_level = "change_level",
 }
 
 /**
@@ -168,6 +169,8 @@ export enum BTN {
   Level_Easy_Ignore = "level_easy_ignore",
   Level_Medium = "level_medium",
   Level_Hard = "level_hard",
+  Level_Keep_As_It_Is = "level_keep_as_it_is",
+  Level_Change = "level_change",
   Ignore_Success = "ignore_success",
   Ignore_Failed = "ignore_failed",
   Ignore_Busy = "ignore_busy",

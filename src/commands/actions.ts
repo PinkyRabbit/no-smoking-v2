@@ -34,7 +34,7 @@ export class Actions extends Mixin(DevActions, Settings) {
     this.onDev = this.onDev.bind(this);
     this.onHow = this.onHow.bind(this);
     this.devModeDisabled = this.devModeDisabled.bind(this);
-    this.onIgnoreTrainingLevel = this.onIgnoreTrainingLevel.bind(this);
+    this.onIgnoreChangesGuide = this.onIgnoreChangesGuide.bind(this);
   }
 
   override _res(

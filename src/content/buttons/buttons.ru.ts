@@ -12,6 +12,8 @@ export const buttonsRu: ButtonNames  = {
   [BTN.Level_Easy_Ignore]: "Продолжим ❌️",
   [BTN.Level_Medium]: "Обычный 👍",
   [BTN.Level_Hard]: "Продвинутый 👑",
+  [BTN.Level_Keep_As_It_Is]: "Не меняем 📚",
+  [BTN.Level_Change]: "Поднять уровень 🥇",
   [BTN.Ignore_Success]: "Я бросил!",
   [BTN.Ignore_Failed]: "Не буду бросать 👎",
   [BTN.Ignore_Busy]: "Просто продолжим ▶️",
