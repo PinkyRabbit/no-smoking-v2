@@ -198,7 +198,6 @@ export class Settings {
       return;
     }
 
-    console.log(msg.user);
     // penalty and win strike section
     const DAYS_TO_CHANGE_DIFFICULTY = 3;
     const isEasyDifficulty = msg.user.difficulty === Difficulty.EASY;
