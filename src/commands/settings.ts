@@ -70,9 +70,15 @@ export class Settings {
   @transformMsg
   @onlyForKnownUsers
   public async changeLevelHandler(msg: TelegramBot.Message, difficulty: Difficulty) {
+    if (difficulty === Difficulty.DOESNT_SET) {
+      logger.error("User try to select Difficulty.DOESNT_SET");
+      return;
+    }
     await UsersRepo.updateUser(msg, { difficulty });
-    const difficultyName = difficultyNameByLevel(difficulty, msg.user.lang);
-    await this._res(msg.user, Content.DIFFICULTY_SELECTED, { difficulty: difficultyName });
+    if (difficulty !== Difficulty.EASY) {
+      const difficultyName = difficultyNameByLevel(difficulty, msg.user.lang);
+      await this._res(msg.user, Content.DIFFICULTY_SELECTED, { difficulty: difficultyName });
+    }
     return this.onSettingsDone(msg, { isIgnoreHint: true, isConfirm: true });
   }
 
@@ -108,7 +114,7 @@ export class Settings {
         [TimeShifting.Minus_1H]: -10,
         [TimeShifting.Plus_30Min]: 5,
         [TimeShifting.Minus_30Min]: -5,
-      }[timeShift] as -5 | 5 | -10 | 10 ;
+      }[timeShift] as -5 | 5 | -10 | 10;
       if (!shift) {
         await this._res(msg.user, Content.ERROR);
         return;
@@ -160,7 +166,7 @@ export class Settings {
       return;
     }
     try {
-      const timezone= computeTimeOffsetBasedOnInput(msg);
+      const timezone = computeTimeOffsetBasedOnInput(msg);
       await UsersRepo.updateUser(msg, { timezone });
       const local_time = DateTime.utc().setZone(timezone).toFormat(HourFormat.H24);
       await this._res(msg.user, Content.LOCAL_TIME, { local_time }, DialogKey.local_time);
@@ -175,10 +181,13 @@ export class Settings {
    * When everything is set up
    * @private
    */
-  private async onSettingsDone(msg: TelegramBot.Message, options?: {
-    isConfirm?: boolean;
-    isIgnoreHint?: boolean;
-  }) {
+  private async onSettingsDone(
+    msg: TelegramBot.Message,
+    options?: {
+      isConfirm?: boolean;
+      isIgnoreHint?: boolean;
+    },
+  ) {
     const { isConfirm, isIgnoreHint } = options || {};
     if (!msg.user.deltaTime || !msg.user.timezone) {
       logger.error("Incorrect call of onSettingsDone");
