@@ -11,7 +11,7 @@ export const buttonsEn: ButtonNames = {
   [BTN.Level_Easy]: "Training Mode 📚",
   [BTN.Level_Easy_Ignore]: "Ignore ❌️",
   [BTN.Level_Medium]: "Normal 👍",
-  [BTN.Level_Hard]: "Advanced 👑",
+  [BTN.Level_Hard]: "Fast 👑",
   [BTN.Level_Keep_As_It_Is]: "Keep train 📚",
   [BTN.Level_Change]: "Change level 🥇",
   [BTN.Ignore_Success]: "I quit smoking!",
