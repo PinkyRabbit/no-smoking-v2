@@ -195,6 +195,7 @@ export enum BTN {
   Dev_To_Idle_Three_Times = "dev_to_idle_3_times",
   Dev_To_Idle_Max_Limit = "dev_to_idle_max_limit",
   Dev_Next = "dev_next",
+  Dev_Next_Failed = "dev_next_failed",
   Dev_Motivizer_25 = "dev_motivizer_25",
   Dev_Motivizer_Full = "dev_motivizer_full",
   Dev_Ignore = "dev_Ignore",

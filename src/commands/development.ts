@@ -153,10 +153,11 @@ export class DevActions {
   @devModeOnly
   @transformMsg
   @onlyForKnownUsers
-  public async devByTimer(msg: TelegramBot.Message) {
+  public async devByTimer(msg: TelegramBot.Message, isFailed?: boolean) {
+    const failedTime = isFailed ? 5 * 60 * 1000 : 0;
     const update: Partial<User> = {
       lastTime: this.lastTimeToSmoke,
-      nextTime: this.nextTimeToSmoke,
+      nextTime: this.nextTimeToSmoke + failedTime,
     };
     await UsersRepo.updateUser(msg, update);
     await this._res(msg.user, Content.DEV_NEXT);

@@ -3,7 +3,7 @@ import { DateTime } from "luxon";
 import { onlyForKnownUsers, transformMsg } from "./decorators";
 import { Content, DialogKey, Difficulty, HourFormat, Lang, TimeShifting } from "../constants";
 import { computeTimeOffsetBasedOnInput, computeTimezoneShift, mssToTime } from "../lib_helpers/luxon";
-import { difficultyNameByLevel } from "../helpers";
+import { difficultyNameByLevel, getDifficultyLevels } from "../helpers";
 import { UsersRepo } from "../db";
 import logger from "../logger";
 import { IGNORE_TIME } from "./constants";
@@ -64,7 +64,8 @@ export class Settings {
   @onlyForKnownUsers
   public async onLevel(msg: TelegramBot.Message) {
     const difficulty = difficultyNameByLevel(msg.user.difficulty, msg.user.lang);
-    await this._res(msg.user, Content.DIFFICULTY, { difficulty }, DialogKey.difficulty);
+    const levels = getDifficultyLevels(msg.user.lang);
+    await this._res(msg.user, Content.DIFFICULTY, { difficulty, ...levels }, DialogKey.difficulty);
   }
 
   @transformMsg

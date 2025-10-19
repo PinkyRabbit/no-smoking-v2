@@ -132,6 +132,9 @@ export const botActionsInit = (bot: TgBot) => {
       case BTN.Dev_Next:
         act.devByTimer(message);
         break;
+      case BTN.Dev_Next_Failed:
+        act.devByTimer(message, true);
+        break;
       case BTN.Dev_Motivizer_25:
         act.devMotivizer(message, 25);
         break;

@@ -42,6 +42,7 @@ export const buttonsRu: ButtonNames  = {
   [BTN.Dev_To_Idle_Three_Times]: "Idle + 2 pen days before 💤",
   [BTN.Dev_To_Idle_Max_Limit]: "Idle & MAX delta 💤",
   [BTN.Dev_Next]: "По таймеру ⏰️",
+  [BTN.Dev_Next_Failed]: "По таймеру (failed) ⏰️",
   [BTN.Dev_Motivizer_25]: "Мотивайзер на 25 ⛹️",
   [BTN.Dev_Motivizer_Full]: "Мотивайзер весь ⛹️",
   [BTN.Dev_Ignore]: "В режим Ignore 🌀",

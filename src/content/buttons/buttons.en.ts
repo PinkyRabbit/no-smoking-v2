@@ -41,6 +41,7 @@ export const buttonsEn: ButtonNames = {
   [BTN.Dev_To_Idle_Three_Times]: "Idle + 2 pen days before 💤",
   [BTN.Dev_To_Idle_Max_Limit]: "Idle & MAX delta 💤",
   [BTN.Dev_Next]: "By timer ⏰️",
+  [BTN.Dev_Next_Failed]: "By timer (failed) ⏰️",
   [BTN.Dev_Motivizer_25]: "Motivizer to 25 ⛹️",
   [BTN.Dev_Motivizer_Full]: "Motivizer full ⛹️",
   [BTN.Dev_Ignore]: "To Ignore Mode 🌀",

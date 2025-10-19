@@ -132,8 +132,11 @@ const selectButtonsByKey = (key: DialogKey, locale: Lang): InlineKeyboard => {
         buttonFor(BTN.Dev_Stage_1_More_Max, locale),
       ],
       [
-        buttonFor(BTN.Dev_Last_Time_1_Hour, locale),
+        buttonFor(BTN.Dev_Next_Failed, locale),
         buttonFor(BTN.Dev_Next, locale),
+      ],
+      [
+        buttonFor(BTN.Dev_Last_Time_1_Hour, locale),
       ],
       [
         buttonFor(BTN.Dev_To_Idle, locale),
