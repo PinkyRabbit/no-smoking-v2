@@ -127,10 +127,10 @@ export class DevActions {
   @transformMsg
   @onlyForKnownUsers
   public async devToIdle(msg: TelegramBot.Message, isEmpty = false, { isThree, isInMaxPossibleDeltaTime }: Record<string, boolean> = {}) {
-    const lastTime = dateNow() - ((USER_IDLE_TIME + 1)* 60 * 1000);
+    const currentDate = dateNow();
     const update: Partial<User> = {
-      lastTime,
-      nextTime: lastTime + msg.user.deltaTime * 60 * 1000,
+      lastTime: currentDate - ((USER_IDLE_TIME + 1)* 60 * 1000),
+      nextTime: currentDate - msg.user.deltaTime * 1000,
       cigarettesInDay: 2,
       penaltyDays: 0,
       deltaTime: msg.user.deltaTime,
@@ -244,8 +244,12 @@ export class DevActions {
   @transformMsg
   @onlyForKnownUsers
   public async devContent(msg: TelegramBot.Message) {
-    await this._res(msg.user, Content.DIFFICULTY_HARD_DECREASED);
+    const DAYS_TO_CHANGE_DIFFICULTY = 3;
+    const props = { day: msg.user.winstrike, of_days: DAYS_TO_CHANGE_DIFFICULTY };
+    await this._res(msg.user, Content.WINSTRIKE_MEDIUM, props);
     /*
+    await this._res(msg.user, Content.DIFFICULTY_HARD_AUTO);
+
     const difficulty= difficultyNameByLevel(Difficulty.HARD, msg.user.lang);
     const levels = getDifficultyLevels(msg.user.lang);
     await this._res(msg.user, Content.DIFFICULTY, { difficulty, ...levels }, DialogKey.difficulty);

@@ -63,6 +63,11 @@ export class Settings {
   @transformMsg
   @onlyForKnownUsers
   public async onLevel(msg: TelegramBot.Message) {
+    if (msg.user.difficulty === Difficulty.MEDIUM) {
+      await UsersRepo.updateUser(msg, { difficulty: Difficulty.HARD });
+      await this._res(msg.user, Content.DIFFICULTY_HARD_AUTO);
+      return this.onSettingsDone(msg, { isIgnoreHint: true, isConfirm: true });
+    }
     const difficulty = difficultyNameByLevel(msg.user.difficulty, msg.user.lang);
     const levels = getDifficultyLevels(msg.user.lang);
     await this._res(msg.user, Content.DIFFICULTY, { difficulty, ...levels }, DialogKey.difficulty);
@@ -224,13 +229,14 @@ export class Settings {
       const winstrikeDays = daysToString(msg.user.winstrike, msg.user.lang);
       await this._res(msg.user, Content.WINSTRIKE, { winstrike: winstrikeDays });
     }
-    if (isEasyDifficulty && !isIgnoreHint && isWinstrike) {
+    if (msg.user.difficulty !== Difficulty.HARD && !isIgnoreHint && isWinstrike) {
       await this._res(msg.user, Content.WINSTRIKE_BASE_SUCCESS, {}, DialogKey.change_level);
       return;
     }
-    if (isEasyDifficulty && !isIgnoreHint && !isWinstrike && msg.user.winstrike) {
+    const isWinstrikeMessageToDisplay = !isIgnoreHint && !isWinstrike && msg.user.winstrike;
+    if (isEasyDifficulty && isWinstrikeMessageToDisplay) {
       const props = { day: msg.user.winstrike, of_days: DAYS_TO_CHANGE_DIFFICULTY };
-      await this._res(msg.user, Content.WINSTRIKE_BASE, props);
+      await this._res(msg.user, Content.WINSTRIKE_MEDIUM, props);
     }
 
     // stage 2 user without next time

@@ -186,6 +186,10 @@ export const dialogsEn: MultilineContent = {
   [Content.WINSTRIKE_BASE]: `
     📚 To exit training mode, complete several days without a penalty. {{day}} / {{of_days}}
   `,
+  [Content.WINSTRIKE_MEDIUM]: `
+    ⚔️ Complete several days in a row without a penalty to enter Fast Mode!${N2}
+    📆 Current progress: ${B}{{day}} / {{of_days}}${B}
+  `,
   [Content.WINSTRIKE_BASE_FAILED]: `
     ⭐️ You are on the ${B}training${B} difficulty level${N2}
     ✨${I}Penalty points are not counted.${I}✨${N2}
@@ -247,6 +251,9 @@ export const dialogsEn: MultilineContent = {
     ${B}reduced to Normal${B} 🔻${N2}
     🚭 The penalty point hasn't been applied.${NL} 
     ${I}Stay strong - you've got this!${I}
+  `,
+  [Content.DIFFICULTY_HARD_AUTO]: `
+    ✨ Уровень изменён на ${B}Быстрый${B} 🚀 ✨
   `,
   [Content.TIMEZONE]: `
     🌐 ${B}Setting Your Time Zone${B}${N2}
