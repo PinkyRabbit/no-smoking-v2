@@ -7,7 +7,7 @@ import { devModeOnly, onlyForKnownUsers, transformMsg } from "./decorators";
 import { MIN_INTERVAL, STAGE_1_MAX, STAGE_1_STEPS, USER_IDLE_TIME } from "./constants";
 import { getContent } from "../content";
 import { daysToString, minsToTimeString } from "../lib_helpers/humanize-duration";
-import { difficultyNameByLevel, getDifficultyLevels, penaltyMinutesString, stepByDifficulty } from "../helpers";
+import { difficultyNameByLevel, penaltyMinutesString, stepByDifficulty } from "../helpers";
 
 /**
  * Class for development actions
@@ -243,10 +243,12 @@ export class DevActions {
   @transformMsg
   @onlyForKnownUsers
   public async devContent(msg: TelegramBot.Message) {
+    await this._res(msg.user, Content.DIFFICULTY_HARD_DECREASED);
+    /*
     const difficulty= difficultyNameByLevel(Difficulty.HARD, msg.user.lang);
     const levels = getDifficultyLevels(msg.user.lang);
     await this._res(msg.user, Content.DIFFICULTY, { difficulty, ...levels }, DialogKey.difficulty);
-    /*
+
     const contentKey: Content = Content.DIFFICULTY_SELECTED;
     const dialogKey: DialogKey = DialogKey.difficulty;
     // const dialogKey = undefined;

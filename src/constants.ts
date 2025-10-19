@@ -83,6 +83,7 @@ export enum Content {
   DIFFICULTY_EASY = "difficulty_simple",
   DIFFICULTY_MEDIUM = "difficulty_normal",
   DIFFICULTY_HARD = "difficulty_hard",
+  DIFFICULTY_HARD_DECREASED = "difficulty_auto_decreased",
   DIFFICULTY_DESCRIPTION = "difficulty_description",
   TIMEZONE = "timezone",
   TIMEZONE_INTRO = "timezone_select",

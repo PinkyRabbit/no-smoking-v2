@@ -241,6 +241,13 @@ export const dialogsEn: MultilineContent = {
     Your account setup will be completed automatically in 1 minute.
     This pause is to ensure you’ve had time to read the message above.
   `,
+  [Content.DIFFICULTY_HARD_DECREASED]: `
+    You're off the timeline!${N2}
+    Your difficulty level has been${NL}
+    ${B}reduced to Normal${B} 🔻${N2}
+    🚭 The penalty point hasn't been applied.${NL} 
+    ${I}Stay strong - you've got this!${I}
+  `,
   [Content.TIMEZONE]: `
     🌐 ${B}Setting Your Time Zone${B}${N2}
     To set your time zone, please follow these steps:${N2}
