@@ -141,7 +141,7 @@ export class Settings {
       return this.onSettingsDone(msg, { isConfirm });
     }
     await UsersRepo.updateUser(msg, { difficulty: Difficulty.EASY });
-    await this._res(msg.user, Content.DIFFICULTY_AUTO);
+    await this._res(msg.user, Content.DIFFICULTY_DESCRIPTION);
     const oneMinute = 60 * 1000;
     setTimeout(() => {
       this.onSettingsDone(msg);

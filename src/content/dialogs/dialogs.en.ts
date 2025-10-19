@@ -216,7 +216,7 @@ export const dialogsEn: MultilineContent = {
     ${B}by typing${B} /level${ND}
     You have selected the ${B}"{{difficulty}}"${B} difficulty level.
   `,
-  [Content.DIFFICULTY_AUTO]: `
+  [Content.DIFFICULTY_DESCRIPTION]: `
     📌 Please Read This Message${N2}
     You have been assigned the Training difficulty level.${ND}
     ${B}Why is it important to start with the "Training" level?${B}${N2}
