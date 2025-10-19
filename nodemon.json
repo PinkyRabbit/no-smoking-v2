@@ -1,0 +1,6 @@
+{
+  "watch": ["src"],
+  "ignore": ["node_modules", "dist", "build", ".git", "*.log"],
+  "ext": "ts",
+  "legacyWatch": true
+}
