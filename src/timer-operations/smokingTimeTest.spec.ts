@@ -2,7 +2,7 @@ import { expect } from "chai";
 import sinon from "sinon";
 import TgBot from "../telegram-bot";
 import { User } from "../db";
-import { Content, DialogKey, HourFormat, Lang } from "../constants";
+import { Content, DialogKey, HourFormat, IdempotencyKeys, Lang } from "../constants";
 import { _sendDelayedToIgnore, _sendDelayedToSmokers } from "./smokingTimeTest";
 
 describe("smokingTimeTest", () => {
@@ -33,6 +33,7 @@ describe("smokingTimeTest", () => {
       cigarettesInDay: 0,
       cigarettesSummary: 0,
       startDate: new Date(),
+      idempotencyKey: IdempotencyKeys.One,
     };
   });
 
@@ -58,43 +59,36 @@ describe("smokingTimeTest", () => {
       const users = [user];
       _sendDelayedToSmokers(botMock, users);
       expect(botMock.sendToUser.calledOnce).to.be.true;
-      expect(botMock.sendToUser.calledWith(
-        user,
-        Content.TIME_FOR_A_SMOKE,
-      )).to.be.true;
+      expect(botMock.sendToUser.calledWith(user, Content.TIME_FOR_A_SMOKE)).to.be.true;
     });
 
     it("should send messages to multiple users with delay", () => {
       const users: User[] = [
         { ...user, chatId: 1 },
         { ...user, chatId: 2 },
-        { ...user, chatId: 3 }
+        { ...user, chatId: 3 },
       ];
 
       _sendDelayedToSmokers(botMock, [...users]);
 
       // Assert first call
       expect(botMock.sendToUser.calledOnce).to.be.true;
-      expect(botMock.sendToUser.calledWith(
-        users[2], // Last user due to pop()
-        Content.TIME_FOR_A_SMOKE,
-      )).to.be.true;
+      expect(
+        botMock.sendToUser.calledWith(
+          users[2], // Last user due to pop()
+          Content.TIME_FOR_A_SMOKE,
+        ),
+      ).to.be.true;
 
       // Advance timer and check second call
       clock.tick(10);
       expect(botMock.sendToUser.calledTwice).to.be.true;
-      expect(botMock.sendToUser.secondCall.calledWith(
-        users[1],
-        Content.TIME_FOR_A_SMOKE,
-      )).to.be.true;
+      expect(botMock.sendToUser.secondCall.calledWith(users[1], Content.TIME_FOR_A_SMOKE)).to.be.true;
 
       // Advance timer and check third call
       clock.tick(10);
       expect(botMock.sendToUser.calledThrice).to.be.true;
-      expect(botMock.sendToUser.thirdCall.calledWith(
-        users[0],
-        Content.TIME_FOR_A_SMOKE,
-      )).to.be.true;
+      expect(botMock.sendToUser.thirdCall.calledWith(users[0], Content.TIME_FOR_A_SMOKE)).to.be.true;
     });
 
     it("should handle users array mutation correctly", () => {
@@ -119,7 +113,7 @@ describe("smokingTimeTest", () => {
 
     beforeEach(() => {
       botMock = {
-        sendToUser: sinon.stub()
+        sendToUser: sinon.stub(),
       };
     });
 
@@ -135,20 +129,14 @@ describe("smokingTimeTest", () => {
       _sendDelayedToIgnore(botMock as unknown as TgBot, users);
 
       sinon.assert.calledOnce(botMock.sendToUser);
-      sinon.assert.calledWith(
-        botMock.sendToUser,
-        user,
-        Content.BOT_IGNORE,
-        {},
-        DialogKey.ignore
-      );
+      sinon.assert.calledWith(botMock.sendToUser, user, Content.BOT_IGNORE, {}, DialogKey.ignore);
     });
 
     it("should send ignore messages to multiple users with delay", () => {
       const users: User[] = [
         { ...user, chatId: 1 },
         { ...user, chatId: 2 },
-        { ...user, chatId: 3 }
+        { ...user, chatId: 3 },
       ];
 
       _sendDelayedToIgnore(botMock as unknown as TgBot, [...users]);
@@ -160,30 +148,18 @@ describe("smokingTimeTest", () => {
         users[2], // Last user due to pop()
         Content.BOT_IGNORE,
         {},
-        DialogKey.ignore
+        DialogKey.ignore,
       );
 
       // Advance timer and check second call
       clock.tick(10);
       sinon.assert.calledTwice(botMock.sendToUser);
-      sinon.assert.calledWith(
-        botMock.sendToUser.secondCall,
-        users[1],
-        Content.BOT_IGNORE,
-        {},
-        DialogKey.ignore
-      );
+      sinon.assert.calledWith(botMock.sendToUser.secondCall, users[1], Content.BOT_IGNORE, {}, DialogKey.ignore);
 
       // Advance timer and check third call
       clock.tick(10);
       sinon.assert.calledThrice(botMock.sendToUser);
-      sinon.assert.calledWith(
-        botMock.sendToUser.thirdCall,
-        users[0],
-        Content.BOT_IGNORE,
-        {},
-        DialogKey.ignore
-      );
+      sinon.assert.calledWith(botMock.sendToUser.thirdCall, users[0], Content.BOT_IGNORE, {}, DialogKey.ignore);
     });
 
     it("should handle array mutation correctly", () => {
