@@ -216,8 +216,6 @@ export const dialogsEn: MultilineContent = {
   [Content.DIFFICULTY_MEDIUM]: "Normal",
   [Content.DIFFICULTY_HARD]: "Fast",
   [Content.DIFFICULTY_SELECTED]: `
-    You can always change the difficulty level${NL}
-    ${B}by typing${B} /level${ND}
     You have selected the ${B}"{{difficulty}}"${B} difficulty level.
   `,
   [Content.DIFFICULTY_DESCRIPTION]: `
@@ -253,7 +251,7 @@ export const dialogsEn: MultilineContent = {
     ${I}Stay strong - you've got this!${I}
   `,
   [Content.DIFFICULTY_HARD_AUTO]: `
-    ✨ Уровень изменён на ${B}Быстрый${B} 🚀 ✨
+    ✨ The difficulty level has been changed to ${B}Fast${B} 🚀 ✨
   `,
   [Content.TIMEZONE]: `
     🌐 ${B}Setting Your Time Zone${B}${N2}
@@ -361,6 +359,7 @@ export const dialogsEn: MultilineContent = {
   `,
   [Content.STATS]: `
     📋 ${B}Your Statistics${B}:${NL}
+    - Your current difficulty level 🏂 ${B}{{difficulty}}${B}${NL}
     - You started using the bot on {{start_date}}${NL}
     - Days since then: {{days_from_start}}${NL}
     - Total cigarettes smoked: {{cigarettes}}${NL}

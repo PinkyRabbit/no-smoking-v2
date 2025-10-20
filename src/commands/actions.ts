@@ -15,7 +15,7 @@ import { getFormattedStartDate, mssToTime, tsToDateTime } from "../lib_helpers/l
 import logger from "../logger";
 import { stage2 } from "./decorators/stage2";
 import { cigarettesText } from "../helpers/content";
-import { penaltyByDifficulty, penaltyMinutesString, stepByDifficulty } from "../helpers";
+import { difficultyNameByLevel, penaltyByDifficulty, penaltyMinutesString, stepByDifficulty } from "../helpers";
 import { InlineKeyboard } from "../content/types";
 
 @LogActionCalls
@@ -458,10 +458,12 @@ export class Actions extends Mixin(DevActions, Settings) {
   @onlyForKnownUsers
   @stage2
   public async onStats(msg: TelegramBot.Message) {
+    const difficulty = difficultyNameByLevel(msg.user.difficulty, msg.user.lang);
     const { start_date, days_from_start } = getFormattedStartDate(msg.user.startDate, msg.user.lang);
     const contentProps = {
       start_date,
       days_from_start,
+      difficulty,
       penalty_all: minsToTimeString(msg.user.penaltyAll, msg.user.lang),
       delta_min: minsToTimeString(msg.user.minDeltaTime, msg.user.lang),
       delta_time: minsToTimeString(msg.user.deltaTime, msg.user.lang),

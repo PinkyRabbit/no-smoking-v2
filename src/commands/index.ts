@@ -11,7 +11,6 @@ export const botActionsInit = (bot: TgBot) => {
   bot.onText(BotEvent.Start, act.onStart);
   bot.onText(BotEvent.Stats, act.onStats);
   bot.onText(BotEvent.SelectLanguage, act.onLang);
-  bot.onText(BotEvent.SelectLevel, act.onLevel);
   bot.onText(BotEvent.SelectLocalTime, act.localTimeDialogCall);
   bot.onText(BotEvent.Dev, act.onDev);
   bot.onText(BotEvent.How, act.onHow);

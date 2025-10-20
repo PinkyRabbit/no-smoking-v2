@@ -221,8 +221,6 @@ export const dialogsRu: MultilineContent = {
   [Content.DIFFICULTY_MEDIUM]: "Нормальный",
   [Content.DIFFICULTY_HARD]: "Быстрый",
   [Content.DIFFICULTY_SELECTED]: `
-    Сложность всегда можно изменить${NL}
-    ${B}написав${B} /level${ND}
     Вы выбрали уровень сложности ${B}"{{difficulty}}"${B}
   `,
   [Content.DIFFICULTY_DESCRIPTION]: `
@@ -367,6 +365,7 @@ export const dialogsRu: MultilineContent = {
   `,
   [Content.STATS]: `
     📋 ${B}Ваша статистика${B}:${NL}
+    - Текущий уровень сложности 🏂 ${B}{{difficulty}}${B}${NL}
     - Вы начали пользоваться ботом {{start_date}}${NL}
     - Дней с того момента: {{days_from_start}}${NL}
     - Всего выкурено сигарет: {{cigarettes}}${NL}
