@@ -230,7 +230,10 @@ export class Settings {
       const winstrikeDays = daysToString(msg.user.winstrike, msg.user.lang);
       await this._res(msg.user, Content.WINSTRIKE, { winstrike: winstrikeDays });
     }
-    if (msg.user.difficulty !== Difficulty.HARD && !isIgnoreHint && isWinstrike) {
+    const shouldOfferUpLevelForMedium = msg.user.difficulty === Difficulty.MEDIUM
+      && msg.user.winstrike % DAYS_TO_CHANGE_DIFFICULTY ===0;
+    const shouldOfferLevelUp = isEasyDifficulty || shouldOfferUpLevelForMedium;
+    if (shouldOfferLevelUp && !isIgnoreHint && isWinstrike) {
       await this._res(msg.user, Content.WINSTRIKE_BASE_SUCCESS, {}, DialogKey.change_level);
       return;
     }
@@ -239,11 +242,7 @@ export class Settings {
       const props = { day: msg.user.winstrike, of_days: DAYS_TO_CHANGE_DIFFICULTY };
       await this._res(msg.user, Content.WINSTRIKE_BASE, props);
     }
-    if (
-      msg.user.difficulty === Difficulty.MEDIUM
-      && isWinstrikeMessageToDisplay
-      && msg.user.winstrike % DAYS_TO_CHANGE_DIFFICULTY === 0
-    ) {
+    if (msg.user.difficulty === Difficulty.MEDIUM && isWinstrikeMessageToDisplay) {
       const props = { day: msg.user.winstrike, of_days: DAYS_TO_CHANGE_DIFFICULTY };
       await this._res(msg.user, Content.WINSTRIKE_MEDIUM, props);
     }
