@@ -406,8 +406,8 @@ describe("Actions", () => {
         penalty: 0,
         penaltyDays: user.penaltyDays + 1,
         motivizerIndex: 1,
-        deltaTime: 72,
-        nextTime: 1686852780000,
+        deltaTime: 75,
+        nextTime: 1686852960000,
         cigarettesInDay: 0,
         cigarettesSummary: user.cigarettesSummary + 1,
         winstrike: 0,
@@ -441,14 +441,14 @@ describe("Actions", () => {
       it("should compute new delta correctly for MEDIUM difficulty without penalty", () => {
         user.penalty = 0;
         const result = actions._computeNewDelta(msg.user);
-        expect(result).to.equal(31.5);
+        expect(result).to.equal(32.5);
       });
 
       it("should compute new delta correctly for HARD difficulty without penalty", () => {
         user.penalty = 0;
         user.difficulty = Difficulty.HARD;
         const result = actions._computeNewDelta(msg.user);
-        expect(result).to.equal(32.5);
+        expect(result).to.equal(35.5);
       });
 
       it("should ignore penalty for EASY difficulty", () => {
@@ -461,13 +461,13 @@ describe("Actions", () => {
       it("should compute new delta correctly for MEDIUM with penalty", () => {
         user.penalty = 5;
         const result = actions._computeNewDelta(msg.user);
-        expect(result).to.equal(29); // - 2.5  (+ step 1)
+        expect(result).to.equal(25); // - 2.5  (+ step 2)
       });
 
       it("should compute new delta correctly for HARD with penalty", () => {
         user.penalty = 4;
         const result = actions._computeNewDelta(msg.user);
-        expect(result).to.equal(29.5);  // - 4  (+ step 2)
+        expect(result).to.equal(25);  // - 4  (+ step 5)
       });
 
       it("should return minDeltaTime when computed value would be below minimum", () => {
