@@ -127,10 +127,10 @@ export class DevActions {
   @transformMsg
   @onlyForKnownUsers
   public async devToIdle(msg: TelegramBot.Message, isEmpty = false, { isThree, isInMaxPossibleDeltaTime }: Record<string, boolean> = {}) {
-    const lastTime = dateNow() - ((USER_IDLE_TIME + 1)* 60 * 1000);
+    const currentDate = dateNow();
     const update: Partial<User> = {
-      lastTime,
-      nextTime: lastTime + msg.user.deltaTime * 60 * 1000,
+      lastTime: currentDate - ((USER_IDLE_TIME + 1)* 60 * 1000),
+      nextTime: currentDate - msg.user.deltaTime * 1000,
       cigarettesInDay: 2,
       penaltyDays: 0,
       deltaTime: msg.user.deltaTime,
@@ -153,10 +153,11 @@ export class DevActions {
   @devModeOnly
   @transformMsg
   @onlyForKnownUsers
-  public async devByTimer(msg: TelegramBot.Message) {
+  public async devByTimer(msg: TelegramBot.Message, isFailed?: boolean) {
+    const failedTime = isFailed ? 5 * 60 * 1000 : 0;
     const update: Partial<User> = {
       lastTime: this.lastTimeToSmoke,
-      nextTime: this.nextTimeToSmoke,
+      nextTime: this.nextTimeToSmoke + failedTime,
     };
     await UsersRepo.updateUser(msg, update);
     await this._res(msg.user, Content.DEV_NEXT);
@@ -243,15 +244,25 @@ export class DevActions {
   @transformMsg
   @onlyForKnownUsers
   public async devContent(msg: TelegramBot.Message) {
+    const DAYS_TO_CHANGE_DIFFICULTY = 3;
+    const props = { day: msg.user.winstrike, of_days: DAYS_TO_CHANGE_DIFFICULTY };
+    await this._res(msg.user, Content.WINSTRIKE_MEDIUM, props);
     /*
+    await this._res(msg.user, Content.DIFFICULTY_HARD_AUTO);
+
+    const difficulty= difficultyNameByLevel(Difficulty.HARD, msg.user.lang);
+    const levels = getDifficultyLevels(msg.user.lang);
+    await this._res(msg.user, Content.DIFFICULTY, { difficulty, ...levels }, DialogKey.difficulty);
+
     const contentKey: Content = Content.DIFFICULTY_SELECTED;
     const dialogKey: DialogKey = DialogKey.difficulty;
     // const dialogKey = undefined;
     const fakeProps = this.getDevContentProps(msg.user);
     await this._res(msg.user, contentKey, fakeProps, dialogKey);
-     */
+
     const time_to_get_smoke = mssToTime(msg.user.nextTime, msg.user);
     await this._res(msg.user, Content.NEXT_SMOKING_TIME, { time_to_get_smoke }, DialogKey.im_smoking);
+     */
   }
 
   @devModeOnly

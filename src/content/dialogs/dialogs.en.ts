@@ -186,6 +186,10 @@ export const dialogsEn: MultilineContent = {
   [Content.WINSTRIKE_BASE]: `
     📚 To exit training mode, complete several days without a penalty. {{day}} / {{of_days}}
   `,
+  [Content.WINSTRIKE_MEDIUM]: `
+    ⚔️ Complete several days in a row without a penalty to enter Fast Mode!${N2}
+    📆 Current progress: ${B}{{day}} / {{of_days}}${B}
+  `,
   [Content.WINSTRIKE_BASE_FAILED]: `
     ⭐️ You are on the ${B}training${B} difficulty level${N2}
     ✨${I}Penalty points are not counted.${I}✨${N2}
@@ -196,26 +200,25 @@ export const dialogsEn: MultilineContent = {
   `,
   [Content.DIFFICULTY]: `
     📈 ${B}Choose Your Difficulty Level${B}${N2}
-    The app offers three difficulty levels:${N2}
-    - ${B}Training Mode${B}: +0.5 minute per day${NL}
-    - ${B}Normal${B}: +1 minute per day${NL}
-    - ${B}Advanced${B}: +2 minutes per day${NL}
-    Your current difficulty level - ${B}{{difficulty}}${B}${N2}
-    The ${B}Training Mode${B} is ideal for beginners, helping you get used to following intervals
-    even if you occasionally miss the schedule. It’s a training mode designed to help you ease into the process.${N2}
-    If you’re ready to make serious progress with your habit, choose ${B}Normal${B} or ${B}Advanced${B}. 
-    Normal provides a moderate pace, while Advanced is more intense, with the interval step increasing by 2 minutes.${N2}
-    You can change the difficulty level anytime in the settings.
+    - ${B}{{ difficulty_easy }}${B}:${NL}
+     +0.5 minute per day${NL}
+    Helps you get used to bot interval system.${N2}
+    - ${B}{{ difficulty_medium }}${B}:${NL}
+    +2 minute per day. Is ${I}optimal${I} for usage.${NL}
+    If you are keeping a moderate speed - this is your way.${N2}
+    - ${B}{{ difficulty_hard }}${B}:${NL}
+    +5 minutes per day${NL}
+    Only if you are ${I}ready to try hard${I} with quit of smoking.${NL}
+    1 mistake - and you will be back to the Normal level.${N2}
+    Your current difficulty level 🏂 ${B}{{difficulty}}${B}.
   `,
   [Content.DIFFICULTY_EASY]: "Training",
   [Content.DIFFICULTY_MEDIUM]: "Normal",
-  [Content.DIFFICULTY_HARD]: "Advanced",
+  [Content.DIFFICULTY_HARD]: "Fast",
   [Content.DIFFICULTY_SELECTED]: `
-    You can always change the difficulty level${NL}
-    ${B}by typing${B} /level${ND}
     You have selected the ${B}"{{difficulty}}"${B} difficulty level.
   `,
-  [Content.DIFFICULTY_AUTO]: `
+  [Content.DIFFICULTY_DESCRIPTION]: `
     📌 Please Read This Message${N2}
     You have been assigned the Training difficulty level.${ND}
     ${B}Why is it important to start with the "Training" level?${B}${N2}
@@ -239,6 +242,16 @@ export const dialogsEn: MultilineContent = {
     ⬆️ ⬆️ ⬆️ ⬆️ ⬆️${NL}
     Your account setup will be completed automatically in 1 minute.
     This pause is to ensure you’ve had time to read the message above.
+  `,
+  [Content.DIFFICULTY_HARD_DECREASED]: `
+    You're off the timeline!${N2}
+    Your difficulty level has been${NL}
+    ${B}reduced to Normal${B} 🔻${N2}
+    🚭 The penalty point hasn't been applied.${NL} 
+    ${I}Stay strong - you've got this!${I}
+  `,
+  [Content.DIFFICULTY_HARD_AUTO]: `
+    ✨ The difficulty level has been changed to ${B}Fast${B} 🚀 ✨
   `,
   [Content.TIMEZONE]: `
     🌐 ${B}Setting Your Time Zone${B}${N2}
@@ -346,6 +359,7 @@ export const dialogsEn: MultilineContent = {
   `,
   [Content.STATS]: `
     📋 ${B}Your Statistics${B}:${NL}
+    - Your current difficulty level 🏂 ${B}{{difficulty}}${B}${NL}
     - You started using the bot on {{start_date}}${NL}
     - Days since then: {{days_from_start}}${NL}
     - Total cigarettes smoked: {{cigarettes}}${NL}

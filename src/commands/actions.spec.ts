@@ -5,7 +5,7 @@ import { Chat, Message } from "node-telegram-bot-api";
 import { IObjectID } from "monk";
 import { DateTime, Settings as LuxonSettings } from "luxon";
 import TgBot from "../telegram-bot";
-import { Content, DialogKey, Difficulty, HourFormat, Lang } from "../constants";
+import { Content, DialogKey, Difficulty, HourFormat, IdempotencyKeys, Lang } from "../constants";
 import logger from "../logger";
 import { PlainUser } from "../global";
 import { UsersRepo } from "../db";
@@ -39,7 +39,8 @@ describe("Actions", () => {
       minDeltaTimesInitial: [],
       minDeltaTime: 0,
       deltaTime: 0,
-      lastTime: 0, nextTime: 0,
+      lastTime: 0,
+      nextTime: 0,
       ignoreTime: 0,
       difficulty: 0,
       penalty: 0,
@@ -51,6 +52,7 @@ describe("Actions", () => {
       cigarettesInDay: 2,
       cigarettesSummary: 3,
       startDate: currentDate,
+      idempotencyKey: IdempotencyKeys.One,
     };
     msg = {
       user,
@@ -62,16 +64,18 @@ describe("Actions", () => {
     const loggerFake = ((log: string) => console.log(log)) as never;
     sinon.stub(logger, "debug").callsFake(loggerFake);
 
-    const decoratorStub = sinon.stub().callsFake(
-      function testDecorator(target: unknown, propertyKey: string, descriptor: PropertyDescriptor) {
-        return descriptor;
-      }
-    );
-    const constructorStub = sinon.stub().callsFake(
-      function testConstructor<T extends new (...args: unknown[]) => Actions>(constructor: T) {
-        return constructor;
-      }
-    );
+    const decoratorStub = sinon.stub().callsFake(function testDecorator(
+      target: unknown,
+      propertyKey: string,
+      descriptor: PropertyDescriptor,
+    ) {
+      return descriptor;
+    });
+    const constructorStub = sinon.stub().callsFake(function testConstructor<
+      T extends new (...args: unknown[]) => Actions,
+    >(constructor: T) {
+      return constructor;
+    });
     updateUserStub = sinon.stub(UsersRepo, "updateUser").resolves();
     const actionsModule = proxyquire("./actions", {
       "./decorators": {
@@ -83,7 +87,7 @@ describe("Actions", () => {
         UsersRepo: {
           updateUser: updateUserStub,
         },
-      }
+      },
     });
     const Actions = actionsModule.Actions;
     botMock = sinon.createStubInstance(TgBot);
@@ -97,20 +101,29 @@ describe("Actions", () => {
     sinon.restore();
   });
 
-  it ("timers should be frozen", () => {
+  it("timers should be frozen", () => {
     expect(new Date().toISOString()).to.equal("2023-06-15T12:00:00.000Z");
     expect(DateTime.now().toISO()).to.equal("2023-06-15T12:00:00.000+00:00");
   });
 
   describe("imSmokingHandler", () => {
-    it ("Stage 1. Should send a FIRST_STEP message on first button click.", async () => {
+    it("Stage 1. Should send a FIRST_STEP message on first button click.", async () => {
       user.cigarettesInDay = 0;
       user.cigarettesSummary = 0;
-      await actions.imSmokingHandler(msg);
+      await actions.imSmokingHandler(msg, IdempotencyKeys.One);
       expect(_resSpy.calledOnce).to.be.true;
-      expect(_resSpy.firstCall.args).to.be.deep.equal([user, Content.FIRST_STEP, { stage_1_left: 20 }, DialogKey.im_smoking]);
+      expect(_resSpy.firstCall.args).to.be.deep.equal([
+        user,
+        Content.FIRST_STEP,
+        { stage_1_left: 20 },
+        DialogKey.im_smoking_2,
+      ]);
       expect(updateUserStub.calledOnce).to.be.true;
-      expect(updateUserStub.firstCall.args[1]).to.be.deep.equal({ lastTime: Date.now(), cigarettesSummary: 1 });
+      expect(updateUserStub.firstCall.args[1]).to.be.deep.equal({
+        lastTime: Date.now(),
+        cigarettesSummary: 1,
+        idempotencyKey: IdempotencyKeys.Two,
+      });
     });
 
     it("Stage 1. Should send a STAGE_1_PROCESSING message on second button click.", async () => {
@@ -121,12 +134,17 @@ describe("Actions", () => {
       msg.ts += timeShift;
       clock.tick(timeShift);
 
-      await actions.imSmokingHandler(msg);
+      await actions.imSmokingHandler(msg, IdempotencyKeys.One);
       expect(_resSpy.calledOnce).to.be.true;
-      expect(_resSpy.firstCall.args).to.be.deep.equal([user, Content.STAGE_1_PROCESSING, { stage_1_left: 19 }, DialogKey.im_smoking]);
+      expect(_resSpy.firstCall.args).to.be.deep.equal([
+        user,
+        Content.STAGE_1_PROCESSING,
+        { stage_1_left: 19 },
+        DialogKey.im_smoking_2,
+      ]);
     });
 
-    it ("Stage 1. On STAGE_1_PROCESSING second click should correctly update the User", async () => {
+    it("Stage 1. On STAGE_1_PROCESSING second click should correctly update the User", async () => {
       user.lastTime = Date.now();
 
       const minutes = 47;
@@ -134,16 +152,17 @@ describe("Actions", () => {
       msg.ts += timeShift;
       clock.tick(timeShift);
 
-      await actions.imSmokingHandler(msg);
+      await actions.imSmokingHandler(msg, IdempotencyKeys.One);
       expect(updateUserStub.calledOnce).to.be.true;
       expect(updateUserStub.firstCall.args[1]).to.be.deep.equal({
         lastTime: msg.ts,
         minDeltaTimesInitial: [minutes],
         cigarettesSummary: user.cigarettesSummary + 1,
+        idempotencyKey: IdempotencyKeys.Two,
       });
     });
 
-    it ("Stage 1. On STAGE_1_PROCESSING should correctly shift time in middle", async () => {
+    it("Stage 1. On STAGE_1_PROCESSING should correctly shift time in middle", async () => {
       user.lastTime = Date.now();
       user.minDeltaTimesInitial = [10, 20, 30, 40];
 
@@ -152,16 +171,17 @@ describe("Actions", () => {
       msg.ts += timeShift;
       clock.tick(timeShift);
 
-      await actions.imSmokingHandler(msg);
+      await actions.imSmokingHandler(msg, IdempotencyKeys.One);
       expect(updateUserStub.calledOnce).to.be.true;
       expect(updateUserStub.firstCall.args[1]).to.be.deep.equal({
         lastTime: msg.ts,
         minDeltaTimesInitial: [...msg.user.minDeltaTimesInitial, minutes],
         cigarettesSummary: user.cigarettesSummary + 1,
+        idempotencyKey: IdempotencyKeys.Two,
       });
     });
 
-    it ("Stage 1. Show notification if user clicking too quickly", async () => {
+    it("Stage 1. Show notification if user clicking too quickly", async () => {
       user.lastTime = Date.now();
       user.minDeltaTimesInitial = [10, 20, 30, 40];
 
@@ -170,23 +190,25 @@ describe("Actions", () => {
       msg.ts += timeShift;
       clock.tick(timeShift);
 
-      await actions.imSmokingHandler(msg);
+      await actions.imSmokingHandler(msg, IdempotencyKeys.One);
       expect(_resSpy.calledOnce).to.be.true;
-      expect(_resSpy.firstCall.args).to.be.deep.equal(
-        [
-          user,
-          Content.STAGE_1_IGNORE_MIN,
-          {
-            min_stage_1: `${MIN_INTERVAL} minutes`,
-            stage_1_left: STAGE_1_STEPS - user.minDeltaTimesInitial.length,
-          },
-          DialogKey.im_smoking,
-        ]);
+      expect(_resSpy.firstCall.args).to.be.deep.equal([
+        user,
+        Content.STAGE_1_IGNORE_MIN,
+        {
+          min_stage_1: `${MIN_INTERVAL} minutes`,
+          stage_1_left: STAGE_1_STEPS - user.minDeltaTimesInitial.length,
+        },
+        DialogKey.im_smoking_2,
+      ]);
       expect(updateUserStub.calledOnce).to.be.true;
-      expect(updateUserStub.firstCall.args[1]).to.be.deep.equal({ lastTime: msg.user.lastTime });
+      expect(updateUserStub.firstCall.args[1]).to.be.deep.equal({
+        lastTime: msg.user.lastTime,
+        idempotencyKey: IdempotencyKeys.Two,
+      });
     });
 
-    it ("Stage 1. Show notification if click delay is bigger than maximum", async () => {
+    it("Stage 1. Show notification if click delay is bigger than maximum", async () => {
       user.lastTime = Date.now();
       user.minDeltaTimesInitial = [10, 20, 30, 40];
 
@@ -195,26 +217,26 @@ describe("Actions", () => {
       msg.ts += timeShift;
       clock.tick(timeShift);
 
-      await actions.imSmokingHandler(msg);
+      await actions.imSmokingHandler(msg, IdempotencyKeys.One);
       expect(_resSpy.calledOnce).to.be.true;
-      expect(_resSpy.firstCall.args).to.be.deep.equal(
-        [
-          user,
-          Content.STAGE_1_IGNORE_MAX ,
-          {
-            max_stage_1: STAGE_1_MAX,
-            stage_1_left: STAGE_1_STEPS - user.minDeltaTimesInitial.length,
-          },
-          DialogKey.im_smoking,
-        ]);
+      expect(_resSpy.firstCall.args).to.be.deep.equal([
+        user,
+        Content.STAGE_1_IGNORE_MAX,
+        {
+          max_stage_1: STAGE_1_MAX,
+          stage_1_left: STAGE_1_STEPS - user.minDeltaTimesInitial.length,
+        },
+        DialogKey.im_smoking_2,
+      ]);
       expect(updateUserStub.calledOnce).to.be.true;
       expect(updateUserStub.firstCall.args[1]).to.be.deep.equal({
         lastTime: msg.ts,
         cigarettesSummary: user.cigarettesSummary + 1,
+        idempotencyKey: IdempotencyKeys.Two,
       });
     });
 
-    it ("Stage 1. Should show additional hint if the value is twice more than middle value", async () => {
+    it("Stage 1. Should show additional hint if the value is twice more than middle value", async () => {
       user.lastTime = Date.now();
       user.minDeltaTimesInitial = [10, 20, 30, 40];
       const middleValue = user.minDeltaTimesInitial.reduce((a, b) => a + b, 0) / user.minDeltaTimesInitial.length;
@@ -224,15 +246,21 @@ describe("Actions", () => {
       clock.tick(timeShift);
       const expectedStage1Left = STAGE_1_STEPS - user.minDeltaTimesInitial.length - 1;
 
-      await actions.imSmokingHandler(msg);
+      await actions.imSmokingHandler(msg, IdempotencyKeys.One);
       expect(_resSpy.calledTwice).to.be.true;
-      expect(_resSpy.firstCall.args).to.be.deep.equal([user, Content.STAGE_1_YOU_CAN_RESET ]);
-      expect(_resSpy.secondCall.args).to.be.deep.equal([user, Content.STAGE_1_PROCESSING, { stage_1_left: expectedStage1Left }, DialogKey.im_smoking]);
+      expect(_resSpy.firstCall.args).to.be.deep.equal([user, Content.STAGE_1_YOU_CAN_RESET]);
+      expect(_resSpy.secondCall.args).to.be.deep.equal([
+        user,
+        Content.STAGE_1_PROCESSING,
+        { stage_1_left: expectedStage1Left },
+        DialogKey.im_smoking_2,
+      ]);
       expect(updateUserStub.calledOnce).to.be.true;
       expect(updateUserStub.firstCall.args[1]).to.be.deep.equal({
         lastTime: msg.ts,
         minDeltaTimesInitial: [...msg.user.minDeltaTimesInitial, minutes],
         cigarettesSummary: user.cigarettesSummary + 1,
+        idempotencyKey: IdempotencyKeys.Two,
       });
     });
 
@@ -254,10 +282,10 @@ describe("Actions", () => {
 
       const onLevelStub = sinon.stub(actions, "newLocalTime").resolves();
 
-      await actions.imSmokingHandler(msg);
+      await actions.imSmokingHandler(msg, IdempotencyKeys.One);
 
       expect(_resSpy.calledTwice).to.be.true;
-      expect(_resSpy.firstCall.args).to.be.deep.equal([user, Content.STAGE_1_END, { delta_time:  EXPECTED_STRING }]);
+      expect(_resSpy.firstCall.args).to.be.deep.equal([user, Content.STAGE_1_END, { delta_time: EXPECTED_STRING }]);
       expect(_resSpy.secondCall.args).to.be.deep.equal([user, Content.SETTINGS]);
       expect(updateUserStub.calledOnce).to.be.true;
       expect(updateUserStub.firstCall.args[1]).to.be.deep.equal({
@@ -266,23 +294,24 @@ describe("Actions", () => {
         deltaTime: EXPECTED_MINUTES,
         minDeltaTime: EXPECTED_MINUTES,
         cigarettesSummary: user.cigarettesSummary + 1,
+        idempotencyKey: IdempotencyKeys.Two,
       });
       expect(onLevelStub.calledOnce).to.be.true;
     });
 
-    it ("Stage 2. Should not enter stage 2 without required props", async () => {
+    it("Stage 2. Should not enter stage 2 without required props", async () => {
       const timeShift = 100 * 60 * 1000;
       user.lastTime = Date.now();
       user.deltaTime = 73;
       user.minDeltaTime = 73;
-      msg.ts = user.lastTime  + timeShift;
+      msg.ts = user.lastTime + timeShift;
 
-      await actions.imSmokingHandler(msg);
+      await actions.imSmokingHandler(msg, IdempotencyKeys.One);
       expect(_resSpy.calledOnce).to.be.true;
       expect(_resSpy.firstCall.args[1]).to.be.deep.equal(Content.STAGE_2_PROPS_MISSING);
     });
 
-    it ("Stage 2. Should correctly compute the next value for I'm smoking", async () => {
+    it("Stage 2. Should correctly compute the next value for I'm smoking", async () => {
       const timeShift = 100 * 60 * 1000;
       user.lastTime = Date.now();
       user.deltaTime = 73;
@@ -294,29 +323,27 @@ describe("Actions", () => {
       user.cigarettesSummary += 1;
       msg.ts = user.lastTime + timeShift;
 
-      await actions.imSmokingHandler(msg);
+      await actions.imSmokingHandler(msg, IdempotencyKeys.One);
       expect(_resSpy.calledTwice).to.be.true;
-      expect(_resSpy.firstCall.args).to.be.deep.equal([
-        user,
-        Content.STAGE_2_SUCCESS,
-      ]);
+      expect(_resSpy.firstCall.args).to.be.deep.equal([user, Content.STAGE_2_SUCCESS]);
       expect(_resSpy.secondCall.args).to.be.deep.equal([
         user,
         Content.NEXT_SMOKING_TIME,
         { time_to_get_smoke: "15:53" },
-        DialogKey.im_smoking,
+        DialogKey.im_smoking_2,
       ]);
       expect(updateUserStub.calledOnce).to.be.true;
       expect(updateUserStub.firstCall.args[1]).to.be.deep.equal({
         lastTime: msg.ts,
-        nextTime: msg.ts + (user.deltaTime * 60 * 1000),
+        nextTime: msg.ts + user.deltaTime * 60 * 1000,
         ignoreTime: msg.ts + IGNORE_TIME,
         cigarettesInDay: user.cigarettesInDay + 1,
         cigarettesSummary: user.cigarettesSummary + 1,
+        idempotencyKey: IdempotencyKeys.Two,
       });
     });
 
-    it ("Stage 2. Should ignore too quick calls", async () => {
+    it("Stage 2. Should ignore too quick calls", async () => {
       const timeShift = (MIN_INTERVAL - 1) * 60 * 1000;
       user.lastTime = Date.now();
       user.deltaTime = 73;
@@ -326,13 +353,13 @@ describe("Actions", () => {
       user.difficulty = Difficulty.EASY;
       msg.ts = user.lastTime + timeShift;
 
-      await actions.imSmokingHandler(msg);
+      await actions.imSmokingHandler(msg, IdempotencyKeys.One);
       expect(_resSpy.calledOnce).to.be.true;
       expect(_resSpy.firstCall.args[1]).to.be.equal(Content.STAGE_2_IGNORE_MIN);
       expect(updateUserStub.called).to.be.false;
     });
 
-    it ("Stage 2. Should use a penalty if value is lower than delta time", async () => {
+    it("Stage 2. Should use a penalty if value is lower than delta time", async () => {
       user.lastTime = Date.now();
       user.deltaTime = 73;
       user.minDeltaTime = 52;
@@ -341,39 +368,36 @@ describe("Actions", () => {
       user.difficulty = Difficulty.EASY;
       user.penalty = 2;
       user.penaltyAll = 8;
-      user.nextTime = user.lastTime + (user.deltaTime * 60 * 1000);
+      user.nextTime = user.lastTime + user.deltaTime * 60 * 1000;
       const timeShift = (user.deltaTime - 1) * 60 * 1000;
       msg.ts = user.lastTime + timeShift;
 
-      await actions.imSmokingHandler(msg);
+      await actions.imSmokingHandler(msg, IdempotencyKeys.One);
       expect(_resSpy.calledThrice).to.be.true;
       expect(_resSpy.firstCall.args[1]).to.be.equal(Content.PENALTY);
       expect(_resSpy.firstCall.args[2]).to.be.deep.equal({ penalty: user.penalty + 1 });
-      expect(_resSpy.secondCall.args).to.be.deep.equal([
-        user,
-        Content.STAGE_2,
-      ]);
+      expect(_resSpy.secondCall.args).to.be.deep.equal([user, Content.STAGE_2]);
       expect(_resSpy.thirdCall.args).to.be.deep.equal([
         user,
         Content.NEXT_SMOKING_TIME,
         { time_to_get_smoke: "15:25" },
-        DialogKey.im_smoking,
+        DialogKey.im_smoking_2,
       ]);
       expect(updateUserStub.calledOnce).to.be.true;
       expect(updateUserStub.firstCall.args[1]).to.be.deep.equal({
         lastTime: msg.ts,
-        nextTime: msg.ts + (user.deltaTime * 60 * 1000),
+        nextTime: msg.ts + user.deltaTime * 60 * 1000,
         ignoreTime: msg.ts + IGNORE_TIME,
         penalty: user.penalty + 1,
         penaltyAll: user.penaltyAll + 1,
         cigarettesInDay: user.cigarettesInDay + 1,
         cigarettesSummary: user.cigarettesSummary + 1,
-        winstrike: 0,
+        idempotencyKey: IdempotencyKeys.Two,
       });
     });
 
-    it ("Stage 2. Should display motivizer for too big pause", async () => {
-      const timeShift = (USER_IDLE_TIME + 1)* 60 * 1000;
+    it("Stage 2. Should display motivizer for too big pause", async () => {
+      const timeShift = (USER_IDLE_TIME + 1) * 60 * 1000;
       user.lastTime = Date.now();
       user.deltaTime = 73;
       user.minDeltaTime = 52;
@@ -382,11 +406,11 @@ describe("Actions", () => {
       user.difficulty = Difficulty.HARD;
       msg.ts = user.lastTime + timeShift;
 
-      await actions.imSmokingHandler(msg);
+      await actions.imSmokingHandler(msg, IdempotencyKeys.One);
       expect(botMock.sendMessage.calledOnce).to.be.true;
     });
 
-    it ("Stage 2. Should correctly update the user for too big pause", async () => {
+    it("Stage 2. Should correctly update the user for too big pause", async () => {
       const timeShift = (USER_IDLE_TIME + 1) * 60 * 1000;
       user.lastTime = Date.now();
       user.deltaTime = 73.5;
@@ -397,7 +421,7 @@ describe("Actions", () => {
       user.difficulty = Difficulty.HARD;
       msg.ts = user.lastTime + timeShift;
 
-      await actions.imSmokingHandler(msg);
+      await actions.imSmokingHandler(msg, IdempotencyKeys.One);
 
       expect(updateUserStub.calledOnce).to.be.true;
       expect(updateUserStub.firstCall.args[1]).to.be.deep.equal({
@@ -406,11 +430,12 @@ describe("Actions", () => {
         penalty: 0,
         penaltyDays: user.penaltyDays + 1,
         motivizerIndex: 1,
-        deltaTime: 72,
-        nextTime: 1686852780000,
+        deltaTime: 75,
+        nextTime: 1686852960000,
         cigarettesInDay: 0,
         cigarettesSummary: user.cigarettesSummary + 1,
         winstrike: 0,
+        idempotencyKey: IdempotencyKeys.Two,
       });
     });
   });
@@ -441,14 +466,14 @@ describe("Actions", () => {
       it("should compute new delta correctly for MEDIUM difficulty without penalty", () => {
         user.penalty = 0;
         const result = actions._computeNewDelta(msg.user);
-        expect(result).to.equal(31.5);
+        expect(result).to.equal(32.5);
       });
 
       it("should compute new delta correctly for HARD difficulty without penalty", () => {
         user.penalty = 0;
         user.difficulty = Difficulty.HARD;
         const result = actions._computeNewDelta(msg.user);
-        expect(result).to.equal(32.5);
+        expect(result).to.equal(35.5);
       });
 
       it("should ignore penalty for EASY difficulty", () => {
@@ -461,13 +486,13 @@ describe("Actions", () => {
       it("should compute new delta correctly for MEDIUM with penalty", () => {
         user.penalty = 5;
         const result = actions._computeNewDelta(msg.user);
-        expect(result).to.equal(29); // - 2.5  (+ step 1)
+        expect(result).to.equal(25); // - 2.5  (+ step 2)
       });
 
       it("should compute new delta correctly for HARD with penalty", () => {
         user.penalty = 4;
         const result = actions._computeNewDelta(msg.user);
-        expect(result).to.equal(29.5);  // - 4  (+ step 2)
+        expect(result).to.equal(25); // - 4  (+ step 5)
       });
 
       it("should return minDeltaTime when computed value would be below minimum", () => {

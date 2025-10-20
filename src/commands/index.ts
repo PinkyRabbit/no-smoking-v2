@@ -3,7 +3,7 @@ import TgBot from "../telegram-bot";
 import logger from "../logger";
 import { BotEvent } from "./keys";
 import { Actions } from "./actions";
-import { BTN, Difficulty, HourFormat, Lang, TimeShifting } from "../constants";
+import { BTN, Difficulty, HourFormat, IdempotencyKeys, Lang, TimeShifting } from "../constants";
 
 export const botActionsInit = (bot: TgBot) => {
   const act = new Actions(bot);
@@ -11,7 +11,6 @@ export const botActionsInit = (bot: TgBot) => {
   bot.onText(BotEvent.Start, act.onStart);
   bot.onText(BotEvent.Stats, act.onStats);
   bot.onText(BotEvent.SelectLanguage, act.onLang);
-  bot.onText(BotEvent.SelectLevel, act.onLevel);
   bot.onText(BotEvent.SelectLocalTime, act.localTimeDialogCall);
   bot.onText(BotEvent.Dev, act.onDev);
   bot.onText(BotEvent.How, act.onHow);
@@ -29,7 +28,14 @@ export const botActionsInit = (bot: TgBot) => {
         act.toStage1(message);
         break;
       case BTN.Im_Smoking:
-        act.imSmokingHandler(message);
+      case BTN.Im_Smoking_1:
+        act.imSmokingHandler(message, IdempotencyKeys.One);
+        break;
+      case BTN.Im_Smoking_2:
+        act.imSmokingHandler(message, IdempotencyKeys.Two);
+        break;
+      case BTN.Im_Smoking_3:
+        act.imSmokingHandler(message, IdempotencyKeys.Three);
         break;
       case BTN.Lang_RU:
         act.changeLanguageHandler(message, Lang.RU);
@@ -131,6 +137,9 @@ export const botActionsInit = (bot: TgBot) => {
         break;
       case BTN.Dev_Next:
         act.devByTimer(message);
+        break;
+      case BTN.Dev_Next_Failed:
+        act.devByTimer(message, true);
         break;
       case BTN.Dev_Motivizer_25:
         act.devMotivizer(message, 25);

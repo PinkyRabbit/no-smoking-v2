@@ -104,8 +104,14 @@ const selectButtonsByKey = (key: DialogKey, locale: Lang): InlineKeyboard => {
       buttonFor(BTN.Dev_Content_EN, locale),
     ]];
   }
-  if (key === DialogKey.im_smoking) {
-    return [[buttonFor(BTN.Im_Smoking, locale)]];
+  if (key === DialogKey.im_smoking_1) {
+    return [[buttonFor(BTN.Im_Smoking_1, locale)]];
+  }
+  if (key === DialogKey.im_smoking_2) {
+    return [[buttonFor(BTN.Im_Smoking_2, locale)]];
+  }
+  if (key === DialogKey.im_smoking_3) {
+    return [[buttonFor(BTN.Im_Smoking_3, locale)]];
   }
   if (key === DialogKey.start_existing) {
     return [
@@ -132,8 +138,11 @@ const selectButtonsByKey = (key: DialogKey, locale: Lang): InlineKeyboard => {
         buttonFor(BTN.Dev_Stage_1_More_Max, locale),
       ],
       [
-        buttonFor(BTN.Dev_Last_Time_1_Hour, locale),
+        buttonFor(BTN.Dev_Next_Failed, locale),
         buttonFor(BTN.Dev_Next, locale),
+      ],
+      [
+        buttonFor(BTN.Dev_Last_Time_1_Hour, locale),
       ],
       [
         buttonFor(BTN.Dev_To_Idle, locale),

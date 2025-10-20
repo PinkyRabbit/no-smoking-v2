@@ -1,8 +1,8 @@
-import monk, { IMonkManager, ICollection } from "monk";
+import monk, { ICollection, IMonkManager } from "monk";
 import TelegramBot, { Message } from "node-telegram-bot-api";
 import logger from "../../logger";
 import { RequestOptions } from "../dbOptionsConstructor";
-import { Difficulty, HourFormat, Lang } from "../../constants";
+import { Difficulty, HourFormat, IdempotencyKeys, Lang } from "../../constants";
 import { logWithTimestamps } from "../../lib_helpers/logger";
 import { dateNow, tsToDateTime } from "../../lib_helpers/luxon";
 import { tgLangCodeToLang } from "../../lib_helpers/i18n";
@@ -141,6 +141,15 @@ export type User = {
    * @type Date
    */
   startDate: Date;
+  /**
+   * @property idempotencyKey
+   * @type IdempotencyKeys
+   * @default IdempotencyKeys.One
+   * Telegram could make multiple same calls at once
+   * To prevent this, we use idempotency key to identify the call
+   * and ignore it if it's already processed
+   */
+  idempotencyKey: IdempotencyKeys;
 };
 
 export class UsersRepo extends RequestOptions {
@@ -176,7 +185,7 @@ export class UsersRepo extends RequestOptions {
       UsersRepo.instance = null;
       UsersRepo.db = null;
       logger.info("DB connection closed");
-    } catch(e) {
+    } catch (e) {
       logger.error(e);
     }
   }
@@ -211,6 +220,7 @@ export class UsersRepo extends RequestOptions {
       cigarettesInDay: 0,
       cigarettesSummary: 0,
       startDate: new Date(),
+      idempotencyKey: IdempotencyKeys.One,
     };
     return UsersRepo.call.insert(defaultUser);
   }
@@ -237,10 +247,7 @@ export class UsersRepo extends RequestOptions {
   static async getAllSmokersToSmoke(): Promise<User[]> {
     const ts = dateNow();
     const users = await UsersRepo.call.find({
-      $and: [
-        { nextTime: { $ne: 0 } },
-        { nextTime: { $lte: ts } },
-      ]
+      $and: [{ nextTime: { $ne: 0 } }, { nextTime: { $lte: ts } }],
     });
     const userIds = users.map(({ _id }) => _id);
     const chatIds = users.map(({ chatId }) => chatId);
@@ -256,21 +263,21 @@ export class UsersRepo extends RequestOptions {
   static async getAllIgnoringBot(): Promise<User[]> {
     const ts = dateNow();
     const users = await UsersRepo.call.find({
-      $and: [
-        { ignoreTime: { $ne: 0 } },
-        { ignoreTime: { $lte: ts } },
-      ]
+      $and: [{ ignoreTime: { $ne: 0 } }, { ignoreTime: { $lte: ts } }],
     });
     const userIds = users.map(({ _id }) => _id);
     const chatIds = users.map(({ chatId }) => chatId);
     const dateTimeString = tsToDateTime(ts);
     logger.debug(`[${dateTimeString}] ignoringBot call, ${chatIds.length} affected`);
-    await UsersRepo.call.update({ _id: { $in: userIds } }, {
-      $set: {
-        cigarettesInDay: 0,
-        ignoreTime: 0,
+    await UsersRepo.call.update(
+      { _id: { $in: userIds } },
+      {
+        $set: {
+          cigarettesInDay: 0,
+          ignoreTime: 0,
+        },
       },
-    });
+    );
     return users;
   }
 }

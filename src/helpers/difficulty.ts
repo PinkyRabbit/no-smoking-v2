@@ -1,6 +1,6 @@
 import { User } from "../db";
-import { Content, Difficulty, Lang } from "../constants";
-import { getContent } from "../content";
+import { BTN, Content, Difficulty, Lang } from "../constants";
+import { buttonFor, getContent } from "../content";
 import { minsToTimeString } from "../lib_helpers/humanize-duration";
 
 export const difficultyNameByLevel = (difficulty: Difficulty, lang: Lang): string => {
@@ -15,31 +15,38 @@ export const difficultyNameByLevel = (difficulty: Difficulty, lang: Lang): strin
   return "Unknown";
 };
 
+export const getDifficultyLevels = (lang: Lang): {
+  difficulty_easy: string,
+  difficulty_medium: string,
+  difficulty_hard: string
+} => (  {
+  difficulty_easy: buttonFor(BTN.Level_Easy, lang).text,
+  difficulty_medium: buttonFor(BTN.Level_Medium, lang).text,
+  difficulty_hard: buttonFor(BTN.Level_Hard, lang).text,
+});
+
 export const stepByDifficulty = (difficulty: Difficulty): number => {
   switch (difficulty) {
     case Difficulty.HARD:
-      return 2;
+      return 5;
     case Difficulty.MEDIUM:
-      return 1;
+      return 2;
     case Difficulty.EASY:
     default:
       return 0.5;
   }
 };
 
-export const penaltyByDifficulty = (difficulty: Difficulty, penalty: number): number => {
+export const penaltyByDifficulty = (difficulty: Difficulty, penaltyPoints: number): number => {
   if (difficulty === Difficulty.EASY) {
     return 0;
   }
-  if (difficulty === Difficulty.MEDIUM) {
-    return 0.5 * penalty;
+  let penalty = 0;
+  for(let i = 0; i < penaltyPoints; i += 1) {
+    const step = penalty + 0.5;
+    penalty += step;
   }
-  let hardLevelValue = 0;
-  for(let i = 0; i < penalty; i += 1) {
-    const step = hardLevelValue + 0.5;
-    hardLevelValue += step;
-  }
-  return hardLevelValue;
+  return penalty;
 };
 
 export const penaltyMinutesString = ({ difficulty, penalty, lang }: User) => {
