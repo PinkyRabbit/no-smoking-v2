@@ -267,6 +267,8 @@ export class Actions extends Mixin(DevActions, Settings) {
     const isPenalty = msg.ts < msg.user.nextTime;
     if (isPenalty) {
       logger.debug(`U-${msg.user.chatId} [penalty] ${tsToDateTime(msg.ts)} < ${tsToDateTime(msg.user.nextTime)}`);
+    }
+    if (isPenalty && msg.user.difficulty !== Difficulty.EASY) {
       update.winstrike = 0;
     }
     if (isPenalty && msg.user.difficulty === Difficulty.HARD) {
