@@ -293,11 +293,9 @@ export class Actions extends Mixin(DevActions, Settings) {
       const newDelta = isMaxTimeLimitReached ? msg.user.deltaTime : this._computeNewDelta(msg.user);
       const newNextTime = msg.ts + newDelta * 60 * 1000;
       update.penalty = 0;
-      update.penaltyDays = msg.user.penalty ? msg.user.penaltyDays + 1 : 0;
       update.cigarettesInDay = 0;
       update.deltaTime = newDelta;
       update.nextTime = newNextTime;
-      update.winstrike = msg.user.penalty ? 0 : msg.user.winstrike + 1;
 
       const isEasyDifficulty = msg.user.difficulty === Difficulty.EASY;
       if (isEasyDifficulty) {
