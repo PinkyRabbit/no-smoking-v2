@@ -3,7 +3,7 @@ import TgBot from "../telegram-bot";
 import logger from "../logger";
 import { BotEvent } from "./keys";
 import { Actions } from "./actions";
-import { BTN, Difficulty, HourFormat, Lang, TimeShifting } from "../constants";
+import { BTN, Difficulty, HourFormat, IdempotencyKeys, Lang, TimeShifting } from "../constants";
 
 export const botActionsInit = (bot: TgBot) => {
   const act = new Actions(bot);
@@ -28,7 +28,14 @@ export const botActionsInit = (bot: TgBot) => {
         act.toStage1(message);
         break;
       case BTN.Im_Smoking:
-        act.imSmokingHandler(message);
+      case BTN.Im_Smoking_1:
+        act.imSmokingHandler(message, IdempotencyKeys.One);
+        break;
+      case BTN.Im_Smoking_2:
+        act.imSmokingHandler(message, IdempotencyKeys.Two);
+        break;
+      case BTN.Im_Smoking_3:
+        act.imSmokingHandler(message, IdempotencyKeys.Three);
         break;
       case BTN.Lang_RU:
         act.changeLanguageHandler(message, Lang.RU);

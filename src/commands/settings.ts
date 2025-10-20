@@ -9,6 +9,7 @@ import logger from "../logger";
 import { IGNORE_TIME } from "./constants";
 import { PlainUser } from "../global";
 import { daysToString } from "../lib_helpers/humanize-duration";
+import { smokingButtonByIdempotencyKey } from "../helpers/idempotency";
 
 export class Settings {
   /**
@@ -209,7 +210,7 @@ export class Settings {
       });
       const time_to_get_smoke = mssToTime(nextTime, msg.user);
       await this._res(msg.user, Content.STAGE_2_INITIAL);
-      await this._res(msg.user, Content.NEXT_SMOKING_TIME, { time_to_get_smoke }, DialogKey.im_smoking);
+      await this._res(msg.user, Content.NEXT_SMOKING_TIME, { time_to_get_smoke }, smokingButtonByIdempotencyKey(msg.user.idempotencyKey) );
       return;
     }
 
@@ -251,7 +252,7 @@ export class Settings {
     } else {
       await this._res(msg.user, Content.SETTINGS_UPDATED);
     }
-    await this._res(msg.user, Content.NEXT_SMOKING_TIME, { time_to_get_smoke }, DialogKey.im_smoking);
+    await this._res(msg.user, Content.NEXT_SMOKING_TIME, { time_to_get_smoke }, smokingButtonByIdempotencyKey(msg.user.idempotencyKey));
   }
 
   @transformMsg

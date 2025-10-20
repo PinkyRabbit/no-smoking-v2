@@ -130,7 +130,9 @@ export enum DialogKey {
   beginning = "new_user_beginning",
   lang = "lang",
   dev_lang = "dev_lang",
-  im_smoking = "im_smoking",
+  im_smoking_1 = "im_smoking_1",
+  im_smoking_2 = "im_smoking_2",
+  im_smoking_3 = "im_smoking_3",
   start_existing = "start_existing",
   dev = "dev",
   difficulty = "difficulty",
@@ -163,6 +165,9 @@ export enum BTN {
   CallStart = "call_start",
   Beginning = "new_user_beginning",
   Im_Smoking = "im_smoking",
+  Im_Smoking_1 = "im_smoking_1",
+  Im_Smoking_2 = "im_smoking_2",
+  Im_Smoking_3 = "im_smoking_3",
   Lang_RU = "lang_ru",
   Lang_EN = "lang_en",
   Reset_Stage_1 = "reset_to_stage_1",
@@ -206,4 +211,10 @@ export enum BTN {
   Dev_Content_RU = "dev_content_ru",
   Dev_Content_EN = "dev_content_en",
   Recommendations = "recommendations",
+}
+
+export enum IdempotencyKeys {
+  One = "IdempotencyKeysOne",
+  Two = "IdempotencyKeysTwo",
+  Three = "IdempotencyKeysThree",
 }

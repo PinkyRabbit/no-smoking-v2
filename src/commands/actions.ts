@@ -3,7 +3,7 @@ import TgBot from "../telegram-bot";
 import { join as pathJoin } from "path";
 import { Mixin } from "ts-mixer";
 import { ContentProps, getContent } from "../content";
-import { Content, DialogKey, Difficulty, HourFormat, Motivizer, YouCan } from "../constants";
+import { Content, DialogKey, Difficulty, HourFormat, IdempotencyKeys, Motivizer, YouCan } from "../constants";
 import { DevActions } from "./development";
 import { Settings } from "./settings";
 import { User, UsersRepo } from "../db";
@@ -17,6 +17,7 @@ import { stage2 } from "./decorators/stage2";
 import { cigarettesText } from "../helpers/content";
 import { difficultyNameByLevel, penaltyByDifficulty, penaltyMinutesString, stepByDifficulty } from "../helpers";
 import { InlineKeyboard } from "../content/types";
+import { getNextIdempotencyKey } from "../helpers/idempotency";
 
 @LogActionCalls
 export class Actions extends Mixin(DevActions, Settings) {
@@ -165,20 +166,22 @@ export class Actions extends Mixin(DevActions, Settings) {
   @transformMsg
   @onlyForKnownUsers
   public async toStage1(msg: TelegramBot.Message) {
-    await this._res(msg.user, Content.STAGE_1, {}, DialogKey.im_smoking);
+    await this._res(msg.user, Content.STAGE_1, {}, DialogKey.im_smoking_1);
   }
 
   /**
    * Stage 1
    */
   private async _stage1(msg: TelegramBot.Message) {
+    const { idempotencyKey, ImSmokingDialogKey } = getNextIdempotencyKey(msg.user.idempotencyKey);
     const update: Partial<User> = {
+      idempotencyKey,
       lastTime: msg.ts,
     };
     if (!msg.user.lastTime) {
       update.cigarettesSummary = 1;
       await UsersRepo.updateUser(msg, update);
-      await this._res(msg.user, Content.FIRST_STEP, { stage_1_left: STAGE_1_STEPS }, DialogKey.im_smoking);
+      await this._res(msg.user, Content.FIRST_STEP, { stage_1_left: STAGE_1_STEPS }, ImSmokingDialogKey);
       return;
     }
     const timeDifferenceMs = msg.ts - msg.user.lastTime;
@@ -191,7 +194,7 @@ export class Actions extends Mixin(DevActions, Settings) {
       isValidDeltaTime = false;
       update.lastTime = msg.user.lastTime;
       const contentProps = { min_stage_1: minsToTimeString(MIN_INTERVAL, msg.user.lang), stage_1_left: deltaTimesLeft };
-      await this._res(msg.user, Content.STAGE_1_IGNORE_MIN, contentProps, DialogKey.im_smoking);
+      await this._res(msg.user, Content.STAGE_1_IGNORE_MIN, contentProps, ImSmokingDialogKey);
     } else {
       update.cigarettesSummary = msg.user.cigarettesSummary + 1;
     }
@@ -200,7 +203,7 @@ export class Actions extends Mixin(DevActions, Settings) {
       logger.debug(`deltaTime > STAGE_1_MAX ${deltaTime} > ${STAGE_1_MAX}`);
       isValidDeltaTime = false;
       const contentProps = { max_stage_1: STAGE_1_MAX, stage_1_left: deltaTimesLeft };
-      await this._res(msg.user, Content.STAGE_1_IGNORE_MAX, contentProps, DialogKey.im_smoking);
+      await this._res(msg.user, Content.STAGE_1_IGNORE_MAX, contentProps, ImSmokingDialogKey);
     }
     // add time if timestamp is valid
     if (isValidDeltaTime) {
@@ -216,7 +219,7 @@ export class Actions extends Mixin(DevActions, Settings) {
       }
     }
     if (isValidDeltaTime && deltaTimesLeft > 0) {
-      await this._res(msg.user, Content.STAGE_1_PROCESSING, { stage_1_left: deltaTimesLeft }, DialogKey.im_smoking);
+      await this._res(msg.user, Content.STAGE_1_PROCESSING, { stage_1_left: deltaTimesLeft }, ImSmokingDialogKey);
     }
     if (!isValidDeltaTime || deltaTimesLeft > 0) {
       await UsersRepo.updateUser(msg, update);
@@ -241,6 +244,7 @@ export class Actions extends Mixin(DevActions, Settings) {
    */
   @stage2
   private async _stage2(msg: TelegramBot.Message) {
+    const { idempotencyKey, ImSmokingDialogKey } = getNextIdempotencyKey(msg.user.idempotencyKey);
     const timeDifferenceMs = msg.ts - msg.user.lastTime;
     const currentDelta = Math.round(timeDifferenceMs / 60 / 1000); // in minutes
     const daysToLog = Math.floor(currentDelta / 60 / 24);
@@ -252,6 +256,7 @@ export class Actions extends Mixin(DevActions, Settings) {
       return;
     }
     const update: Partial<User> = {
+      idempotencyKey,
       lastTime: msg.ts,
       nextTime: msg.ts + msg.user.deltaTime * 60 * 1000,
       ignoreTime: msg.ts + IGNORE_TIME,
@@ -344,7 +349,7 @@ export class Actions extends Mixin(DevActions, Settings) {
       const time_to_get_smoke = mssToTime(update.nextTime!, msg.user);
       const content = !isPenalty && msg.user.cigarettesInDay ? Content.STAGE_2_SUCCESS : Content.STAGE_2;
       await this._res(msg.user, content);
-      await this._res(msg.user, Content.NEXT_SMOKING_TIME, { time_to_get_smoke }, DialogKey.im_smoking);
+      await this._res(msg.user, Content.NEXT_SMOKING_TIME, { time_to_get_smoke }, ImSmokingDialogKey);
     }
     // update user
     await UsersRepo.updateUser(msg, update);
@@ -352,7 +357,10 @@ export class Actions extends Mixin(DevActions, Settings) {
 
   @transformMsg
   @onlyForKnownUsers
-  public async imSmokingHandler(msg: TelegramBot.Message) {
+  public async imSmokingHandler(msg: TelegramBot.Message, idempotencyKey: IdempotencyKeys) {
+    if (msg.user.idempotencyKey && msg.user.idempotencyKey !== idempotencyKey) {
+      return;
+    }
     if (!msg.user.minDeltaTime) {
       return this._stage1(msg);
     }
@@ -366,14 +374,16 @@ export class Actions extends Mixin(DevActions, Settings) {
   @onlyForKnownUsers
   @stage2
   public async resetIgnoreHandler(msg: TelegramBot.Message) {
+    const { idempotencyKey, ImSmokingDialogKey } = getNextIdempotencyKey(msg.user.idempotencyKey);
     await UsersRepo.updateUser(msg, {
+      idempotencyKey,
       lastTime: 0,
       nextTime: 0,
       penaltyDays: 0,
       winstrike: 0,
     });
     const contentProps = { delta_time: minsToTimeString(msg.user.deltaTime, msg.user.lang) };
-    await this._res(msg.user, Content.START_RESET_IGNORE, contentProps, DialogKey.im_smoking);
+    await this._res(msg.user, Content.START_RESET_IGNORE, contentProps, ImSmokingDialogKey);
   }
 
   @transformMsg
@@ -402,7 +412,9 @@ export class Actions extends Mixin(DevActions, Settings) {
   @onlyForKnownUsers
   @stage2
   public async resetToStage2Handler(msg: TelegramBot.Message) {
+    const { idempotencyKey, ImSmokingDialogKey } = getNextIdempotencyKey(msg.user.idempotencyKey);
     await UsersRepo.updateUser(msg, {
+      idempotencyKey,
       lastTime: 0,
       nextTime: 0,
       cigarettesInDay: 0,
@@ -410,7 +422,7 @@ export class Actions extends Mixin(DevActions, Settings) {
       winstrike: 0,
     });
     const contentProps = { delta_time: minsToTimeString(msg.user.minDeltaTime, msg.user.lang) };
-    await this._res(msg.user, Content.START_RESET_TO_STAGE_2, contentProps, DialogKey.im_smoking);
+    await this._res(msg.user, Content.START_RESET_TO_STAGE_2, contentProps, ImSmokingDialogKey);
   }
 
   @transformMsg

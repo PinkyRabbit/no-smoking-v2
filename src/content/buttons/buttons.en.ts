@@ -4,7 +4,10 @@ import { ButtonNames } from "../types";
 export const buttonsEn: ButtonNames = {
   [BTN.CallStart]: "/start",
   [BTN.Beginning]: "Let's Get it Started!",
-  [BTN.Im_Smoking]: "I’m having a smoke 🚬",
+  [BTN.Im_Smoking]: "I’m having a smoke 🚬 (Legacy)",
+  [BTN.Im_Smoking_1]: "I’m having a smoke 🚬",
+  [BTN.Im_Smoking_2]: "I’m having a smoke 🚬 ",
+  [BTN.Im_Smoking_3]: "I’m having a smoke 🚬  ",
   [BTN.Reset_Stage_1]: "Full Reset 👍",
   [BTN.Reset_Stage_2]: "Stage 1 Progress Reset 🐯",
   [BTN.Reset_Ignore]: "Keep it as it is ❌️",
