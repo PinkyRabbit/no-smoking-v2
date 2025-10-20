@@ -28,28 +28,25 @@ export const getDifficultyLevels = (lang: Lang): {
 export const stepByDifficulty = (difficulty: Difficulty): number => {
   switch (difficulty) {
     case Difficulty.HARD:
-      return 2;
+      return 5;
     case Difficulty.MEDIUM:
-      return 1;
+      return 2;
     case Difficulty.EASY:
     default:
       return 0.5;
   }
 };
 
-export const penaltyByDifficulty = (difficulty: Difficulty, penalty: number): number => {
+export const penaltyByDifficulty = (difficulty: Difficulty, penaltyPoints: number): number => {
   if (difficulty === Difficulty.EASY) {
     return 0;
   }
-  if (difficulty === Difficulty.MEDIUM) {
-    return 0.5 * penalty;
+  let penalty = 0;
+  for(let i = 0; i < penaltyPoints; i += 1) {
+    const step = penalty + 0.5;
+    penalty += step;
   }
-  let hardLevelValue = 0;
-  for(let i = 0; i < penalty; i += 1) {
-    const step = hardLevelValue + 0.5;
-    hardLevelValue += step;
-  }
-  return hardLevelValue;
+  return penalty;
 };
 
 export const penaltyMinutesString = ({ difficulty, penalty, lang }: User) => {
