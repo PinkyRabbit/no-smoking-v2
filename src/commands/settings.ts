@@ -239,7 +239,11 @@ export class Settings {
       const props = { day: msg.user.winstrike, of_days: DAYS_TO_CHANGE_DIFFICULTY };
       await this._res(msg.user, Content.WINSTRIKE_BASE, props);
     }
-    if (msg.user.difficulty === Difficulty.MEDIUM  && isWinstrikeMessageToDisplay) {
+    if (
+      msg.user.difficulty === Difficulty.MEDIUM
+      && isWinstrikeMessageToDisplay
+      && msg.user.winstrike % DAYS_TO_CHANGE_DIFFICULTY === 0
+    ) {
       const props = { day: msg.user.winstrike, of_days: DAYS_TO_CHANGE_DIFFICULTY };
       await this._res(msg.user, Content.WINSTRIKE_MEDIUM, props);
     }
