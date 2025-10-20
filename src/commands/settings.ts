@@ -237,6 +237,10 @@ export class Settings {
     const isWinstrikeMessageToDisplay = !isIgnoreHint && !isWinstrike && msg.user.winstrike;
     if (isEasyDifficulty && isWinstrikeMessageToDisplay) {
       const props = { day: msg.user.winstrike, of_days: DAYS_TO_CHANGE_DIFFICULTY };
+      await this._res(msg.user, Content.WINSTRIKE_BASE, props);
+    }
+    if (msg.user.difficulty === Difficulty.MEDIUM  && isWinstrikeMessageToDisplay) {
+      const props = { day: msg.user.winstrike, of_days: DAYS_TO_CHANGE_DIFFICULTY };
       await this._res(msg.user, Content.WINSTRIKE_MEDIUM, props);
     }
 
