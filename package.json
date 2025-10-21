@@ -18,13 +18,13 @@
   "dependencies": {
     "@logtail/node": "^0.5.6",
     "@logtail/winston": "^0.5.6",
-    "humanize-duration": "^3.33.0",
-    "i18n": "^0.15.1",
+    "humanize-duration": "^3.33.1",
+    "i18n": "^0.15.2",
     "luxon": "^3.7.1",
     "monk": "^7.3.4",
     "node-telegram-bot-api": "^0.66.0",
     "ts-mixer": "^6.0.4",
-    "winston": "^3.17.0"
+    "winston": "^3.18.3"
   },
   "devDependencies": {
     "@types/chai": "^4.3.19",
