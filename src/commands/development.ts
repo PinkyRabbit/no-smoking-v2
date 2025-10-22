@@ -246,7 +246,11 @@ export class DevActions {
   @onlyForKnownUsers
   public async devContent(msg: TelegramBot.Message) {
     const buttonsForIdle = getIdleVariants(msg.user.lang);
-    await this._res(msg.user, Content.BOT_IGNORE, { ...buttonsForIdle }, DialogKey.ignore);
+    const no_penalty_time = minsToTimeString(msg.user.deltaTime, msg.user.lang);
+    const penalty10Computed = msg.user.deltaTime - 10;
+    const penalty10Value = msg.user.minDeltaTime < penalty10Computed ? penalty10Computed : msg.user.minDeltaTime;
+    const penalty_10_time= minsToTimeString(penalty10Value, msg.user.lang);
+    await this._res(msg.user, Content.BOT_IGNORE, { ...buttonsForIdle, no_penalty_time, penalty_10_time }, DialogKey.ignore);
     /*
       const DAYS_TO_CHANGE_DIFFICULTY = 3;
       const props = { day: msg.user.winstrike, of_days: DAYS_TO_CHANGE_DIFFICULTY };
