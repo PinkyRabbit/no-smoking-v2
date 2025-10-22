@@ -318,7 +318,7 @@ export const dialogsEn: MultilineContent = {
     4. ${I}Were you on a break and maybe got off schedule?${I} – If you slipped, click ${B}"Penalty: 10 minutes"${B}${NL}
     If your schedule is fine, just click ${B}"Let’s continue"${B} 😊 
   `,
-  [Content.BOT_IGNORE_BUSY]: `
+  [Content.BOT_IGNORE_JUST_GO_ON]: `
     ${B}Let’s just continue!${B} Great! 👍${ND}
     We understand that life is truly fast-paced and busy these days.${N2}
     That’s exactly why you shouldn’t give up on quitting smoking.${NL}

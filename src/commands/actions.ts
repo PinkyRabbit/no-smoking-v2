@@ -427,9 +427,18 @@ export class Actions extends Mixin(DevActions, Settings) {
 
   @transformMsg
   @onlyForKnownUsers
-  public async ignoreBusy(msg: TelegramBot.Message) {
+  public async ignoreFullReset(msg: TelegramBot.Message) {
     await UsersRepo.updateUser(msg, { ignoreTime: msg.ts + IGNORE_TIME, winstrike: 0 });
-    await this._res(msg.user, Content.BOT_IGNORE_BUSY);
+    await this._res(msg.user, Content.BOT_IGNORE_JUST_GO_ON);
+    const local_time = mssToTime(msg.ts, msg.user);
+    await this._res(msg.user, Content.ON_IDLE_TIME_CONFIRMATION, { local_time }, DialogKey.confirm_local_time);
+  }
+
+  @transformMsg
+  @onlyForKnownUsers
+  public async ignoreJustGoOn(msg: TelegramBot.Message) {
+    await UsersRepo.updateUser(msg, { ignoreTime: msg.ts + IGNORE_TIME, winstrike: 0 });
+    await this._res(msg.user, Content.BOT_IGNORE_JUST_GO_ON);
     const local_time = mssToTime(msg.ts, msg.user);
     await this._res(msg.user, Content.ON_IDLE_TIME_CONFIRMATION, { local_time }, DialogKey.confirm_local_time);
   }

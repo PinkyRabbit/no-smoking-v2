@@ -68,8 +68,11 @@ export const botActionsInit = (bot: TgBot) => {
       case BTN.Reset_Stage_2:
         act.resetToStage2Handler(message);
         break;
-      case BTN.Ignore_Busy:
-        act.ignoreBusy(message);
+      case BTN.Ignore_Full_Reset:
+        act.ignoreFullReset(message);
+        break;
+      case BTN.Ignore_Just_Go_On:
+        act.ignoreJustGoOn(message);
         break;
       case BTN.Ignore_Penalty_10:
         act.ignorePenalty10(message);
