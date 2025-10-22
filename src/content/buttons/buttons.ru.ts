@@ -20,7 +20,7 @@ export const buttonsRu: ButtonNames  = {
   [BTN.Ignore_Success]: "Я бросил!",
   [BTN.Ignore_Failed]: "Не буду бросать 👎",
   [BTN.Ignore_Full_Reset]: "С самого начала 🔄",
-  [BTN.Ignore_Just_Go_On]: "Просто продолжим ✅",
+  [BTN.Ignore_Just_Go_On]: "Просто продолжим 👌",
   [BTN.Ignore_Penalty_10]: "Штраф 10 минут 🔻",
   [BTN.Local_Time_Correct]: "Верно ✅",
   [BTN.Local_Time_Wrong]: "✏️ Изменить",

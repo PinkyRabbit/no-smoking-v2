@@ -308,15 +308,18 @@ export const dialogsEn: MultilineContent = {
   [Content.BOT_IGNORE]: `
     🕵️ ${B}We lost you!${B}${N2}
     It’s been ${I}2 days${I} since your last interaction with the bot.${N2}
-    We understand there could be many reasons for this, but we’d like to check in:${NL}
     ${B}Are you planning to continue or not?${B}${ND}
-    Here are your options:${N2}
-    1. ${I}Did you quit smoking?${I}  – If so, congratulations! 🎊${NL}
-    Click the button, and we’ll share some final recommendations with you.${N2}
-    2. ${I}Changed your mind about quitting?${I} – That’s unfortunate, but it’s your choice. Click "I’ll keep smoking"${N2}
-    3. ${I}You were busy and didn’t have time to continue?${I} – That’s fine, it happens! Just click ${B}"Let’s continue"${B}${N2}
-    4. ${I}Were you on a break and maybe got off schedule?${I} – If you slipped, click ${B}"Penalty: 10 minutes"${B}${NL}
-    If your schedule is fine, just click ${B}"Let’s continue"${B} 😊 
+    ❌ If you ${B}don’t plan${B} to keep using the bot — please choose a reason:${N2}
+    - ${I}You quit smoking?${I} — Then congratulations! 🎊${N2}
+    - ${I}You decided not to quit after all${I} — That’s unfortunate, but it's your choice.${ND}
+    ✅ If ${B}you plan to continue${B}, there are several options:${N2}
+    1. ${B}{{from_scratch_message}}${B} — for those who haven't used the bot for a while.${NL}
+    This will reset your progress so you can ${I}start fresh${I}.${N2}
+    2. ${B}{{no_penalty_message}}${B} — we'll simply pick up where you left off.${NL}
+    Your timer will be set to ${B}{{ no_penalty_time }}${B}${N2} 
+    3. ${B}{{penalty_10_message}}${B}  — if you’ve fallen off schedule, 
+    it's better to make a small rollback of 10 minutes.${NL}
+    Your timer will be set to ${B}{{ penalty_10_time }}${B}.
   `,
   [Content.BOT_IGNORE_JUST_GO_ON]: `
     ${B}Let’s just continue!${B} Great! 👍${ND}
