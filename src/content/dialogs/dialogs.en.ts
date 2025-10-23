@@ -117,6 +117,7 @@ export const dialogsEn: MultilineContent = {
   `,
   [Content.STAGE_2_INITIAL]: `
     ${B}All set!${B}${N2}
+    🕒 Your current smoking interval: ${B}{{delta_time}}${B}${N2}
     Now we’ll try to stick to a smoking schedule.${NL}
     Each day, we’ll shift it by a few minutes depending on the chosen difficulty level.${N2}
     If you miss the scheduled time, no worries.${NL} 
@@ -240,7 +241,8 @@ export const dialogsEn: MultilineContent = {
     When you feel like you’ve reduced or eliminated violations, ${B}you can switch to a more advanced difficulty level${B}.
     Penalties will then be applied, but they won’t bother you because you’ll already be prepared.${ND}
     ⬆️ ⬆️ ⬆️ ⬆️ ⬆️${NL}
-    Your account setup will be completed automatically in 1 minute.
+    Your account setup will be completed${NL} 
+    🔜 ${B}automatically in 1 minute{B}.${NL}
     This pause is to ensure you’ve had time to read the message above.
   `,
   [Content.DIFFICULTY_HARD_DECREASED]: `
@@ -299,7 +301,8 @@ export const dialogsEn: MultilineContent = {
     Start using the bot ⤵️ 
   `,
   [Content.SETTINGS_UPDATED]: `
-    ${B}Your settings have been updated${B} ✔
+    ${B}Your settings have been updated${B} ✔${N2}
+    🕒 Your current smoking interval: ${B}{{delta_time}}${B}
   `,
   [Content.SETTINGS_UPDATED_ON_IDLE]: `
     ${B}Your settings have been updated${B} ✔${ND}️

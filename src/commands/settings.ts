@@ -8,7 +8,7 @@ import { UsersRepo } from "../db";
 import logger from "../logger";
 import { IGNORE_TIME } from "./constants";
 import { PlainUser } from "../global";
-import { daysToString } from "../lib_helpers/humanize-duration";
+import { daysToString, minsToTimeString } from "../lib_helpers/humanize-duration";
 import { smokingButtonByIdempotencyKey } from "../helpers/idempotency";
 
 export class Settings {
@@ -209,7 +209,8 @@ export class Settings {
         ignoreTime: msg.ts + IGNORE_TIME,
       });
       const time_to_get_smoke = mssToTime(nextTime, msg.user);
-      await this._res(msg.user, Content.STAGE_2_INITIAL);
+      const delta_time = minsToTimeString(msg.user.deltaTime, msg.user.lang);
+      await this._res(msg.user, Content.STAGE_2_INITIAL, { delta_time });
       await this._res(msg.user, Content.NEXT_SMOKING_TIME, { time_to_get_smoke }, smokingButtonByIdempotencyKey(msg.user.idempotencyKey) );
       return;
     }
@@ -258,7 +259,8 @@ export class Settings {
     if (isConfirm) {
       await this._res(msg.user, Content.STAGE_2_HINT);
     } else {
-      await this._res(msg.user, Content.SETTINGS_UPDATED);
+      const delta_time = minsToTimeString(msg.user.deltaTime, msg.user.lang);
+      await this._res(msg.user, Content.SETTINGS_UPDATED, { delta_time });
     }
     await this._res(msg.user, Content.NEXT_SMOKING_TIME, { time_to_get_smoke }, smokingButtonKey);
   }
