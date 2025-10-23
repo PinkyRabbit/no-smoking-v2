@@ -247,9 +247,10 @@ export class Settings {
       await this._res(msg.user, Content.WINSTRIKE_MEDIUM, props);
     }
 
+    const smokingButtonKey = smokingButtonByIdempotencyKey(msg.user.idempotencyKey);
     // stage 2 user without next time
     if (!msg.user.nextTime) {
-      await this._res(msg.user, Content.SETTINGS_UPDATED_ON_IDLE);
+      await this._res(msg.user, Content.SETTINGS_UPDATED_ON_IDLE, {}, smokingButtonKey);
       return;
     }
     // stage 2 normal
@@ -259,7 +260,7 @@ export class Settings {
     } else {
       await this._res(msg.user, Content.SETTINGS_UPDATED);
     }
-    await this._res(msg.user, Content.NEXT_SMOKING_TIME, { time_to_get_smoke }, smokingButtonByIdempotencyKey(msg.user.idempotencyKey));
+    await this._res(msg.user, Content.NEXT_SMOKING_TIME, { time_to_get_smoke }, smokingButtonKey);
   }
 
   @transformMsg

@@ -305,7 +305,7 @@ export const dialogsRu: MultilineContent = {
     ${B}Ваши настройки обновлены${B} ✔️
   `,
   [Content.SETTINGS_UPDATED_ON_IDLE]: `
-    🎯 Готово!${N2}
+    ✅ Готово!${N2}
     Каждый раз, когда закуришь — просто нажимай «Я курю».
   `,
   [Content.BOT_IGNORE]: `
