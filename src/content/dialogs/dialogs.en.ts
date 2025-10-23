@@ -43,6 +43,14 @@ export const dialogsEn: MultilineContent = {
     and all data has been updated.${N2}
     You need to complete Stage 1 again ⤵️
   `,
+  [Content.START_VALID_USER]: `
+    👁 Activation Attempt${N2}
+    A repeated attempt to activate the account has been detected.${NL}
+    This usually happens due to a glitch.${ND}
+    Just in case, here’s your current status:${N2}
+    ⏱️ Time between smoke breaks: ${B}{{delta_time}}${B}.${NL}
+    ⏰ Next break: ${B}{{time_to_get_smoke}}${B}
+  `,
   [Content.START_RESET_IGNORE]: `
     You have chosen to ${B}"keep things as they are"${B}${NL}
     That’s entirely up to you.${NL}

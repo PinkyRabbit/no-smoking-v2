@@ -11,13 +11,13 @@ import { IGNORE_TIME, MIN_INTERVAL, STAGE_1_MAX, STAGE_1_STEPS, USER_IDLE_TIME }
 import { minsToTimeString } from "../lib_helpers/humanize-duration";
 import { LogActionCalls, onlyForKnownUsers, transformMsg } from "./decorators";
 import { tgLangCodeToLang } from "../lib_helpers/i18n";
-import { getFormattedStartDate, mssToTime, tsToDateTime } from "../lib_helpers/luxon";
+import { dateNow, getFormattedStartDate, mssToTime, tsToDateTime } from "../lib_helpers/luxon";
 import logger from "../logger";
 import { stage2 } from "./decorators/stage2";
 import { cigarettesText } from "../helpers/content";
 import { computeNewDelta, difficultyNameByLevel, penaltyMinutesString, stepByDifficulty } from "../helpers";
 import { InlineKeyboard } from "../content/types";
-import { getNextIdempotencyKey } from "../helpers/idempotency";
+import { getNextIdempotencyKey, smokingButtonByIdempotencyKey } from "../helpers/idempotency";
 
 @LogActionCalls
 export class Actions extends Mixin(DevActions, Settings) {
@@ -120,16 +120,17 @@ export class Actions extends Mixin(DevActions, Settings) {
       await this._res(user, Content.START_NEW, {}, DialogKey.beginning);
       return;
     }
-    await UsersRepo.updateUser(msg, { startDate: new Date(), penaltyAll: 0 });
     if (!msg.user.minDeltaTime) {
-      await UsersRepo.updateUser(msg, {
-        lastTime: 0,
-        nextTime: 0,
-        ignoreTime: 0,
-        minDeltaTimesInitial: [],
-      });
+      UsersRepo.resetUser(msg);
       await this._res(msg.user, Content.START_EXISTING_STAGE_1);
       await this.toStage1(msg);
+      return;
+    }
+    if (msg.user.ignoreTime && msg.user.ignoreTime > dateNow()) {
+      const smokingButtonKey = smokingButtonByIdempotencyKey(msg.user.idempotencyKey);
+      const time_to_get_smoke = mssToTime(msg.user.nextTime, msg.user);
+      const delta_time = minsToTimeString(msg.user.deltaTime, msg.user.lang);
+      await this._res(msg.user, Content.START_VALID_USER, { delta_time, time_to_get_smoke }, smokingButtonKey );
       return;
     }
     const min_delta = minsToTimeString(msg.user.minDeltaTime, msg.user.lang);

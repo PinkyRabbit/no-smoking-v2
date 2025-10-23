@@ -47,6 +47,7 @@ export enum Content {
   START_NEW = "Start_New_User",
   START_EXISTING = "Start_Existing_User",
   START_EXISTING_STAGE_1 = "Start_Existing_Stage_1",
+  START_VALID_USER = "Start_Valid_User",
   START_RESET_IGNORE = "Start_Reset_Ignore",
   START_RESET_TO_STAGE_1 = "Start_Reset_Stage_1",
   START_RESET_TO_STAGE_2 = "Start_Reset_Stage_2",
