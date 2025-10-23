@@ -9,6 +9,7 @@ import { getContent } from "../content";
 import { daysToString, minsToTimeString } from "../lib_helpers/humanize-duration";
 import { difficultyNameByLevel, penaltyMinutesString, stepByDifficulty } from "../helpers";
 import { getIdleVariants } from "../helpers/idle";
+import { computeNewDelta } from "../helpers/delta";
 
 /**
  * Class for development actions
@@ -247,9 +248,8 @@ export class DevActions {
   public async devContent(msg: TelegramBot.Message) {
     const buttonsForIdle = getIdleVariants(msg.user.lang);
     const no_penalty_time = minsToTimeString(msg.user.deltaTime, msg.user.lang);
-    const penalty10Computed = msg.user.deltaTime - 10;
-    const penalty10Value = msg.user.minDeltaTime < penalty10Computed ? penalty10Computed : msg.user.minDeltaTime;
-    const penalty_10_time= minsToTimeString(penalty10Value, msg.user.lang);
+    const tenMinutesDelta = computeNewDelta(msg.user, true);
+    const penalty_10_time= minsToTimeString(tenMinutesDelta, msg.user.lang);
     await this._res(msg.user, Content.BOT_IGNORE, { ...buttonsForIdle, no_penalty_time, penalty_10_time }, DialogKey.ignore);
     /*
       const DAYS_TO_CHANGE_DIFFICULTY = 3;

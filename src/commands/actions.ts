@@ -15,7 +15,7 @@ import { getFormattedStartDate, mssToTime, tsToDateTime } from "../lib_helpers/l
 import logger from "../logger";
 import { stage2 } from "./decorators/stage2";
 import { cigarettesText } from "../helpers/content";
-import { difficultyNameByLevel, penaltyByDifficulty, penaltyMinutesString, stepByDifficulty } from "../helpers";
+import { difficultyNameByLevel, penaltyMinutesString, stepByDifficulty, computeNewDelta } from "../helpers";
 import { InlineKeyboard } from "../content/types";
 import { getNextIdempotencyKey } from "../helpers/idempotency";
 
@@ -83,29 +83,6 @@ export class Actions extends Mixin(DevActions, Settings) {
       }, 400);
     });
   }
-
-  /**
-   * Helper to calculate new delta time
-   */
-  public _computeNewDelta = (
-    {
-      deltaTime,
-      difficulty,
-      penalty,
-      minDeltaTime,
-    }: Pick<User, "deltaTime" | "difficulty" | "penalty" | "minDeltaTime">,
-    isTenMinPenalty?: boolean,
-  ) => {
-    if (isTenMinPenalty) {
-      const newDeltaTime = deltaTime - 10;
-      return newDeltaTime >= minDeltaTime ? newDeltaTime : minDeltaTime;
-    }
-    const deltaTimeInt = deltaTime * 10;
-    const stepInt = stepByDifficulty(difficulty) * 10;
-    const penaltyInt = penaltyByDifficulty(difficulty, penalty) * 10;
-    const newDelta = (deltaTimeInt + stepInt - penaltyInt) / 10;
-    return newDelta >= minDeltaTime ? newDelta : minDeltaTime;
-  };
 
   /**
    * This method is called by decorator "onlyForKnownUsers",
@@ -292,7 +269,7 @@ export class Actions extends Mixin(DevActions, Settings) {
       // normal idle update
       logger.debug(`U-${msg.user.chatId} [idle] ${currentDelta} >= ${USER_IDLE_TIME}`);
       const isMaxTimeLimitReached = msg.user.deltaTime >= USER_IDLE_TIME - 5;
-      const newDelta = isMaxTimeLimitReached ? msg.user.deltaTime : this._computeNewDelta(msg.user);
+      const newDelta = isMaxTimeLimitReached ? msg.user.deltaTime : computeNewDelta(msg.user);
       const newNextTime = msg.ts + newDelta * 60 * 1000;
       update.penalty = 0;
       update.cigarettesInDay = 0;
@@ -446,7 +423,7 @@ export class Actions extends Mixin(DevActions, Settings) {
   @transformMsg
   @onlyForKnownUsers
   public async ignorePenalty10(msg: TelegramBot.Message) {
-    const newDelta = this._computeNewDelta(msg.user, true);
+    const newDelta = computeNewDelta(msg.user, true);
     await UsersRepo.updateUser(msg, {
       deltaTime: newDelta,
       penaltyAll: msg.user.penaltyAll + 10,

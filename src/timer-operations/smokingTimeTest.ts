@@ -1,6 +1,9 @@
 import TgBot from "../telegram-bot";
 import { User, UsersRepo } from "../db";
 import { Content, DialogKey } from "../constants";
+import { getIdleVariants } from "../helpers/idle";
+import { minsToTimeString } from "../lib_helpers/humanize-duration";
+import { computeNewDelta } from "../helpers";
 
 /**
  * Helper to make messages to send delayed
@@ -26,7 +29,11 @@ export const _sendDelayedToIgnore = (bot: TgBot, users: User[]) => {
   if (!user) {
     return;
   }
-  bot.sendToUser(user, Content.BOT_IGNORE, {}, DialogKey.ignore);
+  const buttonsForIdle = getIdleVariants(user.lang);
+  const no_penalty_time = minsToTimeString(user.deltaTime, user.lang);
+  const tenMinutesDelta = computeNewDelta(user, true);
+  const penalty_10_time= minsToTimeString(tenMinutesDelta, user.lang);
+  bot.sendToUser(user, Content.BOT_IGNORE, { ...buttonsForIdle, no_penalty_time, penalty_10_time }, DialogKey.ignore);
   setTimeout(() => _sendDelayedToIgnore(bot, users), 10);
 };
 

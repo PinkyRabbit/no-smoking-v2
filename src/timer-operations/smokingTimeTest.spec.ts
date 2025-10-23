@@ -129,7 +129,7 @@ describe("smokingTimeTest", () => {
       _sendDelayedToIgnore(botMock as unknown as TgBot, users);
 
       sinon.assert.calledOnce(botMock.sendToUser);
-      sinon.assert.calledWith(botMock.sendToUser, user, Content.BOT_IGNORE, {}, DialogKey.ignore);
+      sinon.assert.calledWith(botMock.sendToUser, user, Content.BOT_IGNORE, sinon.match.object, DialogKey.ignore);
     });
 
     it("should send ignore messages to multiple users with delay", () => {
@@ -147,19 +147,19 @@ describe("smokingTimeTest", () => {
         botMock.sendToUser,
         users[2], // Last user due to pop()
         Content.BOT_IGNORE,
-        {},
+        sinon.match.object,
         DialogKey.ignore,
       );
 
       // Advance timer and check second call
       clock.tick(10);
       sinon.assert.calledTwice(botMock.sendToUser);
-      sinon.assert.calledWith(botMock.sendToUser.secondCall, users[1], Content.BOT_IGNORE, {}, DialogKey.ignore);
+      sinon.assert.calledWith(botMock.sendToUser.secondCall, users[1], Content.BOT_IGNORE, sinon.match.object, DialogKey.ignore);
 
       // Advance timer and check third call
       clock.tick(10);
       sinon.assert.calledThrice(botMock.sendToUser);
-      sinon.assert.calledWith(botMock.sendToUser.thirdCall, users[0], Content.BOT_IGNORE, {}, DialogKey.ignore);
+      sinon.assert.calledWith(botMock.sendToUser.thirdCall, users[0], Content.BOT_IGNORE, sinon.match.object, DialogKey.ignore);
     });
 
     it("should handle array mutation correctly", () => {
