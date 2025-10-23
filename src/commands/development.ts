@@ -8,8 +8,7 @@ import { MIN_INTERVAL, STAGE_1_MAX, STAGE_1_STEPS, USER_IDLE_TIME } from "./cons
 import { getContent } from "../content";
 import { daysToString, minsToTimeString } from "../lib_helpers/humanize-duration";
 import { difficultyNameByLevel, penaltyMinutesString, stepByDifficulty } from "../helpers";
-import { getIdleVariants } from "../helpers/idle";
-import { computeNewDelta } from "../helpers/delta";
+import { getNextIdempotencyKey } from "../helpers/idempotency";
 
 /**
  * Class for development actions
@@ -76,22 +75,16 @@ export class DevActions {
   @transformMsg
   @onlyForKnownUsers
   public async devFillStage1(msg: TelegramBot.Message) {
-    const INTERVAL_STEP = 1;
-    const minDeltaTimesInitial = [...msg.user.minDeltaTimesInitial];
-    let stepsAdded = 0;
-    while (minDeltaTimesInitial.length < STAGE_1_STEPS - 1) {
-      stepsAdded += 1;
-      minDeltaTimesInitial.push(MIN_INTERVAL + INTERVAL_STEP);
-    }
-    const defaultUser = UsersRepo.getDefaultUser(msg);
+    const INTERVAL_STEP = 21;
+    const minDeltaTimesInitial = new Array(STAGE_1_STEPS - 1).fill(MIN_INTERVAL + INTERVAL_STEP);
+    const { idempotencyKey, ImSmokingDialogKey } = getNextIdempotencyKey(msg.user.idempotencyKey);
     const update: Partial<User> = {
-      ...defaultUser,
       lastTime: this.lastTimeToSmoke,
-      nextTime: this.nextTimeToSmoke,
       minDeltaTimesInitial: minDeltaTimesInitial,
+      idempotencyKey,
     };
     await UsersRepo.updateUser(msg, update);
-    await this._res(msg.user, Content.DEV_FILL_STAGE_1, { stepsAdded });
+    await this._res(msg.user, Content.DEV_FILL_STAGE_1, { stepsAdded: STAGE_1_STEPS - 1 }, ImSmokingDialogKey);
   }
 
   @devModeOnly
@@ -238,12 +231,16 @@ export class DevActions {
   @transformMsg
   @onlyForKnownUsers
   public async devContent(msg: TelegramBot.Message) {
-    const buttonsForIdle = getIdleVariants(msg.user.lang);
-    const no_penalty_time = minsToTimeString(msg.user.deltaTime, msg.user.lang);
-    const tenMinutesDelta = computeNewDelta(msg.user, true);
-    const penalty_10_time= minsToTimeString(tenMinutesDelta, msg.user.lang);
-    await this._res(msg.user, Content.BOT_IGNORE, { ...buttonsForIdle, no_penalty_time, penalty_10_time }, DialogKey.ignore);
+    const delta_time = minsToTimeString(msg.user.deltaTime, msg.user.lang);
+    await this._res(msg.user, Content.SETTINGS_UPDATED, { delta_time });
+    // await this._res(msg.user, Content.DIFFICULTY_DESCRIPTION);
     /*
+      const buttonsForIdle = getIdleVariants(msg.user.lang);
+      const no_penalty_time = minsToTimeString(msg.user.deltaTime, msg.user.lang);
+      const tenMinutesDelta = computeNewDelta(msg.user, true);
+      const penalty_10_time= minsToTimeString(tenMinutesDelta, msg.user.lang);
+      await this._res(msg.user, Content.BOT_IGNORE, { ...buttonsForIdle, no_penalty_time, penalty_10_time }, DialogKey.ignore);
+
       const DAYS_TO_CHANGE_DIFFICULTY = 3;
       const props = { day: msg.user.winstrike, of_days: DAYS_TO_CHANGE_DIFFICULTY };
       await this._res(msg.user, Content.WINSTRIKE_MEDIUM, props);

@@ -231,7 +231,7 @@ export class UsersRepo extends RequestOptions {
 
   static resetUser(msg: TelegramBot.Message) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { chatId, lang, hourFormat, ...defaultUser } = UsersRepo.getDefaultUser(msg);
+    const { chatId, lang, hourFormat, idempotencyKey, ...defaultUser } = UsersRepo.getDefaultUser(msg);
     logger.info(`The user @${defaultUser.username} was reset`);
     return UsersRepo.updateUser(msg, defaultUser);
   }
@@ -260,7 +260,6 @@ export class UsersRepo extends RequestOptions {
     const users = await UsersRepo.call.find({
       $and: [{ nextTime: { $ne: 0 } }, { nextTime: { $lte: ts } }],
     });
-    console.log(users);
     const userIds = users.map(({ _id }) => _id);
     const chatIds = users.map(({ chatId }) => chatId);
     const dateTimeString = tsToDateTime(ts);
