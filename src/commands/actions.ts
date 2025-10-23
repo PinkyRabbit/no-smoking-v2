@@ -15,7 +15,7 @@ import { getFormattedStartDate, mssToTime, tsToDateTime } from "../lib_helpers/l
 import logger from "../logger";
 import { stage2 } from "./decorators/stage2";
 import { cigarettesText } from "../helpers/content";
-import { difficultyNameByLevel, penaltyMinutesString, stepByDifficulty, computeNewDelta } from "../helpers";
+import { computeNewDelta, difficultyNameByLevel, penaltyMinutesString, stepByDifficulty } from "../helpers";
 import { InlineKeyboard } from "../content/types";
 import { getNextIdempotencyKey } from "../helpers/idempotency";
 
@@ -367,20 +367,7 @@ export class Actions extends Mixin(DevActions, Settings) {
   @onlyForKnownUsers
   @stage2
   public async resetToStage1Handler(msg: TelegramBot.Message) {
-    await UsersRepo.updateUser(msg, {
-      lastTime: 0,
-      nextTime: 0,
-      ignoreTime: 0,
-      deltaTime: 0,
-      minDeltaTime: 0,
-      minDeltaTimesInitial: [],
-      cigarettesInDay: 0,
-      cigarettesSummary: 0,
-      penalty: 0,
-      penaltyDays: 0,
-      penaltyAll: 0,
-      winstrike: 0,
-    });
+    await UsersRepo.resetUser(msg);
     await this._res(msg.user, Content.START_RESET_TO_STAGE_1);
     await this.toStage1(msg);
   }

@@ -16,15 +16,6 @@ import { computeNewDelta } from "../helpers/delta";
  * @remark This class should be inherited by Actions class
  */
 export class DevActions {
-  private readonly stage1UserParams: Partial<User> = {
-    lastTime: 0,
-    nextTime: 0,
-    minDeltaTime: 0,
-    minDeltaTimesInitial: [],
-    timezone: undefined,
-    difficulty: Difficulty.DOESNT_SET,
-  };
-
   get lastTimeToSmoke() {
     const validInterval = MIN_INTERVAL + 1;
     return dateNow() - (validInterval * 60 * 1000);
@@ -77,7 +68,7 @@ export class DevActions {
   @transformMsg
   @onlyForKnownUsers
   public async devResetToStage1(msg: TelegramBot.Message) {
-    await UsersRepo.updateUser(msg, this.stage1UserParams);
+    await UsersRepo.resetUser(msg);
     await this._res(msg.user, Content.DEV_TO_STAGE_1);
   }
 
@@ -92,8 +83,9 @@ export class DevActions {
       stepsAdded += 1;
       minDeltaTimesInitial.push(MIN_INTERVAL + INTERVAL_STEP);
     }
+    const defaultUser = UsersRepo.getDefaultUser(msg);
     const update: Partial<User> = {
-      ...this.stage1UserParams,
+      ...defaultUser,
       lastTime: this.lastTimeToSmoke,
       nextTime: this.nextTimeToSmoke,
       minDeltaTimesInitial: minDeltaTimesInitial,
