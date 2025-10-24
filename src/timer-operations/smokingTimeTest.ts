@@ -4,16 +4,20 @@ import { Content, DialogKey } from "../constants";
 import { getIdleVariants } from "../helpers/idle";
 import { minsToTimeString } from "../lib_helpers/humanize-duration";
 import { computeNewDelta } from "../helpers";
+import { isDayToSendChatLinkCheck } from "../lib_helpers/luxon";
 
 /**
  * Helper to make messages to send delayed
  * Only to use in smokingTimeTest
  * @private
  */
-export const _sendDelayedToSmokers = (bot: TgBot, users: User[]) => {
+export const _sendDelayedToSmokers = (bot: TgBot, users: User[], isDayOfChatLinkSending?: boolean) => {
   const user = users.pop();
   if (!user) {
     return;
+  }
+  if (isDayOfChatLinkSending && user.cigarettesInDay === 5) {
+    bot.sendToUser(user, Content.JOIN_OUR_CHAT);
   }
   bot.sendToUser(user, Content.TIME_FOR_A_SMOKE);
   setTimeout(() => _sendDelayedToSmokers(bot, users), 10);
@@ -43,7 +47,8 @@ export const _sendDelayedToIgnore = (bot: TgBot, users: User[]) => {
  */
 export const smokingTimeTest = async (bot: TgBot) => {
   const usersToSmoke = await UsersRepo.getAllSmokersToSmoke();
-  _sendDelayedToSmokers(bot, usersToSmoke);
+  const isDayOfChatLinkSending = isDayToSendChatLinkCheck();
+  _sendDelayedToSmokers(bot, usersToSmoke, isDayOfChatLinkSending);
   const usersIgnoringBot = await UsersRepo.getAllIgnoringBot();
   _sendDelayedToIgnore(bot, usersIgnoringBot);
 };

@@ -3,6 +3,7 @@ import { MultilineContent } from "../types";
 import { B, I, N2, ND, NL } from "./constants";
 
 const donate_link = process.env.DONATE_LINK;
+const tg_group_link = process.env.TG_GROUP_LINK;
 
 export const dialogsEn: MultilineContent = {
   [Content.MESSAGE]: "Received your message",
@@ -404,6 +405,12 @@ export const dialogsEn: MultilineContent = {
     It’s time to leave smoking behind. Your interval is already huge, and there’s no point in continuing further.${N2}
     Check out our recommendations to help you quit for good. Simply click the button below 💙${ND}
     We wish you success no matter what! 💪
+  `,
+  [Content.JOIN_OUR_CHAT]: `
+    We’ve created ${B}a cozy chat for our users${B}${N2}
+    a place to meet new people,${NL}
+    share ideas, and get inspired 💫${N2}
+    Come join us 👉 [link](${tg_group_link})
   `,
   // dev
   [Content.DEV]: `⚒️ ${B}Development Mode is ON${B} ⚒️`,

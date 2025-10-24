@@ -8,6 +8,11 @@ export const dateNow = () => {
   return DateTime.utc().toMillis();
 };
 
+export const isDayToSendChatLinkCheck = () => {
+  const numberOfDayToSendTheChatLink = 10;
+  return DateTime.utc().day % numberOfDayToSendTheChatLink === 0;
+};
+
 export const tsToDateTime = (ts: unknown) => {
   const dateTime = typeof ts === "number" ? DateTime.fromMillis(ts) : DateTime.utc();
   return dateTime.toFormat("dd.MM.yyyy HH:mm");

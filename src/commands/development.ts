@@ -8,7 +8,7 @@ import { MIN_INTERVAL, STAGE_1_MAX, STAGE_1_STEPS, USER_IDLE_TIME } from "./cons
 import { getContent } from "../content";
 import { daysToString, minsToTimeString } from "../lib_helpers/humanize-duration";
 import { difficultyNameByLevel, penaltyMinutesString, stepByDifficulty } from "../helpers";
-import { getNextIdempotencyKey, smokingButtonByIdempotencyKey } from "../helpers/idempotency";
+import { getNextIdempotencyKey } from "../helpers/idempotency";
 
 /**
  * Class for development actions
@@ -231,11 +231,13 @@ export class DevActions {
   @transformMsg
   @onlyForKnownUsers
   public async devContent(msg: TelegramBot.Message) {
-    const smokingButtonKey = smokingButtonByIdempotencyKey(msg.user.idempotencyKey);
-    const time_to_get_smoke = mssToTime(msg.user.nextTime, msg.user);
-    const delta_time = minsToTimeString(msg.user.deltaTime, msg.user.lang);
-    await this._res(msg.user, Content.START_VALID_USER, { delta_time, time_to_get_smoke }, smokingButtonKey );
+    await this._res(msg.user, Content.JOIN_OUR_CHAT);
     /*
+      const smokingButtonKey = smokingButtonByIdempotencyKey(msg.user.idempotencyKey);
+      const time_to_get_smoke = mssToTime(msg.user.nextTime, msg.user);
+      const delta_time = minsToTimeString(msg.user.deltaTime, msg.user.lang);
+      await this._res(msg.user, Content.START_VALID_USER, { delta_time, time_to_get_smoke }, smokingButtonKey );
+
       await this._res(msg.user, Content.SETTINGS_UPDATED, { delta_time });
       await this._res(msg.user, Content.DIFFICULTY_DESCRIPTION);
 

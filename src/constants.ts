@@ -106,6 +106,7 @@ export enum Content {
   STATS = "get_stats",
   HOW = "how_to_help",
   MAXIMUM_REACHED = "maximum_reached",
+  JOIN_OUR_CHAT = "join_our_chat",
   // TEST
   DEV = "Dev",
   DEV_OFF = "Dev_Off",
