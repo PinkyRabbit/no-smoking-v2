@@ -11,13 +11,13 @@ import { IGNORE_TIME, MIN_INTERVAL, STAGE_1_MAX, STAGE_1_STEPS, USER_IDLE_TIME }
 import { minsToTimeString } from "../lib_helpers/humanize-duration";
 import { LogActionCalls, onlyForKnownUsers, transformMsg } from "./decorators";
 import { tgLangCodeToLang } from "../lib_helpers/i18n";
-import { getFormattedStartDate, mssToTime, tsToDateTime } from "../lib_helpers/luxon";
+import { dateNow, getFormattedStartDate, mssToTime, tsToDateTime } from "../lib_helpers/luxon";
 import logger from "../logger";
 import { stage2 } from "./decorators/stage2";
 import { cigarettesText } from "../helpers/content";
-import { difficultyNameByLevel, penaltyByDifficulty, penaltyMinutesString, stepByDifficulty } from "../helpers";
+import { computeNewDelta, difficultyNameByLevel, penaltyMinutesString, stepByDifficulty } from "../helpers";
 import { InlineKeyboard } from "../content/types";
-import { getNextIdempotencyKey } from "../helpers/idempotency";
+import { getNextIdempotencyKey, smokingButtonByIdempotencyKey } from "../helpers/idempotency";
 
 @LogActionCalls
 export class Actions extends Mixin(DevActions, Settings) {
@@ -85,29 +85,6 @@ export class Actions extends Mixin(DevActions, Settings) {
   }
 
   /**
-   * Helper to calculate new delta time
-   */
-  public _computeNewDelta = (
-    {
-      deltaTime,
-      difficulty,
-      penalty,
-      minDeltaTime,
-    }: Pick<User, "deltaTime" | "difficulty" | "penalty" | "minDeltaTime">,
-    isTenMinPenalty?: boolean,
-  ) => {
-    if (isTenMinPenalty) {
-      const newDeltaTime = deltaTime - 10;
-      return newDeltaTime >= minDeltaTime ? newDeltaTime : minDeltaTime;
-    }
-    const deltaTimeInt = deltaTime * 10;
-    const stepInt = stepByDifficulty(difficulty) * 10;
-    const penaltyInt = penaltyByDifficulty(difficulty, penalty) * 10;
-    const newDelta = (deltaTimeInt + stepInt - penaltyInt) / 10;
-    return newDelta >= minDeltaTime ? newDelta : minDeltaTime;
-  };
-
-  /**
    * This method is called by decorator "onlyForKnownUsers",
    * when non-authorized user trying to make a call to private route
    * @see {onlyForKnownUsers} - decorator
@@ -143,16 +120,17 @@ export class Actions extends Mixin(DevActions, Settings) {
       await this._res(user, Content.START_NEW, {}, DialogKey.beginning);
       return;
     }
-    await UsersRepo.updateUser(msg, { startDate: new Date(), penaltyAll: 0 });
     if (!msg.user.minDeltaTime) {
-      await UsersRepo.updateUser(msg, {
-        lastTime: 0,
-        nextTime: 0,
-        ignoreTime: 0,
-        minDeltaTimesInitial: [],
-      });
+      UsersRepo.resetUser(msg);
       await this._res(msg.user, Content.START_EXISTING_STAGE_1);
       await this.toStage1(msg);
+      return;
+    }
+    if (msg.user.ignoreTime && msg.user.ignoreTime > dateNow()) {
+      const smokingButtonKey = smokingButtonByIdempotencyKey(msg.user.idempotencyKey);
+      const time_to_get_smoke = mssToTime(msg.user.nextTime, msg.user);
+      const delta_time = minsToTimeString(msg.user.deltaTime, msg.user.lang);
+      await this._res(msg.user, Content.START_VALID_USER, { delta_time, time_to_get_smoke }, smokingButtonKey );
       return;
     }
     const min_delta = minsToTimeString(msg.user.minDeltaTime, msg.user.lang);
@@ -292,7 +270,7 @@ export class Actions extends Mixin(DevActions, Settings) {
       // normal idle update
       logger.debug(`U-${msg.user.chatId} [idle] ${currentDelta} >= ${USER_IDLE_TIME}`);
       const isMaxTimeLimitReached = msg.user.deltaTime >= USER_IDLE_TIME - 5;
-      const newDelta = isMaxTimeLimitReached ? msg.user.deltaTime : this._computeNewDelta(msg.user);
+      const newDelta = isMaxTimeLimitReached ? msg.user.deltaTime : computeNewDelta(msg.user);
       const newNextTime = msg.ts + newDelta * 60 * 1000;
       update.penalty = 0;
       update.cigarettesInDay = 0;
@@ -390,20 +368,7 @@ export class Actions extends Mixin(DevActions, Settings) {
   @onlyForKnownUsers
   @stage2
   public async resetToStage1Handler(msg: TelegramBot.Message) {
-    await UsersRepo.updateUser(msg, {
-      lastTime: 0,
-      nextTime: 0,
-      ignoreTime: 0,
-      deltaTime: 0,
-      minDeltaTime: 0,
-      minDeltaTimesInitial: [],
-      cigarettesInDay: 0,
-      cigarettesSummary: 0,
-      penalty: 0,
-      penaltyDays: 0,
-      penaltyAll: 0,
-      winstrike: 0,
-    });
+    await UsersRepo.resetUser(msg);
     await this._res(msg.user, Content.START_RESET_TO_STAGE_1);
     await this.toStage1(msg);
   }
@@ -427,9 +392,18 @@ export class Actions extends Mixin(DevActions, Settings) {
 
   @transformMsg
   @onlyForKnownUsers
-  public async ignoreBusy(msg: TelegramBot.Message) {
+  public async ignoreFullReset(msg: TelegramBot.Message) {
     await UsersRepo.updateUser(msg, { ignoreTime: msg.ts + IGNORE_TIME, winstrike: 0 });
-    await this._res(msg.user, Content.BOT_IGNORE_BUSY);
+    await this._res(msg.user, Content.BOT_IGNORE_JUST_GO_ON);
+    const local_time = mssToTime(msg.ts, msg.user);
+    await this._res(msg.user, Content.ON_IDLE_TIME_CONFIRMATION, { local_time }, DialogKey.confirm_local_time);
+  }
+
+  @transformMsg
+  @onlyForKnownUsers
+  public async ignoreJustGoOn(msg: TelegramBot.Message) {
+    await UsersRepo.updateUser(msg, { ignoreTime: msg.ts + IGNORE_TIME, winstrike: 0 });
+    await this._res(msg.user, Content.BOT_IGNORE_JUST_GO_ON);
     const local_time = mssToTime(msg.ts, msg.user);
     await this._res(msg.user, Content.ON_IDLE_TIME_CONFIRMATION, { local_time }, DialogKey.confirm_local_time);
   }
@@ -437,7 +411,7 @@ export class Actions extends Mixin(DevActions, Settings) {
   @transformMsg
   @onlyForKnownUsers
   public async ignorePenalty10(msg: TelegramBot.Message) {
-    const newDelta = this._computeNewDelta(msg.user, true);
+    const newDelta = computeNewDelta(msg.user, true);
     await UsersRepo.updateUser(msg, {
       deltaTime: newDelta,
       penaltyAll: msg.user.penaltyAll + 10,

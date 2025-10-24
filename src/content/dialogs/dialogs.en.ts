@@ -3,6 +3,7 @@ import { MultilineContent } from "../types";
 import { B, I, N2, ND, NL } from "./constants";
 
 const donate_link = process.env.DONATE_LINK;
+const tg_group_link = process.env.TG_GROUP_LINK;
 
 export const dialogsEn: MultilineContent = {
   [Content.MESSAGE]: "Received your message",
@@ -42,6 +43,14 @@ export const dialogsEn: MultilineContent = {
     Your account has been reactivated,${NL}
     and all data has been updated.${N2}
     You need to complete Stage 1 again ⤵️
+  `,
+  [Content.START_VALID_USER]: `
+    👁 Activation Attempt${N2}
+    A repeated attempt to activate the account has been detected.${NL}
+    This usually happens due to a glitch.${ND}
+    Just in case, here’s your current status:${N2}
+    ⏱️ Time between smoke breaks: ${B}{{delta_time}}${B}.${NL}
+    ⏰ Next break: ${B}{{time_to_get_smoke}}${B}
   `,
   [Content.START_RESET_IGNORE]: `
     You have chosen to ${B}"keep things as they are"${B}${NL}
@@ -117,6 +126,7 @@ export const dialogsEn: MultilineContent = {
   `,
   [Content.STAGE_2_INITIAL]: `
     ${B}All set!${B}${N2}
+    🕒 Your current smoking interval: ${B}{{delta_time}}${B}${N2}
     Now we’ll try to stick to a smoking schedule.${NL}
     Each day, we’ll shift it by a few minutes depending on the chosen difficulty level.${N2}
     If you miss the scheduled time, no worries.${NL} 
@@ -240,7 +250,8 @@ export const dialogsEn: MultilineContent = {
     When you feel like you’ve reduced or eliminated violations, ${B}you can switch to a more advanced difficulty level${B}.
     Penalties will then be applied, but they won’t bother you because you’ll already be prepared.${ND}
     ⬆️ ⬆️ ⬆️ ⬆️ ⬆️${NL}
-    Your account setup will be completed automatically in 1 minute.
+    Your account setup will be completed${NL} 
+    🔜 ${B}automatically in 1 minute{B}.${NL}
     This pause is to ensure you’ve had time to read the message above.
   `,
   [Content.DIFFICULTY_HARD_DECREASED]: `
@@ -299,7 +310,8 @@ export const dialogsEn: MultilineContent = {
     Start using the bot ⤵️ 
   `,
   [Content.SETTINGS_UPDATED]: `
-    ${B}Your settings have been updated${B} ✔
+    ${B}Your settings have been updated${B} ✔${N2}
+    🕒 Your current smoking interval: ${B}{{delta_time}}${B}
   `,
   [Content.SETTINGS_UPDATED_ON_IDLE]: `
     ${B}Your settings have been updated${B} ✔${ND}️
@@ -308,17 +320,20 @@ export const dialogsEn: MultilineContent = {
   [Content.BOT_IGNORE]: `
     🕵️ ${B}We lost you!${B}${N2}
     It’s been ${I}2 days${I} since your last interaction with the bot.${N2}
-    We understand there could be many reasons for this, but we’d like to check in:${NL}
     ${B}Are you planning to continue or not?${B}${ND}
-    Here are your options:${N2}
-    1. ${I}Did you quit smoking?${I}  – If so, congratulations! 🎊${NL}
-    Click the button, and we’ll share some final recommendations with you.${N2}
-    2. ${I}Changed your mind about quitting?${I} – That’s unfortunate, but it’s your choice. Click "I’ll keep smoking"${N2}
-    3. ${I}You were busy and didn’t have time to continue?${I} – That’s fine, it happens! Just click ${B}"Let’s continue"${B}${N2}
-    4. ${I}Were you on a break and maybe got off schedule?${I} – If you slipped, click ${B}"Penalty: 10 minutes"${B}${NL}
-    If your schedule is fine, just click ${B}"Let’s continue"${B} 😊 
+    ❌ If you ${B}don’t plan${B} to keep using the bot — please choose a reason:${N2}
+    - ${I}You quit smoking?${I} — Then congratulations! 🎊${N2}
+    - ${I}You decided not to quit after all${I} — That’s unfortunate, but it's your choice.${ND}
+    ✅ If ${B}you plan to continue${B}, there are several options:${N2}
+    1. ${B}{{from_scratch_message}}${B} — for those who haven't used the bot for a while.${NL}
+    This will reset your progress so you can ${I}start fresh${I}.${N2}
+    2. ${B}{{no_penalty_message}}${B} — we'll simply pick up where you left off.${NL}
+    Your timer will be set to ${B}{{ no_penalty_time }}${B}${N2} 
+    3. ${B}{{penalty_10_message}}${B}  — if you’ve fallen off schedule, 
+    it's better to make a small rollback of 10 minutes.${NL}
+    Your timer will be set to ${B}{{ penalty_10_time }}${B}.
   `,
-  [Content.BOT_IGNORE_BUSY]: `
+  [Content.BOT_IGNORE_JUST_GO_ON]: `
     ${B}Let’s just continue!${B} Great! 👍${ND}
     We understand that life is truly fast-paced and busy these days.${N2}
     That’s exactly why you shouldn’t give up on quitting smoking.${NL}
@@ -390,6 +405,12 @@ export const dialogsEn: MultilineContent = {
     It’s time to leave smoking behind. Your interval is already huge, and there’s no point in continuing further.${N2}
     Check out our recommendations to help you quit for good. Simply click the button below 💙${ND}
     We wish you success no matter what! 💪
+  `,
+  [Content.JOIN_OUR_CHAT]: `
+    We’ve created ${B}a cozy chat for our users${B}${N2}
+    a place to meet new people,${NL}
+    share ideas, and get inspired 💫${N2}
+    Come join us 👉 [link](${tg_group_link})
   `,
   // dev
   [Content.DEV]: `⚒️ ${B}Development Mode is ON${B} ⚒️`,

@@ -8,21 +8,13 @@ import { MIN_INTERVAL, STAGE_1_MAX, STAGE_1_STEPS, USER_IDLE_TIME } from "./cons
 import { getContent } from "../content";
 import { daysToString, minsToTimeString } from "../lib_helpers/humanize-duration";
 import { difficultyNameByLevel, penaltyMinutesString, stepByDifficulty } from "../helpers";
+import { getNextIdempotencyKey } from "../helpers/idempotency";
 
 /**
  * Class for development actions
  * @remark This class should be inherited by Actions class
  */
 export class DevActions {
-  private readonly stage1UserParams: Partial<User> = {
-    lastTime: 0,
-    nextTime: 0,
-    minDeltaTime: 0,
-    minDeltaTimesInitial: [],
-    timezone: undefined,
-    difficulty: Difficulty.DOESNT_SET,
-  };
-
   get lastTimeToSmoke() {
     const validInterval = MIN_INTERVAL + 1;
     return dateNow() - (validInterval * 60 * 1000);
@@ -75,7 +67,7 @@ export class DevActions {
   @transformMsg
   @onlyForKnownUsers
   public async devResetToStage1(msg: TelegramBot.Message) {
-    await UsersRepo.updateUser(msg, this.stage1UserParams);
+    await UsersRepo.resetUser(msg);
     await this._res(msg.user, Content.DEV_TO_STAGE_1);
   }
 
@@ -83,21 +75,16 @@ export class DevActions {
   @transformMsg
   @onlyForKnownUsers
   public async devFillStage1(msg: TelegramBot.Message) {
-    const INTERVAL_STEP = 1;
-    const minDeltaTimesInitial = [...msg.user.minDeltaTimesInitial];
-    let stepsAdded = 0;
-    while (minDeltaTimesInitial.length < STAGE_1_STEPS - 1) {
-      stepsAdded += 1;
-      minDeltaTimesInitial.push(MIN_INTERVAL + INTERVAL_STEP);
-    }
+    const INTERVAL_STEP = 21;
+    const minDeltaTimesInitial = new Array(STAGE_1_STEPS - 1).fill(MIN_INTERVAL + INTERVAL_STEP);
+    const { idempotencyKey, ImSmokingDialogKey } = getNextIdempotencyKey(msg.user.idempotencyKey);
     const update: Partial<User> = {
-      ...this.stage1UserParams,
       lastTime: this.lastTimeToSmoke,
-      nextTime: this.nextTimeToSmoke,
       minDeltaTimesInitial: minDeltaTimesInitial,
+      idempotencyKey,
     };
     await UsersRepo.updateUser(msg, update);
-    await this._res(msg.user, Content.DEV_FILL_STAGE_1, { stepsAdded });
+    await this._res(msg.user, Content.DEV_FILL_STAGE_1, { stepsAdded: STAGE_1_STEPS - 1 }, ImSmokingDialogKey);
   }
 
   @devModeOnly
@@ -244,24 +231,27 @@ export class DevActions {
   @transformMsg
   @onlyForKnownUsers
   public async devContent(msg: TelegramBot.Message) {
-    const DAYS_TO_CHANGE_DIFFICULTY = 3;
-    const props = { day: msg.user.winstrike, of_days: DAYS_TO_CHANGE_DIFFICULTY };
-    await this._res(msg.user, Content.WINSTRIKE_MEDIUM, props);
+    await this._res(msg.user, Content.JOIN_OUR_CHAT);
     /*
-    await this._res(msg.user, Content.DIFFICULTY_HARD_AUTO);
+      const smokingButtonKey = smokingButtonByIdempotencyKey(msg.user.idempotencyKey);
+      const time_to_get_smoke = mssToTime(msg.user.nextTime, msg.user);
+      const delta_time = minsToTimeString(msg.user.deltaTime, msg.user.lang);
+      await this._res(msg.user, Content.START_VALID_USER, { delta_time, time_to_get_smoke }, smokingButtonKey );
 
-    const difficulty= difficultyNameByLevel(Difficulty.HARD, msg.user.lang);
-    const levels = getDifficultyLevels(msg.user.lang);
-    await this._res(msg.user, Content.DIFFICULTY, { difficulty, ...levels }, DialogKey.difficulty);
+      await this._res(msg.user, Content.SETTINGS_UPDATED, { delta_time });
+      await this._res(msg.user, Content.DIFFICULTY_DESCRIPTION);
 
-    const contentKey: Content = Content.DIFFICULTY_SELECTED;
-    const dialogKey: DialogKey = DialogKey.difficulty;
-    // const dialogKey = undefined;
-    const fakeProps = this.getDevContentProps(msg.user);
-    await this._res(msg.user, contentKey, fakeProps, dialogKey);
+      const buttonsForIdle = getIdleVariants(msg.user.lang);
+      const no_penalty_time = minsToTimeString(msg.user.deltaTime, msg.user.lang);
+      const tenMinutesDelta = computeNewDelta(msg.user, true);
+      const penalty_10_time= minsToTimeString(tenMinutesDelta, msg.user.lang);
+      await this._res(msg.user, Content.BOT_IGNORE, { ...buttonsForIdle, no_penalty_time, penalty_10_time }, DialogKey.ignore);
 
-    const time_to_get_smoke = mssToTime(msg.user.nextTime, msg.user);
-    await this._res(msg.user, Content.NEXT_SMOKING_TIME, { time_to_get_smoke }, DialogKey.im_smoking);
+      const DAYS_TO_CHANGE_DIFFICULTY = 3;
+      const props = { day: msg.user.winstrike, of_days: DAYS_TO_CHANGE_DIFFICULTY };
+      await this._res(msg.user, Content.WINSTRIKE_MEDIUM, props);
+
+      await this._res(msg.user, Content.DIFFICULTY_HARD_AUTO);
      */
   }
 

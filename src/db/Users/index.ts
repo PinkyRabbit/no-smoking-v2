@@ -156,6 +156,36 @@ export class UsersRepo extends RequestOptions {
   private static instance: UsersRepo | null = null;
   public static db: IMonkManager | null = null;
 
+  public static getDefaultUser(msg: TelegramBot.Message): User {
+    const chatId = msg.chat.id;
+    const username = msg.chat?.username || "Unknown";
+    const { lang, hourFormat } = tgLangCodeToLang(msg.from!.language_code);
+    return {
+      chatId,
+      lang,
+      hourFormat,
+      username,
+      timezone: undefined,
+      difficulty: Difficulty.DOESNT_SET,
+      minDeltaTime: 0,
+      minDeltaTimesInitial: [],
+      deltaTime: 0,
+      lastTime: 0,
+      nextTime: 0,
+      ignoreTime: 0,
+      penalty: 0,
+      penaltyAll: 0,
+      penaltyDays: 0,
+      winstrike: 0,
+      motivizerIndex: 0,
+      youCanIndex: 0,
+      cigarettesInDay: 0,
+      cigarettesSummary: 0,
+      startDate: new Date(),
+      idempotencyKey: IdempotencyKeys.One,
+    };
+  }
+
   constructor() {
     super();
     if (!UsersRepo.instance) {
@@ -195,34 +225,15 @@ export class UsersRepo extends RequestOptions {
   }
 
   static addNewUser(msg: TelegramBot.Message) {
-    const chatId = msg.chat.id;
-    const username = msg.from?.username || msg.chat.username || "Unknown";
-    const { lang, hourFormat } = tgLangCodeToLang(msg.from!.language_code);
-    const defaultUser: User = {
-      chatId,
-      lang,
-      hourFormat,
-      username,
-      timezone: undefined,
-      difficulty: Difficulty.DOESNT_SET,
-      minDeltaTime: 0,
-      minDeltaTimesInitial: [],
-      deltaTime: 0,
-      lastTime: 0,
-      nextTime: 0,
-      ignoreTime: 0,
-      penalty: 0,
-      penaltyAll: 0,
-      penaltyDays: 0,
-      winstrike: 0,
-      motivizerIndex: 0,
-      youCanIndex: 0,
-      cigarettesInDay: 0,
-      cigarettesSummary: 0,
-      startDate: new Date(),
-      idempotencyKey: IdempotencyKeys.One,
-    };
+    const defaultUser = UsersRepo.getDefaultUser(msg);
     return UsersRepo.call.insert(defaultUser);
+  }
+
+  static resetUser(msg: TelegramBot.Message) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { chatId, lang, hourFormat, idempotencyKey, ...defaultUser } = UsersRepo.getDefaultUser(msg);
+    logger.info(`The user @${defaultUser.username} was reset`);
+    return UsersRepo.updateUser(msg, defaultUser);
   }
 
   static async updateUser(msg: Message, update: Partial<User>) {
