@@ -13,5 +13,5 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: pa55word
       MONGO_INITDB_DATABASE: tgbot
     volumes:
-      - ./docker-compose.mongo.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - ./docker.cache:/docker-entrypoint-initdb.d/mongo-init.js:ro
 
