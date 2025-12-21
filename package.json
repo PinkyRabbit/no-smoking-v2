@@ -18,6 +18,7 @@
   "dependencies": {
     "@logtail/node": "^0.5.6",
     "@logtail/winston": "^0.5.6",
+    "fast-safe-stringify": "^2.1.1",
     "humanize-duration": "^3.33.2",
     "i18n": "^0.15.3",
     "luxon": "^3.7.2",
