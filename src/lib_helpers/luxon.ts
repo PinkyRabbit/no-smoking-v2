@@ -8,9 +8,11 @@ export const dateNow = () => {
   return DateTime.utc().toMillis();
 };
 
-export const isDayToSendChatLinkCheck = () => {
-  const numberOfDayToSendTheChatLink = 10;
-  return DateTime.utc().day % numberOfDayToSendTheChatLink === 0;
+export const isDayToSendChatLinkCheck = (
+  now: DateTime = DateTime.utc()
+): boolean => {
+  const numberOfDayToSendTheChatLink = 5;
+  return now.day % numberOfDayToSendTheChatLink === 0;
 };
 
 export const tsToDateTime = (ts: unknown) => {

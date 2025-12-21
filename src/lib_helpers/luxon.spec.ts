@@ -7,9 +7,11 @@ import {
   getFormattedStartDate,
   mssToTime,
   simpleOffsetToUtc,
+  isDayToSendChatLinkCheck,
 } from "./luxon";
 import { HourFormat, Lang } from "../constants";
 import { User } from "../db";
+import { DateTime } from "luxon";
 
 describe("lib_helpers.luxon", () => {
   describe("simpleOffsetToUtc", () => {
@@ -277,6 +279,32 @@ describe("lib_helpers.luxon", () => {
     it("returns string in format UTC[+|-]HH:(00|30)", () => {
       const res = computeTimezoneShift(makeMsg("UTC+02:30"), -5);
       expect(res).to.match(/^UTC[+-]\d{2}:(00|30)$/);
+    });
+  });
+
+  describe("isDayToSendChatLinkCheck", () => {
+    it("returns true on day divisible by 10", () => {
+      const date = DateTime.utc(2024, 1, 10);
+      const result = isDayToSendChatLinkCheck(date);
+
+      expect(result).to.equal(true);
+    });
+
+    it("returns false on day NOT divisible by 10", () => {
+      const date = DateTime.utc(2024, 1, 11);
+      const result = isDayToSendChatLinkCheck(date);
+
+      expect(result).to.equal(false);
+    });
+
+    it("returns true on 20th day", () => {
+      const date = DateTime.utc(2024, 5, 20);
+      expect(isDayToSendChatLinkCheck(date)).to.equal(true);
+    });
+
+    it("returns false on 31st day", () => {
+      const date = DateTime.utc(2024, 7, 31);
+      expect(isDayToSendChatLinkCheck(date)).to.equal(false);
     });
   });
 });
