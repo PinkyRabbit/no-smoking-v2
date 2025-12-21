@@ -1,7 +1,7 @@
 import winston from "winston";
 import { Logtail } from "@logtail/node";
 import { LogtailTransport } from "@logtail/winston";
-import safeStringify from "fast-safe-stringify";
+import { truncateFormat } from "./truncate";
 
 const level = process.env.LOG_LEVEL || "debug";
 
@@ -23,15 +23,12 @@ const logger = winston.createLogger({
   transports,
   format: winston.format.combine(
     winston.format.timestamp(),
+    truncateFormat(),
     isDevelopment
       ? winston.format.colorize({ level: true })
       : winston.format.uncolorize(),
-    winston.format.printf(({ level, message, timestamp, ...meta }) => {
-      const msg =
-        typeof message === "string" ? message : safeStringify(message);
-      const rest =
-        meta && Object.keys(meta).length ? " " + safeStringify(meta) : "";
-      return `${timestamp} ${level}: ${msg}${rest}`;
+    winston.format.printf(({ level, message, timestamp  }) => {
+      return `${timestamp} ${level}: ${message}`;
     })
   ),
 });
