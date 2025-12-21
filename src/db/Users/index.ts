@@ -216,7 +216,7 @@ export class UsersRepo extends RequestOptions {
       UsersRepo.db = null;
       logger.info("DB connection closed");
     } catch (e) {
-      logger.error(e);
+      logger.error("DB connection error", e);
     }
   }
 
