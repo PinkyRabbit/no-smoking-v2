@@ -104,6 +104,24 @@ const selectButtonsByKey = (key: DialogKey, locale: Lang): InlineKeyboard => {
       buttonFor(BTN.Dev_Content_EN, locale),
     ]];
   }
+  if (key === DialogKey.im_smoking_init_1) {
+    return [
+      [buttonFor(BTN.Forgot_To_Use_Smoking_Button, locale)],
+      [buttonFor(BTN.Im_Smoking_1, locale)]
+    ];
+  }
+  if (key === DialogKey.im_smoking_init_2) {
+    return [
+      [buttonFor(BTN.Forgot_To_Use_Smoking_Button, locale)],
+      [buttonFor(BTN.Im_Smoking_2, locale)]
+    ];
+  }
+  if (key === DialogKey.im_smoking_init_3) {
+    return [
+      [buttonFor(BTN.Forgot_To_Use_Smoking_Button, locale)],
+      [buttonFor(BTN.Im_Smoking_3, locale)]
+    ];
+  }
   if (key === DialogKey.im_smoking_1) {
     return [[buttonFor(BTN.Im_Smoking_1, locale)]];
   }

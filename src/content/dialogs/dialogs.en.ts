@@ -86,6 +86,11 @@ export const dialogsEn: MultilineContent = {
     ${B}Alright, let’s get started!${B}${ND}
     The next time you feel like smoking, press the the ${B}"I’m having a smoke"${B} button.
   `,
+  [Content.STAGE_1_FORGOT_TO_CLICK]: `
+    Forgot to click? No worries!${N2}
+    When you're just starting to use the bot, this happens quite often.${NL}
+    The main thing is to build the habit and always finish what you start.
+  `,
   [Content.FIRST_STEP]: `
     Your time has been logged!${N2}
     Congratulations! You’ve taken the first step! 👍${N2}

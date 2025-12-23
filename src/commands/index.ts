@@ -27,6 +27,9 @@ export const botActionsInit = (bot: TgBot) => {
       case BTN.Beginning:
         act.toStage1(message);
         break;
+      case BTN.Forgot_To_Use_Smoking_Button:
+        act.forgetToUseSmokingButton(message);
+        break;
       case BTN.Im_Smoking:
       case BTN.Im_Smoking_1:
         act.imSmokingHandler(message, IdempotencyKeys.One);

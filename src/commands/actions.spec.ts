@@ -116,7 +116,7 @@ describe("Actions", () => {
         user,
         Content.FIRST_STEP,
         { stage_1_left: 20 },
-        DialogKey.im_smoking_2,
+        DialogKey.im_smoking_init_2,
       ]);
       expect(updateUserStub.calledOnce).to.be.true;
       expect(updateUserStub.firstCall.args[1]).to.be.deep.equal({
@@ -140,7 +140,7 @@ describe("Actions", () => {
         user,
         Content.STAGE_1_PROCESSING,
         { stage_1_left: 19 },
-        DialogKey.im_smoking_2,
+        DialogKey.im_smoking_init_2,
       ]);
     });
 
@@ -199,7 +199,7 @@ describe("Actions", () => {
           min_stage_1: `${MIN_INTERVAL} minutes`,
           stage_1_left: STAGE_1_STEPS - user.minDeltaTimesInitial.length,
         },
-        DialogKey.im_smoking_2,
+        DialogKey.im_smoking_init_2,
       ]);
       expect(updateUserStub.calledOnce).to.be.true;
       expect(updateUserStub.firstCall.args[1]).to.be.deep.equal({
@@ -226,7 +226,7 @@ describe("Actions", () => {
           max_stage_1: STAGE_1_MAX,
           stage_1_left: STAGE_1_STEPS - user.minDeltaTimesInitial.length,
         },
-        DialogKey.im_smoking_2,
+        DialogKey.im_smoking_init_2,
       ]);
       expect(updateUserStub.calledOnce).to.be.true;
       expect(updateUserStub.firstCall.args[1]).to.be.deep.equal({
@@ -253,7 +253,7 @@ describe("Actions", () => {
         user,
         Content.STAGE_1_PROCESSING,
         { stage_1_left: expectedStage1Left },
-        DialogKey.im_smoking_2,
+        DialogKey.im_smoking_init_2,
       ]);
       expect(updateUserStub.calledOnce).to.be.true;
       expect(updateUserStub.firstCall.args[1]).to.be.deep.equal({

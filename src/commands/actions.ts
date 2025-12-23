@@ -151,7 +151,7 @@ export class Actions extends Mixin(DevActions, Settings) {
    * Stage 1
    */
   private async _stage1(msg: TelegramBot.Message) {
-    const { idempotencyKey, ImSmokingDialogKey } = getNextIdempotencyKey(msg.user.idempotencyKey);
+    const { idempotencyKey, ImSmokingDialogKey } = getNextIdempotencyKey(msg.user.idempotencyKey, true);
     const update: Partial<User> = {
       idempotencyKey,
       lastTime: msg.ts,
@@ -343,6 +343,18 @@ export class Actions extends Mixin(DevActions, Settings) {
       return this._stage1(msg);
     }
     return this._stage2(msg);
+  }
+
+  @transformMsg
+  @onlyForKnownUsers
+  public async forgetToUseSmokingButton(msg: TelegramBot.Message) {
+    const { idempotencyKey, ImSmokingDialogKey } = getNextIdempotencyKey(msg.user.idempotencyKey);
+    const update: Partial<User> = {
+      idempotencyKey,
+      lastTime: undefined,
+    };
+    await UsersRepo.updateUser(msg, update);
+    await this._res(msg.user, Content.STAGE_1_FORGOT_TO_CLICK, { stage_1_left: STAGE_1_STEPS }, ImSmokingDialogKey);
   }
 
   /**

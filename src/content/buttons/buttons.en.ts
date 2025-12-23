@@ -8,6 +8,7 @@ export const buttonsEn: ButtonNames = {
   [BTN.Im_Smoking_1]: "I’m having a smoke 🚬",
   [BTN.Im_Smoking_2]: "I’m having a smoke 🚬 ",
   [BTN.Im_Smoking_3]: "I’m having a smoke 🚬  ",
+  [BTN.Forgot_To_Use_Smoking_Button]: "Forgot to click 🫤",
   [BTN.Reset_Stage_1]: "Full Reset 👍",
   [BTN.Reset_Stage_2]: "Stage 1 Progress Reset 🐯",
   [BTN.Reset_Ignore]: "Keep it as it is ❌️",
