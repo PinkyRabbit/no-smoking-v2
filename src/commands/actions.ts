@@ -121,7 +121,7 @@ export class Actions extends Mixin(DevActions, Settings) {
       return;
     }
     if (!msg.user.minDeltaTime) {
-      UsersRepo.resetUser(msg);
+      await UsersRepo.resetUser(msg);
       await this._res(msg.user, Content.START_EXISTING_STAGE_1);
       await this.toStage1(msg);
       return;
