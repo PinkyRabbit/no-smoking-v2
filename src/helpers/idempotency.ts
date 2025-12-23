@@ -2,6 +2,7 @@ import { DialogKey, IdempotencyKeys } from "../constants";
 
 export const getNextIdempotencyKey = (
   currentKey: IdempotencyKeys,
+  hasForgotButton?: boolean,
 ): {
   idempotencyKey: IdempotencyKeys;
   ImSmokingDialogKey: DialogKey;
@@ -10,18 +11,18 @@ export const getNextIdempotencyKey = (
     case IdempotencyKeys.One:
       return {
         idempotencyKey: IdempotencyKeys.Two,
-        ImSmokingDialogKey: DialogKey.im_smoking_2,
+        ImSmokingDialogKey: hasForgotButton ? DialogKey.im_smoking_init_2 : DialogKey.im_smoking_2 ,
       };
     case IdempotencyKeys.Two:
       return {
         idempotencyKey: IdempotencyKeys.Three,
-        ImSmokingDialogKey: DialogKey.im_smoking_3,
+        ImSmokingDialogKey: hasForgotButton ? DialogKey.im_smoking_init_3 : DialogKey.im_smoking_3 ,
       };
     case IdempotencyKeys.Three:
     default:
       return {
         idempotencyKey: IdempotencyKeys.One,
-        ImSmokingDialogKey: DialogKey.im_smoking_1,
+        ImSmokingDialogKey: hasForgotButton ? DialogKey.im_smoking_init_1 : DialogKey.im_smoking_1 ,
       };
   }
 };

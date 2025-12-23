@@ -8,6 +8,7 @@ export const buttonsRu: ButtonNames  = {
   [BTN.Im_Smoking_1]: "Я сейчас курю 🚬",
   [BTN.Im_Smoking_2]: "Я сейчас курю 🚬 ",
   [BTN.Im_Smoking_3]: "Я сейчас курю 🚬  ",
+  [BTN.Forgot_To_Use_Smoking_Button]: "Забыл нажать 🫤",
   [BTN.Reset_Stage_1]: "Сбросить всё 👍",
   [BTN.Reset_Stage_2]: "Сбросить до Этапа 2 🐯",
   [BTN.Reset_Ignore]: "Оставить \"как есть\" ❌️",
