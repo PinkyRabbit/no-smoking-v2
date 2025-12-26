@@ -8,7 +8,7 @@ import { MIN_INTERVAL, STAGE_1_MAX, STAGE_1_STEPS, USER_IDLE_TIME } from "./cons
 import { getContent } from "../content";
 import { daysToString, minsToTimeString } from "../lib_helpers/humanize-duration";
 import { difficultyNameByLevel, penaltyMinutesString, stepByDifficulty } from "../helpers";
-import { getNextIdempotencyKey } from "../helpers/idempotency";
+import { getNextIdempotencyKey, smokingButtonByIdempotencyKey } from "../helpers/idempotency";
 
 /**
  * Class for development actions
@@ -231,7 +231,8 @@ export class DevActions {
   @transformMsg
   @onlyForKnownUsers
   public async devContent(msg: TelegramBot.Message) {
-    await this._res(msg.user, Content.JOIN_OUR_CHAT);
+    const smokingButtonKey = smokingButtonByIdempotencyKey(msg.user.idempotencyKey);
+    await this._res(msg.user, Content.STAGE_1_FORGOT_TO_CLICK, {}, smokingButtonKey);
     /*
       const smokingButtonKey = smokingButtonByIdempotencyKey(msg.user.idempotencyKey);
       const time_to_get_smoke = mssToTime(msg.user.nextTime, msg.user);

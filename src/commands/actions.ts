@@ -159,7 +159,8 @@ export class Actions extends Mixin(DevActions, Settings) {
     if (!msg.user.lastTime) {
       update.cigarettesSummary = 1;
       await UsersRepo.updateUser(msg, update);
-      await this._res(msg.user, Content.FIRST_STEP, { stage_1_left: STAGE_1_STEPS }, ImSmokingDialogKey);
+      const content = msg.user.minDeltaTimesInitial.length ? Content.STAGE_2 : Content.FIRST_STEP;
+      await this._res(msg.user, content, { stage_1_left: STAGE_1_STEPS }, ImSmokingDialogKey);
       return;
     }
     const timeDifferenceMs = msg.ts - msg.user.lastTime;
